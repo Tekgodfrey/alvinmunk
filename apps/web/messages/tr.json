@@ -331,8 +331,6 @@
   "leaderboard.share": "alvinmunk'ta en çok bağlantılı olanlar 🌌 — insanları topla, puan değil.",
   "leaderboard.rowLabel": "{name}, sıra {rank}, {score} Sosyal XP",
 
-  "howItWorks.meta.title": "Nasıl çalışır",
-  "howItWorks.meta.desc": "Destek döngüsü, iki izli model ve dürüst sybil karşıtı tasarımımız.",
   "howItWorks.eyebrow": "// makine",
   "howItWorks.title": "Nasıl çalışır",
   "howItWorks.subtitle": "alvinmunk güveni görebileceğin bir şeye dönüştürür — ve diğer uygulamalar okuyabilir. Sınırlar dahil tüm makine burada.",
