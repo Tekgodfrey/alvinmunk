@@ -56,6 +56,7 @@ import {
   type QuestWindow,
 } from '../../../lib/attest';
 import { json, withRoute } from '../../../lib/api-route';
+import { decodeVouchClaimedEvent } from '../../../lib/vouch-claimed';
 // The app's one resolved (and validated) network config — no per-route testnet defaults — so
 // the attester signs for the same network, passphrase and contracts as the client.
 import { config, misconfiguredResponse } from '../../../lib/stellar';
