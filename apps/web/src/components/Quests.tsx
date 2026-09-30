@@ -70,8 +70,7 @@ export function Quests({ address }: { address: string }) {
   const refTrim = ref.trim();
   const inviteTrim = invite.trim();
   const validRef = resolvedRef && isStellarAddress(resolvedRef) && resolvedRef !== address;
-  const validInvite =
-    resolvedInvite && isStellarAddress(resolvedInvite) && resolvedInvite !== address;
+  const validInvite = resolvedInvite && isStellarAddress(resolvedInvite) && resolvedInvite !== address;
 
   useEffect(() => {
     if (isStellarAddress(refTrim)) {
@@ -144,9 +143,7 @@ export function Quests({ address }: { address: string }) {
   );
 
   useEffect(() => {
-    getEarnedScore(address, address)
-      .then(setEarned)
-      .catch(() => setEarned(0));
+    getEarnedScore(address, address).then(setEarned).catch(() => setEarned(0));
     getStreak(address, address)
       .then((s) => setStreak({ weeks: s.weeks, best: s.best }))
       .catch(() => setStreak({ weeks: 0, best: 0 }));
@@ -213,11 +210,7 @@ export function Quests({ address }: { address: string }) {
     reloadStreak();
   }
 
-  async function run(
-    kind: 'referral' | 'invite' | 'vouchback',
-    questId: number,
-    evidence: Evidence,
-  ) {
+  async function run(kind: 'referral' | 'invite' | 'vouchback', questId: number, evidence: Evidence) {
     setBusy(kind);
     setError(null);
     setDone(false);
@@ -247,17 +240,12 @@ export function Quests({ address }: { address: string }) {
             <Sticker name="social-plus1" size={28} className="h-6 w-auto" />
           </h2>
           <Badge variant="onchain">
-            {t('quests.earnedXp')}:{' '}
-            {earned === null ? '…' : <NumberTicker value={earned} className="ml-0.5" />}
+            {t('quests.earnedXp')}: {earned === null ? '…' : <NumberTicker value={earned} className="ml-0.5" />}
           </Badge>
         </div>
         <p className="text-sm text-muted-foreground">{t('quests.subtitle')}</p>
         {streak && streak.weeks > 0 && (
-          <StateArt
-            kind="streak-fire"
-            size={64}
-            className="absolute right-4 top-4 motion-safe:animate-float"
-          />
+          <StateArt kind="streak-fire" size={64} className="absolute right-4 top-4 motion-safe:animate-float" />
         )}
         {streak && (
           <div className="mt-3 flex flex-wrap items-center gap-3">
@@ -270,9 +258,7 @@ export function Quests({ address }: { address: string }) {
                   key={i}
                   className={cn(
                     'size-3.5 border transition-colors',
-                    i < Math.min(streak.weeks, 7)
-                      ? 'border-secondary bg-secondary/70'
-                      : 'border-border',
+                    i < Math.min(streak.weeks, 7) ? 'border-secondary bg-secondary/70' : 'border-border',
                   )}
                 />
               ))}
@@ -292,10 +278,7 @@ export function Quests({ address }: { address: string }) {
         )}
         {/* Quest 1 — refer an active wallet */}
         <div className="mt-4">
-          <label
-            htmlFor="quest-ref"
-            className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground"
-          >
+          <label htmlFor="quest-ref" className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
             {t('quests.referLabel')}
             {tag(REFERRAL_QUEST_ID)}
           </label>
@@ -330,9 +313,7 @@ export function Quests({ address }: { address: string }) {
           </p>
           <Button
             variant={completed[REFERRAL_QUEST_ID] ? 'secondary' : 'onchain'}
-            onClick={() =>
-              run('referral', REFERRAL_QUEST_ID, { type: 'referral_tx', ref: resolvedRef! })
-            }
+            onClick={() => run('referral', REFERRAL_QUEST_ID, { type: 'referral_tx', ref: resolvedRef! })}
             disabled={busy !== null || completed[REFERRAL_QUEST_ID] || !validRef || resolvingRef}
             className="mt-2 w-full"
           >
@@ -346,10 +327,7 @@ export function Quests({ address }: { address: string }) {
 
         {/* Quest 2 — invite-converts: someone you invited opened a profile + got vouched for */}
         <div className="mt-4 border-t border-border/60 pt-4">
-          <label
-            htmlFor="quest-invite"
-            className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground"
-          >
+          <label htmlFor="quest-invite" className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
             {t('quests.inviteLabel')}
             {tag(INVITE_QUEST_ID)}
           </label>
@@ -384,12 +362,8 @@ export function Quests({ address }: { address: string }) {
           </p>
           <Button
             variant={completed[INVITE_QUEST_ID] ? 'secondary' : 'onchain'}
-            onClick={() =>
-              run('invite', INVITE_QUEST_ID, { type: 'invite_converts', ref: resolvedInvite! })
-            }
-            disabled={
-              busy !== null || completed[INVITE_QUEST_ID] || !validInvite || resolvingInvite
-            }
+            onClick={() => run('invite', INVITE_QUEST_ID, { type: 'invite_converts', ref: resolvedInvite! })}
+            disabled={busy !== null || completed[INVITE_QUEST_ID] || !validInvite || resolvingInvite}
             className="mt-2 w-full"
           >
             {completed[INVITE_QUEST_ID]

@@ -98,9 +98,7 @@ export const GET = withRoute('GET /api/health', async (): Promise<Response> => {
   let timer: ReturnType<typeof setTimeout> | undefined;
 
   try {
-    const server = new rpc.Server(config.rpcUrl, {
-      allowHttp: config.rpcUrl.startsWith('http://'),
-    });
+    const server = new rpc.Server(config.rpcUrl, { allowHttp: config.rpcUrl.startsWith('http://') });
 
     const timeoutPromise = new Promise<never>((_, reject) => {
       timer = setTimeout(() => reject(new Error('timeout')), RPC_TIMEOUT_MS);
@@ -128,10 +126,7 @@ export const GET = withRoute('GET /api/health', async (): Promise<Response> => {
         checks.latestLedgerAgeSeconds = Math.round(ledgerAgeSeconds);
       }
 
-      if (
-        health.ledgerRetentionWindow != null &&
-        health.ledgerRetentionWindow < MAX_REQUIRED_WINDOW
-      ) {
+      if (health.ledgerRetentionWindow != null && health.ledgerRetentionWindow < MAX_REQUIRED_WINDOW) {
         const retentionWarning = `RPC retention window (${health.ledgerRetentionWindow}) is smaller than required (${MAX_REQUIRED_WINDOW})`;
         rpcWarning = rpcWarning ? `${rpcWarning}; ${retentionWarning}` : retentionWarning;
       }

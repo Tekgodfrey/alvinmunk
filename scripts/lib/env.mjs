@@ -114,9 +114,7 @@ export function resolveDeployment({ env = process.env, root, network } = {}) {
     { label: 'environment', values: env },
     // A .env.local for the other network would hand out the wrong network's ids.
     ...(localNet === wanted ? [{ label: rel(base, envFile), values: local }] : []),
-    ...(fs.existsSync(manifestFile)
-      ? [{ label: rel(base, manifestFile), values: readManifest(manifestFile) }]
-      : []),
+    ...(fs.existsSync(manifestFile) ? [{ label: rel(base, manifestFile), values: readManifest(manifestFile) }] : []),
   ];
   const pick = (envVar) => {
     for (const layer of layers) {
@@ -169,8 +167,7 @@ export function requireDeployment(names, { settings = [], ...opts } = {}) {
     if (!envVar) throw new Error(`unknown contract "${name}"`);
     const id = d.contracts[name];
     if (id === undefined) problems.push(`${envVar} is not set`);
-    else if (!CONTRACT_ID.test(id))
-      problems.push(`${envVar} (from ${d.sources[name]}) is not a contract id: "${id}"`);
+    else if (!CONTRACT_ID.test(id)) problems.push(`${envVar} (from ${d.sources[name]}) is not a contract id: "${id}"`);
   }
   for (const name of settings) {
     if (!d[name]) problems.push(`${SETTING_VARS[name]} is not set`);
@@ -215,9 +212,7 @@ function main(argv) {
     if (argv[i] === '--network') network = argv[++i];
     else if (argv[i] in CONTRACT_VARS) names.push(argv[i]);
     else {
-      console.error(
-        `usage: node scripts/lib/env.mjs [--network testnet|mainnet] [${CONTRACT_NAMES.join('|')} ...]`,
-      );
+      console.error(`usage: node scripts/lib/env.mjs [--network testnet|mainnet] [${CONTRACT_NAMES.join('|')} ...]`);
       process.exit(2);
     }
   }

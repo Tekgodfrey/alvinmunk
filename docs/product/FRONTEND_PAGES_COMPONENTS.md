@@ -37,31 +37,28 @@ shared URL — minimal chrome, maximum funnel.
 ## 2. Page map — every page, its job, its states
 
 ### Marketing
-
-| Route                | Job                                                                 | Key states                                                                        |
-| -------------------- | ------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `/` **Landing**      | 3-second "what + why you"; the constellation promise; single CTA    | hero, how-it-works strip, live-vouch ticker, leaderboard peek, dev teaser, footer |
-| `/how-it-works`      | trust & mechanics: vouch → claim → constellation; two-track honesty | static                                                                            |
-| `/manifesto` _(opt)_ | brand story "collect people, not points"                            | static                                                                            |
+| Route | Job | Key states |
+|-------|-----|-----------|
+| `/` **Landing** | 3-second "what + why you"; the constellation promise; single CTA | hero, how-it-works strip, live-vouch ticker, leaderboard peek, dev teaser, footer |
+| `/how-it-works` | trust & mechanics: vouch → claim → constellation; two-track honesty | static |
+| `/manifesto` *(opt)* | brand story "collect people, not points" | static |
 
 ### App (wallet behind client boundary)
-
-| Route                     | Job                                                                      | States                                               |
-| ------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------- |
-| `/app`                    | home: your crest, "vouch someone", recent activity, near-complete nudges | connected / not-connected / empty / loading          |
-| `/app/vouch`              | compose a vouch → ShareSheet with link + OG preview                      | idle / submitting / success(link) / error            |
-| `/app/quests`             | verified quests (Earned XP) + weekly streak                              | locked / available / verifying / done / error        |
-| `/app/rewards`            | rank→reward unlock table + claim                                         | locked / unlockable / claimed / cap-reached / frozen |
-| `/app/wallet`             | connect/disconnect, balance, USDC trustline, classic L1 demo             | disconnected / connecting / connected                |
-| `/u/[handle]` **Profile** | the shareable identity: constellation, vouch network, rank, moments      | own / others' / not-found / loading                  |
-| `/leaderboard`            | most-connected night sky (faces, not numbers)                            | loading / empty / ranked / you-highlighted / flagged |
+| Route | Job | States |
+|-------|-----|--------|
+| `/app` | home: your crest, "vouch someone", recent activity, near-complete nudges | connected / not-connected / empty / loading |
+| `/app/vouch` | compose a vouch → ShareSheet with link + OG preview | idle / submitting / success(link) / error |
+| `/app/quests` | verified quests (Earned XP) + weekly streak | locked / available / verifying / done / error |
+| `/app/rewards` | rank→reward unlock table + claim | locked / unlockable / claimed / cap-reached / frozen |
+| `/app/wallet` | connect/disconnect, balance, USDC trustline, classic L1 demo | disconnected / connecting / connected |
+| `/u/[handle]` **Profile** | the shareable identity: constellation, vouch network, rank, moments | own / others' / not-found / loading |
+| `/leaderboard` | most-connected night sky (faces, not numbers) | loading / empty / ranked / you-highlighted / flagged |
 
 ### Funnel & Docs
-
-| Route                   | Job                                   | States                                                                                          |
-| ----------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `/claim/[id]` **Claim** | THE viral moment; works logged-out    | preview(unauth) / connecting / claiming / merged(success) / already-claimed / invalid / expired |
-| `/docs/**`              | for-devs: read reputation in one call | see [DEV_DOCS_OUTLINE.md](./DEV_DOCS_OUTLINE.md)                                                |
+| Route | Job | States |
+|-------|-----|--------|
+| `/claim/[id]` **Claim** | THE viral moment; works logged-out | preview(unauth) / connecting / claiming / merged(success) / already-claimed / invalid / expired |
+| `/docs/**` | for-devs: read reputation in one call | see [DEV_DOCS_OUTLINE.md](./DEV_DOCS_OUTLINE.md) |
 
 ## 3. Navbar & Footer (exact contents)
 
@@ -75,8 +72,7 @@ balance pill). **Mobile:** logo + crest avatar (opens menu) + a bottom tab bar
 (`Home / Vouch / Quests / You`) for thumb reach; Connect as a sticky CTA when disconnected.
 
 **Footer (all pages):**
-
-- Manifesto line: _"Reputation should name humans, not hoard points. Lit on Stellar."_
+- Manifesto line: *"Reputation should name humans, not hoard points. Lit on Stellar."*
 - **Product:** App · Vouch · Leaderboard · Rewards
 - **Learn:** How it works · Anti-sybil · Docs
 - **Community:** X · GitHub · Discord
@@ -85,14 +81,12 @@ balance pill). **Mobile:** logo + crest avatar (opens menu) + a bottom tab bar
 ## 4. Component inventory
 
 ### `components/ui/` — primitives (shadcn-style, owned)
-
 `Button` (variants: primary/secondary/ghost/outline; sizes) · `Card` · `Badge` ·
 `Input` · `Textarea` · `Label` · `Dialog`/`Modal` · `Sheet` (mobile menu) ·
 `DropdownMenu` · `Tabs` · `Tooltip` · `Skeleton` · `Avatar` · `Progress` (+ `ProgressRing`)
 · `Toaster` (Sonner) · `Separator` · `ScrollArea`.
 
 ### `components/brand/` — the identity
-
 - **`Logo`** — crest mark + wordmark; `size`, `markOnly`.
 - **`Crest`** — the deterministic **constellation** from wallet seed (refactor of
   `GenesisStamp`); props `address`, `size`, `animate(breathe)`, `alt`. Default avatar.
@@ -100,17 +94,15 @@ balance pill). **Mobile:** logo + crest avatar (opens menu) + a bottom tab bar
 - **`ConstellationGraph`** — a profile's vouch network rendered as connected stars.
 
 ### `components/cards/` — the artifacts (reuse existing behavior, new shell)
-
 - **`HalfCard` / `FullCard`** — the vouch artifact; half = glowing empty socket, full =
   merged with both crests + the one-line note + moment/date.
-- **`VouchCompose`** _(exists)_ — note input → mint → ShareSheet.
+- **`VouchCompose`** *(exists)* — note input → mint → ShareSheet.
 - **`ShareSheet`** — copy link · X · WhatsApp · auto OG preview image of the half-card.
-- **`QuestCard`** _(exists → reskin)_ — title, evidence, `ProgressRing`, verify CTA.
-- **`RewardRow`** _(exists in `Rewards.tsx` → reskin)_ — threshold→USDC, claim/locked/claimed.
-- **`TipModal`** _(exists in `Tip.tsx` → modal)_ — enable USDC, faucet, send tip.
+- **`QuestCard`** *(exists → reskin)* — title, evidence, `ProgressRing`, verify CTA.
+- **`RewardRow`** *(exists in `Rewards.tsx` → reskin)* — threshold→USDC, claim/locked/claimed.
+- **`TipModal`** *(exists in `Tip.tsx` → modal)* — enable USDC, faucet, send tip.
 
 ### `components/social/`
-
 - **`RankBadge`** — rank tier as a constellation tier, not a raw number.
 - **`StreakFlame`** — 🔥 weekly streak (current + best).
 - **`AvatarStack`** — "vouched by" faces (crests) with overflow `+N`.
@@ -118,7 +110,6 @@ balance pill). **Mobile:** logo + crest avatar (opens menu) + a bottom tab bar
 - **`LeaderboardRow`** — crest + handle + connection count secondary; `you` / `flagged ⚠`.
 
 ### `components/states/` — never a dead end (Kaan)
-
 - **`EmptyState`** (icon + warm line + single action) — e.g. "No vouches yet. Reputation
   starts with one trusted connection."
 - **`NearComplete`** — "1 step from claiming your star."
@@ -127,14 +118,12 @@ balance pill). **Mobile:** logo + crest avatar (opens menu) + a bottom tab bar
 - **`TxStatus`** — pending/success/failed with explorer link (uses `onchain` violet).
 
 ### `components/wallet/` — client boundary
-
 - **`WalletProvider`** — single `"use client"` context wrapping `(app)`; wraps the existing
   `lib/wallet.ts` (dev/freighter/passkey) so feature components never touch `window`.
 - **`ConnectButton`** — connect/disconnect; connected = `Crest` + handle + balance pill.
 - Load any `window`-touching widget via `dynamic(() => ..., { ssr: false })`.
 
 ### `components/marketing/`
-
 `Hero` · `HowItWorksStrip` (3 steps: vouch → claim → constellation) · `FeatureGrid` ·
 `LeaderboardPeek` · `DevTeaser` ("read a score in one call") · `CTASection`.
 

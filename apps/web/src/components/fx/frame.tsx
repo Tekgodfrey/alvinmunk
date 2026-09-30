@@ -68,30 +68,10 @@ export function Frame({
     >
       {brackets && (
         <>
-          <span
-            className={cn(
-              'pointer-events-none absolute -left-px -top-px size-3.5 border-l-2 border-t-2',
-              ring,
-            )}
-          />
-          <span
-            className={cn(
-              'pointer-events-none absolute -right-px -top-px size-3.5 border-r-2 border-t-2',
-              ring,
-            )}
-          />
-          <span
-            className={cn(
-              'pointer-events-none absolute -bottom-px -left-px size-3.5 border-b-2 border-l-2',
-              ring,
-            )}
-          />
-          <span
-            className={cn(
-              'pointer-events-none absolute -bottom-px -right-px size-3.5 border-b-2 border-r-2',
-              ring,
-            )}
-          />
+          <span className={cn('pointer-events-none absolute -left-px -top-px size-3.5 border-l-2 border-t-2', ring)} />
+          <span className={cn('pointer-events-none absolute -right-px -top-px size-3.5 border-r-2 border-t-2', ring)} />
+          <span className={cn('pointer-events-none absolute -bottom-px -left-px size-3.5 border-b-2 border-l-2', ring)} />
+          <span className={cn('pointer-events-none absolute -bottom-px -right-px size-3.5 border-b-2 border-r-2', ring)} />
         </>
       )}
       {tape && <Tape corner={tape} size={64} className="z-10" />}

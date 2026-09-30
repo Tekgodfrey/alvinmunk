@@ -24,9 +24,9 @@ export function handleFontSize(handleLength: number): number {
   const MAX_SIZE = 76;
   const MIN_SIZE = 40;
   const MAX_CHARS = 12;
-
+  
   if (handleLength <= MAX_CHARS) return MAX_SIZE;
-
+  
   // Linear interpolation from MAX_SIZE to MIN_SIZE as length increases
   // At 12 chars: 76px, at 32 chars: 40px
   const scaleFactor = (handleLength - MAX_CHARS) / (32 - MAX_CHARS);
@@ -95,14 +95,7 @@ export function ogCard(opts: {
     <div style={SHELL}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Brand />
-        <div
-          style={{
-            display: 'flex',
-            color: invite ? GOLD : GREEN,
-            fontSize: '22px',
-            letterSpacing: '4px',
-          }}
-        >
+        <div style={{ display: 'flex', color: invite ? GOLD : GREEN, fontSize: '22px', letterSpacing: '4px' }}>
           {invite ? 'INVITED YOU' : '● LIVE'}
         </div>
       </div>
@@ -114,21 +107,9 @@ export function ogCard(opts: {
           <div style={{ display: 'flex', width: '380px', height: '380px' }}>
             <svg width="380" height="380" viewBox="0 0 100 100">
               <circle cx="50" cy="50" r="46" fill={VIOLET} fillOpacity="0.08" />
-              <polyline
-                points={polyPoints}
-                fill="none"
-                stroke="#9fb0d8"
-                strokeOpacity="0.3"
-                strokeWidth="0.6"
-              />
+              <polyline points={polyPoints} fill="none" stroke="#9fb0d8" strokeOpacity="0.3" strokeWidth="0.6" />
               {pts.map((p, i) => (
-                <circle
-                  key={i}
-                  cx={p[0]}
-                  cy={p[1]}
-                  r={i === 0 ? 4 : 2.4}
-                  fill={i === 0 ? GOLD : i % 2 ? CYAN : VIOLET}
-                />
+                <circle key={i} cx={p[0]} cy={p[1]} r={i === 0 ? 4 : 2.4} fill={i === 0 ? GOLD : i % 2 ? CYAN : VIOLET} />
               ))}
             </svg>
           </div>
@@ -140,17 +121,7 @@ export function ogCard(opts: {
               join @{handle} on
             </div>
           )}
-          <div
-            style={{
-              display: 'flex',
-              fontSize: handleFontSize(handle.length),
-              fontWeight: 700,
-              lineHeight: 1,
-              wordBreak: 'break-all',
-            }}
-          >
-            @{handle}
-          </div>
+          <div style={{ display: 'flex', fontSize: handleFontSize(handle.length), fontWeight: 700, lineHeight: 1, wordBreak: 'break-all' }}>@{handle}</div>
           <div style={{ display: 'flex', marginTop: '14px', color: MUTED, fontSize: '26px' }}>
             {address ? shortAddr(address) : 'available — claim it'}
           </div>
@@ -179,15 +150,7 @@ export function ogCard(opts: {
         </div>
       </div>
 
-      <div
-        style={{
-          display: 'flex',
-          color: MUTED,
-          fontSize: '20px',
-          letterSpacing: '8px',
-          opacity: 0.5,
-        }}
-      >
+      <div style={{ display: 'flex', color: MUTED, fontSize: '20px', letterSpacing: '8px', opacity: 0.5 }}>
         {`A<ALVINMUNK<<${handle.toUpperCase()}<<COLLECT<PEOPLE<NOT<POINTS<<<<<<<<`.slice(0, 62)}
       </div>
     </div>
@@ -238,25 +201,13 @@ export function claimCard(view: ClaimCardView) {
     return (
       <div style={SHELL}>
         <Brand />
-        <div
-          style={{
-            display: 'flex',
-            flex: 1,
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
+        <div style={{ display: 'flex', flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <svg width="180" height="180" viewBox="0 0 100 100">
             <circle cx="50" cy="50" r="44" fill={VIOLET} fillOpacity="0.08" />
             <circle cx="50" cy="50" r="6" fill={GOLD} />
           </svg>
-          <div style={{ display: 'flex', marginTop: '28px', fontSize: '56px', fontWeight: 700 }}>
-            {title}
-          </div>
-          <div style={{ display: 'flex', marginTop: '16px', color: MUTED, fontSize: '28px' }}>
-            {line}
-          </div>
+          <div style={{ display: 'flex', marginTop: '28px', fontSize: '56px', fontWeight: 700 }}>{title}</div>
+          <div style={{ display: 'flex', marginTop: '16px', color: MUTED, fontSize: '28px' }}>{line}</div>
         </div>
       </div>
     );
@@ -278,35 +229,13 @@ export function claimCard(view: ClaimCardView) {
     <div style={SHELL}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Brand />
-        <div
-          style={{ display: 'flex', color: statusColor, fontSize: '22px', letterSpacing: '4px' }}
-        >
-          {statusText}
-        </div>
+        <div style={{ display: 'flex', color: statusColor, fontSize: '22px', letterSpacing: '4px' }}>{statusText}</div>
       </div>
 
-      <div
-        style={{
-          display: 'flex',
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '48px',
-        }}
-      >
-        <div
-          style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '18px' }}
-        >
+      <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center', gap: '48px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '18px' }}>
           <OgFace address={from} avatar={avatar} size={260} ring={GOLD} />
-          <div
-            style={{
-              display: 'flex',
-              fontSize: claimNameSize(name.length),
-              fontWeight: 700,
-              maxWidth: '520px',
-              wordBreak: 'break-all',
-            }}
-          >
+          <div style={{ display: 'flex', fontSize: claimNameSize(name.length), fontWeight: 700, maxWidth: '520px', wordBreak: 'break-all' }}>
             {name}
           </div>
         </div>
@@ -316,9 +245,7 @@ export function claimCard(view: ClaimCardView) {
           <path d="M2 16h56M44 4l14 12-14 12" fill="none" stroke={MUTED} strokeWidth="4" />
         </svg>
 
-        <div
-          style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '18px' }}
-        >
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '18px' }}>
           <div
             style={{
               display: 'flex',
@@ -336,9 +263,7 @@ export function claimCard(view: ClaimCardView) {
               {lit ? 'LIT' : 'YOUR HALF'}
             </div>
           </div>
-          <div style={{ display: 'flex', color: MUTED, fontSize: '26px' }}>
-            {lit ? 'claimed' : 'waiting for you'}
-          </div>
+          <div style={{ display: 'flex', color: MUTED, fontSize: '26px' }}>{lit ? 'claimed' : 'waiting for you'}</div>
         </div>
       </div>
 
@@ -361,17 +286,7 @@ export function claimCard(view: ClaimCardView) {
         </div>
       ) : null}
 
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginTop: '24px',
-          color: MUTED,
-          fontSize: '20px',
-          letterSpacing: '4px',
-          opacity: 0.55,
-        }}
-      >
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '24px', color: MUTED, fontSize: '20px', letterSpacing: '4px', opacity: 0.55 }}>
         <div style={{ display: 'flex' }}>{`HALF-CARD // #${vouchId}`}</div>
         <div style={{ display: 'flex' }}>COLLECT PEOPLE, NOT POINTS</div>
       </div>
@@ -396,16 +311,7 @@ const SHELL: CSSProperties = {
 
 function Brand() {
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '14px',
-        color: MUTED,
-        fontSize: '24px',
-        letterSpacing: '6px',
-      }}
-    >
+    <div style={{ display: 'flex', alignItems: 'center', gap: '14px', color: MUTED, fontSize: '24px', letterSpacing: '6px' }}>
       <div style={{ width: '14px', height: '14px', borderRadius: '50%', background: GOLD }} />
       ALVINMUNK
     </div>
@@ -511,17 +417,7 @@ function Stat({ label, value, color }: { label: string; value: number; color: st
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ display: 'flex', fontSize: '54px', fontWeight: 700, color }}>{value}</div>
-      <div
-        style={{
-          display: 'flex',
-          marginTop: '6px',
-          color: MUTED,
-          fontSize: '20px',
-          letterSpacing: '3px',
-        }}
-      >
-        {label}
-      </div>
+      <div style={{ display: 'flex', marginTop: '6px', color: MUTED, fontSize: '20px', letterSpacing: '3px' }}>{label}</div>
     </div>
   );
 }

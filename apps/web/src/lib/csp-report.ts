@@ -71,3 +71,4 @@ export function parseCspReports(body: unknown): CspViolation[] {
     .map(violation)
     .filter((v): v is CspViolation => v !== null);
 }
+

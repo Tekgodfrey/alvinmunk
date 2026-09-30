@@ -28,23 +28,17 @@ export default function RewardsPage() {
       </header>
 
       <section className="grid gap-4">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-          {t('rewards.page.send')}
-        </h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">{t('rewards.page.send')}</h2>
         <Tip address={profile.address} />
       </section>
 
       <section className="grid gap-4">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-          {t('rewards.page.claim')}
-        </h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">{t('rewards.page.claim')}</h2>
         <Rewards address={profile.address} />
       </section>
 
       <section className="grid gap-4">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-          {t('rewards.page.unlock')}
-        </h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">{t('rewards.page.unlock')}</h2>
         <Unlockables address={profile.address} />
       </section>
     </div>

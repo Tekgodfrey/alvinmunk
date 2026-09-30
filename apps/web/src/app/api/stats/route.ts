@@ -112,9 +112,7 @@ function decode(v: xdr.ScVal | string): unknown {
 }
 
 /** Live scan of the recent window. Returns the fresh addresses and the latest ledger. */
-async function liveScan(
-  cfg: (typeof NETWORKS)[NetKey],
-): Promise<{ seen: Set<string>; latest: number }> {
+async function liveScan(cfg: (typeof NETWORKS)[NetKey]): Promise<{ seen: Set<string>; latest: number }> {
   const seen = new Set<string>();
   const ids = [cfg.rep, cfg.registry].filter(Boolean) as string[];
   if (ids.length === 0) return { seen, latest: 0 };
@@ -154,9 +152,7 @@ async function liveScan(
 
 async function statsFor(net: NetKey) {
   const cfg = NETWORKS[net];
-  const rosterList = ((roster as Record<string, string[]>)[net] ?? []).filter((a) =>
-    isStellarAddress(a),
-  );
+  const rosterList = ((roster as Record<string, string[]>)[net] ?? []).filter((a) => isStellarAddress(a));
   const configured = Boolean(cfg.rep || cfg.registry) || rosterList.length > 0;
 
   // Read alongside the live scan; it does not depend on it.
@@ -239,9 +235,7 @@ async function readFunnel(cfg: (typeof NETWORKS)[NetKey]): Promise<FunnelResult>
     const { total, records } = await readVouchRecords(rpcServer(cfg.rpc), cfg.rep);
     // Same rule as the wallet count: the app's own contracts are not users.
     const excluded = new Set(cfg.exclude?.filter(Boolean));
-    const users = records.filter(
-      (v) => !excluded.has(v.from) && !(v.claimer && excluded.has(v.claimer)),
-    );
+    const users = records.filter((v) => !excluded.has(v.from) && !(v.claimer && excluded.has(v.claimer)));
     return {
       funnel: aggregateVouchFunnel(users, {
         now: Math.floor(Date.now() / 1000),

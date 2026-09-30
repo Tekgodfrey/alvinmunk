@@ -19,9 +19,7 @@ const m = vi.hoisted(() => ({
 vi.mock('@/lib/registry', () => ({ resolveHandle: m.resolveHandle, getMeta: m.getMeta }));
 vi.mock('@/lib/reputation', () => ({ getScores: m.getScores }));
 vi.mock('@/lib/constellation', () => ({ getPeopleCounts: m.getPeopleCounts }));
-vi.mock('@/components/wallet/wallet-provider', () => ({
-  useWallet: () => ({ profile: m.profile }),
-}));
+vi.mock('@/components/wallet/wallet-provider', () => ({ useWallet: () => ({ profile: m.profile }) }));
 vi.mock('@/lib/i18n', () => ({ useTranslations: () => (k: string) => k }));
 // lib/read-network decides what an override is (tested there); here `testnet` is one.
 vi.mock('@/lib/read-network', () => ({
@@ -88,13 +86,7 @@ describe('/u/[handle] on a ?network= override (#290)', () => {
     expect(container.textContent).toContain('4'); // earned XP from the override's read
     // The vouch network reads the same network, with the override's counts.
     expect(m.vouchNetwork).toHaveBeenLastCalledWith(
-      expect.objectContaining({
-        address: G,
-        handle: 'umut',
-        net: m.net,
-        vouchedByCount: 3,
-        backedCount: 1,
-      }),
+      expect.objectContaining({ address: G, handle: 'umut', net: m.net, vouchedByCount: 3, backedCount: 1 }),
     );
   });
 
@@ -121,9 +113,7 @@ describe('/u/[handle] on a ?network= override (#290)', () => {
     expect(q('[role="status"]')).toBeNull();
     expect(q('a[href="/app"]')?.textContent).toContain('Vouch @umut');
     expect(q('[data-testid="badges"]')).not.toBeNull();
-    expect(m.vouchNetwork).toHaveBeenLastCalledWith(
-      expect.objectContaining({ net: null, isMe: false }),
-    );
+    expect(m.vouchNetwork).toHaveBeenLastCalledWith(expect.objectContaining({ net: null, isMe: false }));
     expect(q('[data-testid="share"]')?.getAttribute('data-path')).toBe('/u/umut');
   });
 });

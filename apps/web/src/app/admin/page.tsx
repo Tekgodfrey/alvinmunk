@@ -263,15 +263,7 @@ function WriteStatus({ write }: { write: ReturnType<typeof useWrite> }) {
   );
 }
 
-function Panel({
-  title,
-  note,
-  children,
-}: {
-  title: string;
-  note?: string;
-  children: React.ReactNode;
-}) {
+function Panel({ title, note, children }: { title: string; note?: string; children: React.ReactNode }) {
   return (
     <section className="rounded-2xl border border-border bg-card/40 p-5">
       <h2 className="text-lg font-semibold">{title}</h2>
@@ -327,10 +319,7 @@ function RewardsAdmin({ wallet }: { wallet: Wallet }) {
     if (!v.ok) return write.reject(v.error);
     const d = v.value;
     write.review(
-      rewardConsequence(
-        d,
-        rows?.find((r) => r.id === d.id),
-      ),
+      rewardConsequence(d, rows?.find((r) => r.id === d.id)),
       () => addReward(wallet, d.id, d.threshold, d.amount),
       () => setForm({ id: '', threshold: '', amount: '' }),
     );
@@ -482,10 +471,7 @@ function GatesAdmin({ wallet }: { wallet: Wallet }) {
     if (!v.ok) return write.reject(v.error);
     const d = v.value;
     write.review(
-      gateConsequence(
-        d,
-        rows?.find((g) => g.id === d.id),
-      ),
+      gateConsequence(d, rows?.find((g) => g.id === d.id)),
       () => createGate(wallet, d.id, d.track, d.min, d.label),
       () => setForm(empty),
     );

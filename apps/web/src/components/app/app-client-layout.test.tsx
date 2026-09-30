@@ -14,9 +14,7 @@ vi.mock('@/components/app/onboarding', () => ({
   Onboarding: () => <div data-testid="onboarding" />,
 }));
 vi.mock('@/components/app/app-shell', () => ({
-  AppShell: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="shell">{children}</div>
-  ),
+  AppShell: ({ children }: { children: React.ReactNode }) => <div data-testid="shell">{children}</div>,
 }));
 
 // The server /app layout, so the whole segment chain is exercised, not just the gate.

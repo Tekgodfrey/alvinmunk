@@ -113,8 +113,7 @@ export const POST = withRoute('POST /api/faucet', async (req: Request): Promise<
       return json({ ok: true, hash, amount: DRIP });
     } catch (e) {
       // Core kept answering TRY_AGAIN_LATER: the mint never entered the queue — a 503, not funded.
-      if (e instanceof TxNotQueuedError)
-        return json({ error: 'network busy, try again later' }, 503);
+      if (e instanceof TxNotQueuedError) return json({ error: 'network busy, try again later' }, 503);
       return json({ error: e instanceof Error ? e.message : 'faucet mint failed' }, 502);
     }
   }
@@ -153,8 +152,9 @@ export const POST = withRoute('POST /api/faucet', async (req: Request): Promise<
   } catch (e) {
     // Include Horizon result_codes when present so the caller can distinguish
     // op_no_trust, op_line_full, tx_bad_seq, etc. from generic failures.
-    const resultCodes = (e as { response?: { data?: { extras?: { result_codes?: unknown } } } })
-      ?.response?.data?.extras?.result_codes;
+    const resultCodes = (
+      e as { response?: { data?: { extras?: { result_codes?: unknown } } } }
+    )?.response?.data?.extras?.result_codes;
     return json(
       {
         error: e instanceof Error ? e.message : 'faucet payment failed',

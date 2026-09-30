@@ -44,9 +44,7 @@ export function txRejectionCode(result: xdr.TransactionResult | undefined): stri
     const outer = result?.result();
     if (!outer) return 'unknown';
     const res =
-      outer.switch().name === 'txFeeBumpInnerFailed'
-        ? outer.innerResultPair().result().result()
-        : outer;
+      outer.switch().name === 'txFeeBumpInnerFailed' ? outer.innerResultPair().result().result() : outer;
     const code = res.switch().name;
     if (code !== 'txFailed') return code;
     for (const op of res.results()) {
@@ -84,9 +82,7 @@ export class TxNotQueuedError extends Error {
     readonly hash: string,
     readonly attempts: number,
   ) {
-    super(
-      'The network is busy and did not accept the transaction. Nothing was sent — try again in a moment.',
-    );
+    super('The network is busy and did not accept the transaction. Nothing was sent — try again in a moment.');
     this.name = 'TxNotQueuedError';
   }
 }

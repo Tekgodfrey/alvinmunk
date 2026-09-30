@@ -55,8 +55,7 @@ export function Unlockables({ address }: { address: string }) {
 
   if (rows !== null && rows.length === 0) return null;
 
-  const have = (track: number) =>
-    track === TRACK.EARNED ? (scores?.earned ?? 0) : (scores?.social ?? 0);
+  const have = (track: number) => (track === TRACK.EARNED ? scores?.earned ?? 0 : scores?.social ?? 0);
   const trackLabel = (track: number) =>
     track === TRACK.EARNED ? t('unlockables.earnedXp') : t('unlockables.socialXp');
 
@@ -85,11 +84,7 @@ export function Unlockables({ address }: { address: string }) {
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium">{g.label}</p>
                 <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                  {t('unlockables.needs', {
-                    min: String(g.min),
-                    track: trackLabel(g.track),
-                    cur: String(cur),
-                  })}
+                  {t('unlockables.needs', { min: String(g.min), track: trackLabel(g.track), cur: String(cur) })}
                 </p>
               </div>
               {unlocked ? (
@@ -103,11 +98,7 @@ export function Unlockables({ address }: { address: string }) {
                   disabled={!passes || busy !== null}
                   onClick={() => onUnlock(g.id)}
                 >
-                  {busy === g.id
-                    ? t('unlockables.unlocking')
-                    : passes
-                      ? t('unlockables.unlock')
-                      : t('unlockables.locked')}
+                  {busy === g.id ? t('unlockables.unlocking') : passes ? t('unlockables.unlock') : t('unlockables.locked')}
                 </Button>
               )}
             </li>

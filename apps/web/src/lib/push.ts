@@ -44,7 +44,9 @@ export function getPushAvailabilityHint(): string | null {
     /iPad|iPhone|iPod/.test(userAgent) ||
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   const isIosSafari =
-    isIosDevice && /Safari/.test(userAgent) && !/(CriOS|FxiOS|EdgiOS|OPiOS)/.test(userAgent);
+    isIosDevice &&
+    /Safari/.test(userAgent) &&
+    !/(CriOS|FxiOS|EdgiOS|OPiOS)/.test(userAgent);
   const isStandalone =
     (typeof window.matchMedia === 'function' &&
       window.matchMedia('(display-mode: standalone)').matches) ||
@@ -147,9 +149,7 @@ export async function syncPushSubscription(
     if (lastSent === sub.endpoint) return; // server already has this endpoint
 
     if (lastSent) {
-      const moved = await rotateSubscription(lastSent, sub, walletAddress, async () =>
-        getVouchIds(),
-      );
+      const moved = await rotateSubscription(lastSent, sub, walletAddress, async () => getVouchIds());
       if (moved) return;
     }
     // No last-sent memory (cleared storage, first run after this feature ships, or the

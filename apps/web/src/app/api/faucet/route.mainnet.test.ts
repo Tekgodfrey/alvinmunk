@@ -14,18 +14,8 @@ vi.mock('@stellar/stellar-sdk', async (importOriginal) => {
   // `new …Server(...)`: the implementation is constructed, so it must be a `function`.
   return {
     ...actual,
-    rpc: {
-      ...actual.rpc,
-      Server: vi.fn().mockImplementation(function () {
-        return {};
-      }),
-    },
-    Horizon: {
-      ...actual.Horizon,
-      Server: vi.fn().mockImplementation(function () {
-        return {};
-      }),
-    },
+    rpc: { ...actual.rpc, Server: vi.fn().mockImplementation(function () { return {}; }) },
+    Horizon: { ...actual.Horizon, Server: vi.fn().mockImplementation(function () { return {}; }) },
   };
 });
 

@@ -16,14 +16,14 @@ tests pass** after the fixes.
 
 ## Tools run
 
-| Tool                                                                                | Purpose                                   | Result                                              |
-| ----------------------------------------------------------------------------------- | ----------------------------------------- | --------------------------------------------------- |
-| **[Scout](https://github.com/CoinFabrik/scout-audit)** (`cargo-scout-audit`)        | Soroban-specific vulnerability detector   | 4 critical → **fixed**; 22 medium triaged           |
-| **`cargo audit`** (RustSec)                                                         | Dependency CVE scan (1,189 advisories)    | **0 vulnerabilities** (3 informational — see below) |
-| **`cargo deny`**                                                                    | Advisories + banned crates + source trust | **bans ok, sources ok**                             |
-| **`cargo clippy`** (`-W all -W pedantic -W arithmetic_side_effects -W unwrap_used`) | Lints incl. security-relevant             | **0 production warnings**                           |
-| **`cargo-geiger`** / grep                                                           | `unsafe` code detection                   | **0 `unsafe` blocks** in any contract               |
-| **`cargo test`** (incl. property/fuzz)                                              | Behavioural correctness                   | **59 tests pass**                                   |
+| Tool | Purpose | Result |
+| --- | --- | --- |
+| **[Scout](https://github.com/CoinFabrik/scout-audit)** (`cargo-scout-audit`) | Soroban-specific vulnerability detector | 4 critical → **fixed**; 22 medium triaged |
+| **`cargo audit`** (RustSec) | Dependency CVE scan (1,189 advisories) | **0 vulnerabilities** (3 informational — see below) |
+| **`cargo deny`** | Advisories + banned crates + source trust | **bans ok, sources ok** |
+| **`cargo clippy`** (`-W all -W pedantic -W arithmetic_side_effects -W unwrap_used`) | Lints incl. security-relevant | **0 production warnings** |
+| **`cargo-geiger`** / grep | `unsafe` code detection | **0 `unsafe` blocks** in any contract |
+| **`cargo test`** (incl. property/fuzz) | Behavioural correctness | **59 tests pass** |
 
 ## Hardening already in place
 
@@ -41,24 +41,24 @@ operations to overflow) **and** `overflow-checks = true` already makes any overf
 none were exploitable. They were nonetheless converted to explicit **`saturating_add`** so the
 arithmetic can never wrap and the intent is self-documenting:
 
-| Contract         | Site                                         | Fix                                                                                                                                                |
-| ---------------- | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `reputation`     | daily-cap counter `used + 1`                 | `used.saturating_add(1)`                                                                                                                           |
-| `reputation`     | vouch sequence id `+ 1`                      | `.saturating_add(1)`                                                                                                                               |
-| `reputation`     | vouch TTL `created + VOUCH_TTL_SECS`         | `claim_deadline()` = `created.saturating_add(VOUCH_TTL_SECS)`, shared by both claim paths (`claim_vouch_signed`, `claim_vouch`) and `expire_vouch` |
-| `quest_registry` | weekly-streak `weeks += 1` / `last_week + 1` | `.saturating_add(1)`                                                                                                                               |
+| Contract | Site | Fix |
+| --- | --- | --- |
+| `reputation` | daily-cap counter `used + 1` | `used.saturating_add(1)` |
+| `reputation` | vouch sequence id `+ 1` | `.saturating_add(1)` |
+| `reputation` | vouch TTL `created + VOUCH_TTL_SECS` | `claim_deadline()` = `created.saturating_add(VOUCH_TTL_SECS)`, shared by both claim paths (`claim_vouch_signed`, `claim_vouch`) and `expire_vouch` |
+| `quest_registry` | weekly-streak `weeks += 1` / `last_week + 1` | `.saturating_add(1)` |
 
 Re-scan after the fix: **0 critical.**
 
 ## Medium findings — triaged (accepted / false-positive)
 
-| Category                             | Count | Verdict                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| ------------------------------------ | ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `unnecessary_admin_parameter`        | 5     | **False positive** — the `admin` argument to `__constructor()` (formerly `init()`) is _stored_ (`set(DataKey::Admin, admin)`) and used for later access control (`upgrade`, admin-gated setters), not unused.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `missing_new_admin_auth`             | 5     | **Fixed (#127)** — the flagged `init()` entrypoint no longer exists. Each contract sets its admin (and its wiring) in a `__constructor` that runs inside the deploy transaction itself, so there is no post-deploy window in which an observer could call `init` with their own admin and then be protected by the `AlreadyInitialized` guard. The deploy scripts pass the constructor's arguments after `--` to `stellar contract deploy`. Already-deployed contracts were initialized before this change and keep their admin through `upgrade`, which never runs a constructor. There is no unprotected `set_admin`; admin-mutating paths (`upgrade`) require `admin.require_auth()`. A 2-step ownership transfer is a possible future enhancement, not a vulnerability. |
-| `unsafe_unwrap`                      | 5     | **Accepted low-risk** — every flagged `unwrap()` reads a config address (`Usdc`, `Reputation`) that the constructor sets at deploy (`init()` did, on contracts deployed before #127); it can only be `None` on a mis-initialised contract, in which case it aborts (no silent failure, no exploit).                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `dos_unexpected_revert_with_storage` | 4     | **Accepted low-risk** — the flagged reverts are intentional guard clauses (`require_auth`, cap checks) that abort a single caller's tx; no shared-state DoS.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `dynamic_storage`                    | 3     | **Accepted** — dynamic keys are per-user/per-day namespaced (`DailyCount(addr, day)`, handle/address maps); this is the intended data model. Caller-sized values inside an entry are capped: `mint_vouch_signed` / `mint_vouches` / `mint_vouch` revert with `NoteTooLong` (#12) on a `Vouch.note` over 240 UTF-8 bytes (unbounded until issue #124; 240 is the web app's 60-character limit at 4 bytes per character), so no voucher can inflate what a claim rewrites, and a registry bio is capped at 80 bytes.                                                                                                                                                                                                                                                          |
+| Category | Count | Verdict |
+| --- | --- | --- |
+| `unnecessary_admin_parameter` | 5 | **False positive** — the `admin` argument to `__constructor()` (formerly `init()`) is *stored* (`set(DataKey::Admin, admin)`) and used for later access control (`upgrade`, admin-gated setters), not unused. |
+| `missing_new_admin_auth` | 5 | **Fixed (#127)** — the flagged `init()` entrypoint no longer exists. Each contract sets its admin (and its wiring) in a `__constructor` that runs inside the deploy transaction itself, so there is no post-deploy window in which an observer could call `init` with their own admin and then be protected by the `AlreadyInitialized` guard. The deploy scripts pass the constructor's arguments after `--` to `stellar contract deploy`. Already-deployed contracts were initialized before this change and keep their admin through `upgrade`, which never runs a constructor. There is no unprotected `set_admin`; admin-mutating paths (`upgrade`) require `admin.require_auth()`. A 2-step ownership transfer is a possible future enhancement, not a vulnerability. |
+| `unsafe_unwrap` | 5 | **Accepted low-risk** — every flagged `unwrap()` reads a config address (`Usdc`, `Reputation`) that the constructor sets at deploy (`init()` did, on contracts deployed before #127); it can only be `None` on a mis-initialised contract, in which case it aborts (no silent failure, no exploit). |
+| `dos_unexpected_revert_with_storage` | 4 | **Accepted low-risk** — the flagged reverts are intentional guard clauses (`require_auth`, cap checks) that abort a single caller's tx; no shared-state DoS. |
+| `dynamic_storage` | 3 | **Accepted** — dynamic keys are per-user/per-day namespaced (`DailyCount(addr, day)`, handle/address maps); this is the intended data model. Caller-sized values inside an entry are capped: `mint_vouch_signed` / `mint_vouches` / `mint_vouch` revert with `NoteTooLong` (#12) on a `Vouch.note` over 240 UTF-8 bytes (unbounded until issue #124; 240 is the web app's 60-character limit at 4 bytes per character), so no voucher can inflate what a claim rewrites, and a registry bio is capped at 80 bytes. |
 
 ## Anti-sybil / economic security (design-level)
 
@@ -72,7 +72,7 @@ pre-computed), an XP stake slashed on unclaimed vouches, and a treasury circuit 
 
 **Threat.** `tip(from, to, amount)` validated only the wallet's own gates — paused, sender
 auth, not frozen — and handed the transfer straight to the Stellar Asset Contract. The SAC
-rejects a _negative_ amount, so two shapes reached it that mint the frozen canonical
+rejects a *negative* amount, so two shapes reached it that mint the frozen canonical
 `tipped` event while moving no USDC:
 
 - `tip(a, b, 0)` from a wallet holding no USDC at all. The SAC is happy: nothing is
@@ -81,7 +81,7 @@ rejects a _negative_ amount, so two shapes reached it that mint the frozen canon
   call succeeds.
 
 Both are cheap (the fee) and repeatable, and `tipped` is what the social feed and the
-indexer read as proof that somebody _received_ a spend — the PRD's Green de-risk metric
+indexer read as proof that somebody *received* a spend — the PRD's Green de-risk metric
 ("D7 return among users who received a spend", `docs/PRD.md` §5) and the traction proof
 suggested in `docs/USER_FEEDBACK.md` §3. A wallet could "receive" any number of tips from
 itself, or send zero-value tips to anyone, and the metric would read it as traction.
@@ -96,12 +96,11 @@ checks (`validateTip` in `lib/admin.ts`) before prompting for a signature, so a 
 chain would reject never costs a fee.
 
 **Residual risk.**
-
 - `tipped` events from a contract deployed before the upgrade are not re-validated, so a
   historical zero/self tip can still appear in a historical scan. It is a fixed one-time
   set and normal events already carry `amount > 0` and two distinct wallets; consumers that
   need to be strict can check both off the event (`lib/events.ts` → `fetchTipsSent`).
-- The check bounds _this_ contract's tip path only. A plain SAC transfer made outside
+- The check bounds *this* contract's tip path only. A plain SAC transfer made outside
   alvinmunk emits no `tipped` event, so it never enters the feed or the metric.
 
 ## Vouch claims: front-running (issue #121)
@@ -127,7 +126,6 @@ the web app builds the message locally rather than asking an RPC node for it, si
 dishonest node could return the message for its own address.
 
 **Residual risk.**
-
 - Whoever holds the link can still claim: the link is a bearer credential, so share it with
   the intended person only.
 - Cards minted before the upgrade, and any card an integration still mints with the legacy

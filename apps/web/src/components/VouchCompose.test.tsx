@@ -133,9 +133,7 @@ describe('VouchCompose note', () => {
 
     // Minted, but no QR in the DOM until the user asks for it.
     expect(container.querySelector('[data-testid="qr"]')).toBeNull();
-    const toggle = container.querySelector<HTMLButtonElement>(
-      'button[aria-controls="vouch-claim-qr"]',
-    )!;
+    const toggle = container.querySelector<HTMLButtonElement>('button[aria-controls="vouch-claim-qr"]')!;
     expect(toggle.getAttribute('aria-expanded')).toBe('false');
 
     await act(async () => toggle.click());
@@ -208,11 +206,7 @@ describe('VouchCompose for several people (#271)', () => {
 
     // One signature for all three; an empty row gets the default note.
     expect(mintVouchesMock).toHaveBeenCalledTimes(1);
-    expect(mintVouchesMock).toHaveBeenCalledWith(WALLET, [
-      'ada',
-      '💧'.repeat(60),
-      'vouched for you',
-    ]);
+    expect(mintVouchesMock).toHaveBeenCalledWith(WALLET, ['ada', '💧'.repeat(60), 'vouched for you']);
     const links = [...container.querySelectorAll('li code')].map((c) => c.textContent);
     const origin = window.location.origin;
     expect(links).toEqual([0, 1, 2].map((i) => `${origin}/claim/${20 + i}#k=${`${i}`.repeat(64)}`));
@@ -263,9 +257,7 @@ describe('VouchCompose for several people (#271)', () => {
     mintVouchesMock.mockRejectedValue(new Error('HostError: Error(Contract, #9)'));
     await openBatch();
     await click(button('Light 2 stars'));
-    expect(toastMock.error).toHaveBeenCalledWith(
-      "You've hit today's vouch limit — try again tomorrow.",
-    );
+    expect(toastMock.error).toHaveBeenCalledWith("You've hit today's vouch limit — try again tomorrow.");
     expect(container.querySelectorAll('li code')).toHaveLength(0);
     expect(addMyVouchMock).not.toHaveBeenCalled();
   });

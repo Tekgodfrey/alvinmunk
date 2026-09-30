@@ -32,13 +32,7 @@ vi.mock('./registry', () => ({ reverseHandle: async () => null }));
 vi.mock('./push', () => ({ subscribeToPush: vi.fn() }));
 vi.mock('./quests', () => ({ getStreak: vi.fn() }));
 
-import {
-  getOwedBonuses,
-  getPendingVouchIds,
-  getPendingVouches,
-  pollNewlyClaimed,
-  type MyVouch,
-} from './myvouches';
+import { getOwedBonuses, getPendingVouchIds, getPendingVouches, pollNewlyClaimed, type MyVouch } from './myvouches';
 import { fetchActivity } from './feed';
 import { fetchVouchersOf } from './constellation';
 import { VOUCH_READ_CONCURRENCY } from './reputation';
@@ -79,20 +73,11 @@ describe('a cold /app load', () => {
   let peak = 0;
 
   beforeEach(() => {
-    const stored: MyVouch[] = MINE.map((id) => ({
-      id,
-      seed: 'ab'.repeat(32),
-      note: `note ${id}`,
-      created: 0,
-      walletAddress: ME,
-    }));
+    const stored: MyVouch[] = MINE.map((id) => ({ id, seed: 'ab'.repeat(32), note: `note ${id}`, created: 0, walletAddress: ME }));
     localStorage.setItem('alvinmunk.myVouches', JSON.stringify(stored));
     getLatestLedgerMock.mockResolvedValue({ sequence: 20_000 });
     getEventsMock.mockImplementation(async (req: { filters: { contractIds: string[] }[] }) => ({
-      events:
-        req.filters[0].contractIds[0] === 'CREP'
-          ? TO_ME.map((id, i) => claimedEvent(id, FRIENDS[i]))
-          : [],
+      events: req.filters[0].contractIds[0] === 'CREP' ? TO_ME.map((id, i) => claimedEvent(id, FRIENDS[i])) : [],
     }));
     readPublicMock.mockResolvedValue([]);
     sdkGetVouchMock.mockImplementation(async (id: number) => {

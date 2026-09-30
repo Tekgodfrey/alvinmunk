@@ -20,26 +20,13 @@ import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { loadDeployment } from './lib/env.mjs';
-const require = createRequire(
-  join(dirname(fileURLToPath(import.meta.url)), '..', 'apps', 'web', 'package.json'),
-);
+const require = createRequire(join(dirname(fileURLToPath(import.meta.url)), '..', 'apps', 'web', 'package.json'));
 const {
-  Address,
-  Contract,
-  Keypair,
-  Networks,
-  TransactionBuilder,
-  nativeToScVal,
-  scValToNative,
-  rpc,
-  xdr,
+  Address, Contract, Keypair, Networks, TransactionBuilder, nativeToScVal, scValToNative, rpc, xdr,
 } = require('@stellar/stellar-sdk');
 
 // Testnet only: set_frozen below signs with the testnet passphrase.
-const deployment = loadDeployment(['reputation', 'rewards'], {
-  network: 'testnet',
-  settings: ['rpcUrl'],
-});
+const deployment = loadDeployment(['reputation', 'rewards'], { network: 'testnet', settings: ['rpcUrl'] });
 const RPC = deployment.rpcUrl;
 const { reputation: REPUTATION, rewards: REWARDS } = deployment.contracts;
 const APPLY = process.env.APPLY === '1';
@@ -89,9 +76,7 @@ function detectRingCandidates(pairs) {
       }
     }
   }
-  return [...reasons.keys()]
-    .sort()
-    .map((address) => ({ address, reasons: [...reasons.get(address)].sort() }));
+  return [...reasons.keys()].sort().map((address) => ({ address, reasons: [...reasons.get(address)].sort() }));
 }
 
 async function readPairs() {
@@ -116,15 +101,8 @@ async function readPairs() {
 async function setFrozen(admin, who) {
   const acc = await server.getAccount(admin.publicKey());
   const tx = new TransactionBuilder(acc, { fee: '1000000', networkPassphrase: Networks.TESTNET })
-    .addOperation(
-      new Contract(REWARDS).call(
-        'set_frozen',
-        new Address(who).toScVal(),
-        nativeToScVal(true, { type: 'bool' }),
-      ),
-    )
-    .setTimeout(60)
-    .build();
+    .addOperation(new Contract(REWARDS).call('set_frozen', new Address(who).toScVal(), nativeToScVal(true, { type: 'bool' })))
+    .setTimeout(60).build();
   const prepared = await server.prepareTransaction(tx);
   prepared.sign(admin);
   const sent = await server.sendTransaction(prepared);
@@ -142,29 +120,14 @@ async function setFrozen(admin, who) {
   const pairs = await readPairs();
   console.log(`read ${pairs.length} claimed-vouch pair(s) in the window`);
   const candidates = detectRingCandidates(pairs);
-  if (!candidates.length) {
-    console.log('no ring candidates detected ✅');
-    return;
-  }
+  if (!candidates.length) { console.log('no ring candidates detected ✅'); return; }
   console.log(`flagged ${candidates.length} ring candidate(s):`);
   candidates.forEach((c) => console.log(`  ${c.address}  [${c.reasons.join(', ')}]`));
   const flagged = candidates.map((c) => c.address);
-  if (!APPLY) {
-    console.log('\n(dry-run) set APPLY=1 + ADMIN_SECRET_KEY to freeze on-chain.');
-    return;
-  }
+  if (!APPLY) { console.log('\n(dry-run) set APPLY=1 + ADMIN_SECRET_KEY to freeze on-chain.'); return; }
   const secret = process.env.ADMIN_SECRET_KEY;
-  if (!secret) {
-    console.error('APPLY=1 needs ADMIN_SECRET_KEY');
-    process.exit(1);
-  }
+  if (!secret) { console.error('APPLY=1 needs ADMIN_SECRET_KEY'); process.exit(1); }
   const admin = Keypair.fromSecret(secret);
-  for (const who of flagged) {
-    console.log(`freezing ${who} …`);
-    console.log('  tx ' + (await setFrozen(admin, who)));
-  }
+  for (const who of flagged) { console.log(`freezing ${who} …`); console.log('  tx ' + (await setFrozen(admin, who))); }
   console.log('done ✅');
-})().catch((e) => {
-  console.error('FAILED ❌', e.message);
-  process.exit(1);
-});
+})().catch((e) => { console.error('FAILED ❌', e.message); process.exit(1); });

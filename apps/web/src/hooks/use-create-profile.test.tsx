@@ -115,15 +115,9 @@ describe('useCreateProfile', () => {
     vi.useRealTimers();
   });
 
-  async function mount(
-    from: 'app' | 'landing' | 'claim',
-    onCreated?: (p: Profile) => void,
-    face?: FaceId,
-  ) {
+  async function mount(from: 'app' | 'landing' | 'claim', onCreated?: (p: Profile) => void, face?: FaceId) {
     await act(async () => {
-      root.render(
-        <Harness from={from} face={face} onCreated={onCreated} onState={(r) => (latest = r)} />,
-      );
+      root.render(<Harness from={from} face={face} onCreated={onCreated} onState={(r) => (latest = r)} />);
     });
   }
 
@@ -186,10 +180,7 @@ describe('useCreateProfile', () => {
     expect(setProfileMock).toHaveBeenCalledWith(
       expect.objectContaining({ handle: 'newperson', address: 'CPASSKEY', source: 'claim' }),
     );
-    expect(trackMock).toHaveBeenCalledWith('profile_created', {
-      walletKind: 'passkey',
-      from: 'claim',
-    });
+    expect(trackMock).toHaveBeenCalledWith('profile_created', { walletKind: 'passkey', from: 'claim' });
   });
 
   it('connects when there is no wallet yet (landing/app flow) and fires onCreated', async () => {
@@ -207,11 +198,7 @@ describe('useCreateProfile', () => {
     expect(recordGenesisMock).toHaveBeenCalledWith(DEV_WALLET, 'freshuser');
     expect(claimHandleMock).toHaveBeenCalledWith(DEV_WALLET, 'freshuser');
     expect(created).toHaveLength(1);
-    expect(created[0]).toMatchObject({
-      handle: 'freshuser',
-      source: 'landing',
-      avatar: { kind: 'face', id: 'face-03' },
-    });
+    expect(created[0]).toMatchObject({ handle: 'freshuser', source: 'landing', avatar: { kind: 'face', id: 'face-03' } });
     expect(toastMock.success).toHaveBeenCalled();
   });
 
@@ -324,9 +311,7 @@ describe('useCreateProfile', () => {
     );
 
     it('does not claim when it cannot tell whether the address holds one', async () => {
-      restoreProfileMock.mockRejectedValue(
-        new Error("Couldn't look up your handle — try again in a moment."),
-      );
+      restoreProfileMock.mockRejectedValue(new Error("Couldn't look up your handle — try again in a moment."));
       vi.spyOn(console, 'error').mockImplementation(() => {});
       await mount('app');
       await setHandle('newname');
@@ -336,9 +321,7 @@ describe('useCreateProfile', () => {
       });
 
       expect(claimHandleMock).not.toHaveBeenCalled();
-      expect(toastMock.error).toHaveBeenCalledWith(
-        "Couldn't look up your handle — try again in a moment.",
-      );
+      expect(toastMock.error).toHaveBeenCalledWith("Couldn't look up your handle — try again in a moment.");
       vi.mocked(console.error).mockRestore();
     });
 
@@ -371,10 +354,7 @@ describe('useCreateProfile', () => {
         await latest.createProfile();
       });
       expect(setProfileMock).not.toHaveBeenCalled();
-      expect(trackErrorMock).toHaveBeenCalledWith(expect.any(Error), {
-        flow: 'create_profile',
-        from: 'landing',
-      });
+      expect(trackErrorMock).toHaveBeenCalledWith(expect.any(Error), { flow: 'create_profile', from: 'landing' });
       expect(trackMock).not.toHaveBeenCalledWith('profile_created', expect.anything());
       expect(toastMock.success).not.toHaveBeenCalled();
       expect(toastMock.error).toHaveBeenCalledWith('claim failed');
@@ -388,33 +368,28 @@ describe('useCreateProfile', () => {
   // Landing and /app onboarding used to carry near-duplicate copy that drifted (#240); both
   // now read the one shared `onboard.*` set, and only the claim page keeps its own.
   describe('messages', () => {
-    it.each(['app', 'landing'] as const)(
-      'uses the shared onboarding copy from %s',
-      async (from) => {
-        await mount(from);
-        await setHandle('ab');
-        await act(async () => {
-          await latest.createProfile();
-        });
-        expect(toastMock.error).toHaveBeenLastCalledWith('Pick a handle — 3+ letters or numbers.');
+    it.each(['app', 'landing'] as const)('uses the shared onboarding copy from %s', async (from) => {
+      await mount(from);
+      await setHandle('ab');
+      await act(async () => {
+        await latest.createProfile();
+      });
+      expect(toastMock.error).toHaveBeenLastCalledWith('Pick a handle — 3+ letters or numbers.');
 
-        availabilityMock.mockResolvedValue(TAKEN);
-        await setHandle('takenname');
-        await act(async () => {
-          await latest.createProfile();
-        });
-        expect(toastMock.error).toHaveBeenLastCalledWith('@takenname is taken — pick another.');
+      availabilityMock.mockResolvedValue(TAKEN);
+      await setHandle('takenname');
+      await act(async () => {
+        await latest.createProfile();
+      });
+      expect(toastMock.error).toHaveBeenLastCalledWith('@takenname is taken — pick another.');
 
-        availabilityMock.mockResolvedValue(FREE);
-        await setHandle('freename');
-        await act(async () => {
-          await latest.createProfile();
-        });
-        expect(toastMock.success).toHaveBeenLastCalledWith(
-          'Your profile is live — @freename stamped on-chain.',
-        );
-      },
-    );
+      availabilityMock.mockResolvedValue(FREE);
+      await setHandle('freename');
+      await act(async () => {
+        await latest.createProfile();
+      });
+      expect(toastMock.success).toHaveBeenLastCalledWith('Your profile is live — @freename stamped on-chain.');
+    });
 
     it('keeps the claim page on its own copy', async () => {
       store.wallet = DEV_WALLET;
@@ -427,28 +402,25 @@ describe('useCreateProfile', () => {
     });
   });
 
-  it.each(['app', 'landing'] as const)(
-    'skips the genesis tx for a new passkey wallet from %s',
-    async (from) => {
-      connectMock.mockResolvedValue(PASSKEY_WALLET);
-      await mount(from, undefined, 'face-02');
-      await setHandle('passkeyuser');
+  it.each(['app', 'landing'] as const)('skips the genesis tx for a new passkey wallet from %s', async (from) => {
+    connectMock.mockResolvedValue(PASSKEY_WALLET);
+    await mount(from, undefined, 'face-02');
+    await setHandle('passkeyuser');
 
-      await act(async () => {
-        await latest.createProfile();
-      });
+    await act(async () => {
+      await latest.createProfile();
+    });
 
-      expect(recordGenesisMock).not.toHaveBeenCalled();
-      expect(claimHandleMock).toHaveBeenCalledWith(PASSKEY_WALLET, 'passkeyuser');
-      expect(setProfileMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          handle: 'passkeyuser',
-          genesisTx: undefined,
-          avatar: { kind: 'face', id: 'face-02' },
-          source: from,
-        }),
-      );
-      expect(trackMock).toHaveBeenCalledWith('profile_created', { walletKind: 'passkey', from });
-    },
-  );
+    expect(recordGenesisMock).not.toHaveBeenCalled();
+    expect(claimHandleMock).toHaveBeenCalledWith(PASSKEY_WALLET, 'passkeyuser');
+    expect(setProfileMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        handle: 'passkeyuser',
+        genesisTx: undefined,
+        avatar: { kind: 'face', id: 'face-02' },
+        source: from,
+      }),
+    );
+    expect(trackMock).toHaveBeenCalledWith('profile_created', { walletKind: 'passkey', from });
+  });
 });

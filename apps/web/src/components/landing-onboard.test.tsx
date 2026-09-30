@@ -8,23 +8,16 @@ import type { Wallet } from '@/lib/wallet';
 (globalThis as { React?: typeof React }).React = React;
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
-const {
-  connectMock,
-  setProfileMock,
-  restoreProfileMock,
-  claimHandleMock,
-  handleAvailabilityMock,
-  pushMock,
-  toastMock,
-} = vi.hoisted(() => ({
-  connectMock: vi.fn(),
-  setProfileMock: vi.fn(),
-  restoreProfileMock: vi.fn(),
-  claimHandleMock: vi.fn(),
-  handleAvailabilityMock: vi.fn(),
-  pushMock: vi.fn(),
-  toastMock: { success: vi.fn(), error: vi.fn() },
-}));
+const { connectMock, setProfileMock, restoreProfileMock, claimHandleMock, handleAvailabilityMock, pushMock, toastMock } =
+  vi.hoisted(() => ({
+    connectMock: vi.fn(),
+    setProfileMock: vi.fn(),
+    restoreProfileMock: vi.fn(),
+    claimHandleMock: vi.fn(),
+    handleAvailabilityMock: vi.fn(),
+    pushMock: vi.fn(),
+    toastMock: { success: vi.fn(), error: vi.fn() },
+  }));
 
 vi.mock('@/components/wallet/wallet-provider', () => ({
   useWallet: () => ({
@@ -86,9 +79,7 @@ describe('LandingOnboard — an address that already holds a handle (#278)', () 
 
   async function submit() {
     const form = handleInput().closest('form')!;
-    await act(async () =>
-      form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })),
-    );
+    await act(async () => form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })));
     await flush();
   }
 
@@ -167,9 +158,7 @@ describe('LandingOnboard — parity with /app onboarding (#240)', () => {
 
   async function submit() {
     const form = handleInput().closest('form')!;
-    await act(async () =>
-      form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })),
-    );
+    await act(async () => form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })));
     await act(async () => {
       for (let i = 0; i < 8; i++) await Promise.resolve();
     });
@@ -177,9 +166,7 @@ describe('LandingOnboard — parity with /app onboarding (#240)', () => {
 
   it('saves the face picked on the landing page with the new profile', async () => {
     await render();
-    const face = container.querySelector<HTMLButtonElement>(
-      '[role="radio"][aria-label="Face 03"]',
-    )!;
+    const face = container.querySelector<HTMLButtonElement>('[role="radio"][aria-label="Face 03"]')!;
     await act(async () => face.click());
     expect(face.getAttribute('aria-checked')).toBe('true');
 
@@ -187,11 +174,7 @@ describe('LandingOnboard — parity with /app onboarding (#240)', () => {
     await submit();
 
     expect(setProfileMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        handle: 'bob',
-        avatar: { kind: 'face', id: 'face-03' },
-        source: 'landing',
-      }),
+      expect.objectContaining({ handle: 'bob', avatar: { kind: 'face', id: 'face-03' }, source: 'landing' }),
     );
     expect(pushMock).toHaveBeenCalledWith('/app');
   });

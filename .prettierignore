@@ -1,7 +1,0 @@
-pnpm-lock.yaml
-.next
-contracts/target
-test_snapshots
-public/assets
-**/*.pdf
-**/*.csv

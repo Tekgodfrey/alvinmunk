@@ -209,11 +209,7 @@ beforeEach(() => {
     const at = {
       result: { options: { contractId: CONTRACT_ID } },
       signed: undefined as { toXDR(): string } | undefined,
-      sign: async ({
-        signTransaction,
-      }: {
-        signTransaction: (x: string) => Promise<{ signedTxXdr: string }>;
-      }) => {
+      sign: async ({ signTransaction }: { signTransaction: (x: string) => Promise<{ signedTxXdr: string }> }) => {
         const { signedTxXdr } = await signTransaction(UNSIGNED_DEPLOY_XDR);
         at.signed = { toXDR: () => signedTxXdr };
       },
@@ -261,9 +257,7 @@ describe('connectPasskey — first run and returning user', () => {
     // The relayer gets the deployer-signed tx, and the confirm poll watches its hash.
     const tx = TransactionBuilder.fromXDR(sentXdr(0), Networks.TESTNET);
     expect(tx.signatures).toHaveLength(1);
-    expect(Keypair.fromPublicKey(DEPLOYER).verify(tx.hash(), tx.signatures[0].signature())).toBe(
-      true,
-    );
+    expect(Keypair.fromPublicKey(DEPLOYER).verify(tx.hash(), tx.signatures[0].signature())).toBe(true);
     expect(mocks.getTransaction).toHaveBeenCalledWith('HASH-1');
     // A fresh enrollment has nothing on-chain to probe.
     expect(mocks.getLedgerEntries).not.toHaveBeenCalled();
@@ -352,10 +346,7 @@ describe('connectPasskey deploy resilience (#186)', () => {
   });
 
   it.each([
-    [
-      'the relayer errors after submitting',
-      () => fetchMock.mockResolvedValueOnce(relayerFail('upstream timeout', 504)),
-    ],
+    ['the relayer errors after submitting', () => fetchMock.mockResolvedValueOnce(relayerFail('upstream timeout', 504))],
     [
       'the tx is reported FAILED (an earlier attempt already deployed it)',
       () => {
@@ -394,22 +385,19 @@ describe('connectPasskey deploy resilience (#186)', () => {
     ['its public key is not base64', { [PUBKEY_KEY]: '%%%not-base64%%%' }],
     ['its public key is not a P-256 point', { [PUBKEY_KEY]: 'BAECAw==' }],
     ['its key id is not base64url', { [KEYID_KEY]: '***' }],
-  ])(
-    'drops a pending record whose wallet never landed when %s, and enrolls afresh',
-    async (_label, corruption) => {
-      seedPendingRecord({ [CONTRACT_KEY]: OTHER_CONTRACT_ID, ...corruption });
-      fetchMock.mockResolvedValueOnce(relayerOk('HASH-1'));
+  ])('drops a pending record whose wallet never landed when %s, and enrolls afresh', async (_label, corruption) => {
+    seedPendingRecord({ [CONTRACT_KEY]: OTHER_CONTRACT_ID, ...corruption });
+    fetchMock.mockResolvedValueOnce(relayerOk('HASH-1'));
 
-      const wallet = await connectPasskey();
+    const wallet = await connectPasskey();
 
-      // Nothing to resume, so the user gets a working wallet instead of a dead end.
-      expect(mocks.createKey).toHaveBeenCalledTimes(1);
-      expect(mocks.deploy).toHaveBeenCalledTimes(1);
-      expect(deployCall(0).signer).toMatchObject({ keyId: KEY_ID_HEX, publicKey: PUBKEY_HEX });
-      expect(wallet.address).toBe(CONTRACT_ID);
-      expect(stored()).toEqual({ [KEYID_KEY]: KEY_ID, [CONTRACT_KEY]: CONTRACT_ID });
-    },
-  );
+    // Nothing to resume, so the user gets a working wallet instead of a dead end.
+    expect(mocks.createKey).toHaveBeenCalledTimes(1);
+    expect(mocks.deploy).toHaveBeenCalledTimes(1);
+    expect(deployCall(0).signer).toMatchObject({ keyId: KEY_ID_HEX, publicKey: PUBKEY_HEX });
+    expect(wallet.address).toBe(CONTRACT_ID);
+    expect(stored()).toEqual({ [KEYID_KEY]: KEY_ID, [CONTRACT_KEY]: CONTRACT_ID });
+  });
 
   it('never adopts a stale contract id left behind by an earlier record', async () => {
     // A stray marker + another wallet's contract id, with no key id. That wallet is live.
@@ -435,9 +423,7 @@ describe('connectPasskey deploy resilience (#186)', () => {
     const err = await connectPasskey().catch((e: unknown) => e);
 
     expect(err).toBeInstanceOf(Error);
-    expect(humanizeError(err)).toBe(
-      "Couldn't reach the network to check your wallet — try again in a moment.",
-    );
+    expect(humanizeError(err)).toBe("Couldn't reach the network to check your wallet — try again in a moment.");
     // An RPC blip is not "absent": no rebuild, no resubmit, no new passkey, nothing discarded.
     expect(mocks.createKey).not.toHaveBeenCalled();
     expect(mocks.deploy).not.toHaveBeenCalled();
@@ -475,19 +461,14 @@ describe('connectPasskey().invoke', () => {
     const cosign = vi.fn(async () => cosigned);
     const wallet = await connectPasskey();
 
-    await expect(wallet.invoke!(OTHER_CONTRACT_ID, 'transfer_handle', [], cosign)).resolves.toEqual(
-      {
-        hash: 'PK-HASH',
-        value: undefined,
-      },
-    );
+    await expect(wallet.invoke!(OTHER_CONTRACT_ID, 'transfer_handle', [], cosign)).resolves.toEqual({
+      hash: 'PK-HASH',
+      value: undefined,
+    });
 
     const prepared = (await mocks.prepareTransaction.mock.results[0].value) as Transaction;
     expect(cosign).toHaveBeenCalledWith(prepared);
-    expect(mocks.kitSign).toHaveBeenCalledWith(cosigned.toXDR(), {
-      keyId: KEY_ID,
-      expiration: 1_120,
-    });
+    expect(mocks.kitSign).toHaveBeenCalledWith(cosigned.toXDR(), { keyId: KEY_ID, expiration: 1_120 });
   });
 
   it('hands the passkey the prepared call itself without a co-signer', async () => {
@@ -507,10 +488,7 @@ describe('connectPasskey — recover an existing account (#278)', () => {
    */
   function pickPasskey(picked = KEY_ID, kitProbe: 'finds' | 'fails' = 'fails') {
     mocks.connectWallet.mockImplementation(
-      async (opts: {
-        keyId?: string;
-        getContractId?: (keyId: string) => Promise<string | undefined>;
-      }) => {
+      async (opts: { keyId?: string; getContractId?: (keyId: string) => Promise<string | undefined> }) => {
         const keyIdBase64 = opts.keyId ?? picked;
         const contractId =
           kitProbe === 'finds' ? KEY_ID_WALLET : await opts.getContractId?.(keyIdBase64);
@@ -522,11 +500,8 @@ describe('connectPasskey — recover an existing account (#278)', () => {
 
   /** The contract whose instance the existence check read, for each check. */
   const probed = () =>
-    mocks.getLedgerEntries.mock.calls.map(([key]) =>
-      (key as { toXDR(f: 'base64'): string }).toXDR('base64'),
-    );
-  const footprintOf = (contractId: string) =>
-    new Contract(contractId).getFootprint().toXDR('base64');
+    mocks.getLedgerEntries.mock.calls.map(([key]) => (key as { toXDR(f: 'base64'): string }).toXDR('base64'));
+  const footprintOf = (contractId: string) => new Contract(contractId).getFootprint().toXDR('base64');
 
   /** No passkey was enrolled and no wallet deployed. */
   function expectNothingCreated() {
@@ -537,7 +512,7 @@ describe('connectPasskey — recover an existing account (#278)', () => {
   }
 
   it.each(['fails', 'finds'] as const)(
-    "finds the wallet of a synced passkey on a fresh browser (the kit's own probe %s)",
+    'finds the wallet of a synced passkey on a fresh browser (the kit\'s own probe %s)',
     async (kitProbe) => {
       pickPasskey(KEY_ID, kitProbe);
       mocks.getLedgerEntries.mockResolvedValue(contractPresent);
@@ -583,9 +558,7 @@ describe('connectPasskey — recover an existing account (#278)', () => {
 
     expect(err).toBeInstanceOf(Error);
     expect(err).not.toBeInstanceOf(AccountNotFoundError);
-    expect(humanizeError(err)).toBe(
-      "Couldn't reach the network to check your wallet — try again in a moment.",
-    );
+    expect(humanizeError(err)).toBe("Couldn't reach the network to check your wallet — try again in a moment.");
     expectNothingCreated();
     expect(stored()).toEqual(before);
   });
@@ -594,9 +567,7 @@ describe('connectPasskey — recover an existing account (#278)', () => {
     seedPendingRecord();
     const before = stored();
     mocks.connectWallet.mockRejectedValue(
-      Object.assign(new Error('The operation either timed out or was not allowed.'), {
-        name: 'NotAllowedError',
-      }),
+      Object.assign(new Error('The operation either timed out or was not allowed.'), { name: 'NotAllowedError' }),
     );
 
     await expect(connectPasskey('recover')).rejects.toThrow(/not allowed/);

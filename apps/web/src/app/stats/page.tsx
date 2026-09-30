@@ -103,9 +103,7 @@ export default function StatsPage() {
             onClick={() => setTab(t.key)}
             className={cn(
               'rounded-full px-5 py-2 text-sm font-medium transition-colors',
-              tab === t.key
-                ? 'bg-primary/20 text-foreground ring-1 ring-inset ring-primary/30'
-                : 'text-muted-foreground hover:text-foreground',
+              tab === t.key ? 'bg-primary/20 text-foreground ring-1 ring-inset ring-primary/30' : 'text-muted-foreground hover:text-foreground',
             )}
           >
             {t.label}
@@ -117,16 +115,11 @@ export default function StatsPage() {
       <div className="glass rounded-3xl p-7">
         {s && !s.configured ? (
           <div className="py-8 text-center">
-            <p className="font-display text-2xl font-semibold text-muted-foreground">
-              Launching on mainnet
-            </p>
+            <p className="font-display text-2xl font-semibold text-muted-foreground">Launching on mainnet</p>
             <p className="mt-2 text-sm text-muted-foreground">
-              Mainnet goes live at the Black belt. The counter turns on the moment the contracts
-              deploy.
+              Mainnet goes live at the Black belt. The counter turns on the moment the contracts deploy.
             </p>
-            <p className="mt-4 font-display text-4xl font-semibold text-muted-foreground">
-              0 / {target}
-            </p>
+            <p className="mt-4 font-display text-4xl font-semibold text-muted-foreground">0 / {target}</p>
           </div>
         ) : (
           <>
@@ -141,8 +134,7 @@ export default function StatsPage() {
                 </div>
               </div>
               <p className="font-display text-2xl font-semibold text-muted-foreground">
-                {users === undefined ? '—' : users}{' '}
-                <span className="text-muted-foreground">/ {target}</span>
+                {users === undefined ? '—' : users} <span className="text-muted-foreground">/ {target}</span>
               </p>
             </div>
 
@@ -156,13 +148,7 @@ export default function StatsPage() {
             <p className="mt-2 text-xs text-muted-foreground">
               {users === undefined ? '—' : pct}% toward {TABS.find((t) => t.key === tab)?.goal}
               {s?.latestLedger ? ` · ledger ${s.latestLedger}` : ''}
-              <span
-                className={cn(
-                  'ml-2 inline-flex items-center gap-1',
-                  isStale ? 'text-amber-400/90' : 'text-secondary/80',
-                )}
-                title={isStale ? 'Sync delayed' : 'Live'}
-              >
+              <span className={cn('ml-2 inline-flex items-center gap-1', isStale ? 'text-amber-400/90' : 'text-secondary/80')} title={isStale ? 'Sync delayed' : 'Live'}>
                 <Activity className="size-3" /> {isStale ? 'stale' : 'live'}
               </span>
             </p>

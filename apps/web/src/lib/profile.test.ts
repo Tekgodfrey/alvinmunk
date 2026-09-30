@@ -33,12 +33,7 @@ describe('profile persistence', () => {
   });
 
   it('round-trips an optional avatar choice', () => {
-    saveProfile({
-      handle: 'kaan',
-      address: 'GABC',
-      createdAt: 1,
-      avatar: { kind: 'face', id: 'face-03' },
-    });
+    saveProfile({ handle: 'kaan', address: 'GABC', createdAt: 1, avatar: { kind: 'face', id: 'face-03' } });
     expect(loadProfile()?.avatar).toEqual({ kind: 'face', id: 'face-03' });
   });
 

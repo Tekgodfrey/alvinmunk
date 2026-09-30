@@ -16,19 +16,10 @@ import { cn } from '@/lib/utils';
 /** How often an open inbox picks up new items. */
 const POLL_MS = 30_000;
 
-const ICONS: Record<InboxKind, typeof Star> = {
-  claim: Star,
-  tip: Coins,
-  quest: Target,
-  streak: Flame,
-};
+const ICONS: Record<InboxKind, typeof Star> = { claim: Star, tip: Coins, quest: Target, streak: Flame };
 
 function itemText(t: TFn, item: InboxItem, handles: Record<string, string | null>): string {
-  const who = item.peer
-    ? handles[item.peer]
-      ? `@${handles[item.peer]}`
-      : shortAddr(item.peer)
-    : '';
+  const who = item.peer ? (handles[item.peer] ? `@${handles[item.peer]}` : shortAddr(item.peer)) : '';
   switch (item.kind) {
     case 'claim':
       return t('inbox.item.claim', { who });
@@ -73,10 +64,7 @@ export default function InboxPage() {
 
   // @handles for the people in the list, one batched read for the ones not looked up yet.
   const peers = [...new Set((items ?? []).map((i) => i.peer).filter((p): p is string => !!p))];
-  const missing = peers
-    .filter((p) => !(p in handles))
-    .sort()
-    .join(',');
+  const missing = peers.filter((p) => !(p in handles)).sort().join(',');
   useEffect(() => {
     if (!missing) return;
     let alive = true;
@@ -94,9 +82,7 @@ export default function InboxPage() {
     <div className="grid gap-6">
       <header>
         <h1 className="font-display text-2xl font-semibold">{t('inbox.title')}</h1>
-        <p className="mt-1 max-w-prose text-sm text-muted-foreground text-balance">
-          {t('inbox.subtitle')}
-        </p>
+        <p className="mt-1 max-w-prose text-sm text-muted-foreground text-balance">{t('inbox.subtitle')}</p>
       </header>
 
       {items === null ? (
@@ -110,9 +96,7 @@ export default function InboxPage() {
           <Bell className="size-10 text-muted-foreground/40" />
           <div>
             <p className="font-medium">{t('inbox.empty.title')}</p>
-            <p className="mt-1 max-w-xs text-sm text-muted-foreground text-balance">
-              {t('inbox.empty.body')}
-            </p>
+            <p className="mt-1 max-w-xs text-sm text-muted-foreground text-balance">{t('inbox.empty.body')}</p>
           </div>
         </div>
       ) : (
@@ -134,11 +118,7 @@ export default function InboxPage() {
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium">{itemText(t, item, handles)}</p>
-                  {item.at ? (
-                    <p className="mt-0.5 text-xs text-muted-foreground">
-                      {timeAgo(item.at, locale)}
-                    </p>
-                  ) : null}
+                  {item.at ? <p className="mt-0.5 text-xs text-muted-foreground">{timeAgo(item.at, locale)}</p> : null}
                 </div>
                 {isNew && (
                   <span className="mt-1.5 size-2 shrink-0 rounded-full bg-primary">

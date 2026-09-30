@@ -5,14 +5,7 @@ import { getWallet } from '@/lib/wallet';
 import { txExplorerUrl } from '@/lib/stellar';
 import { getEarnedScore } from '@/lib/reputation';
 import { getStreak } from '@/lib/quests';
-import {
-  claimReward,
-  getRewardsFor,
-  getUsdcBalance,
-  stroopsToUsdc,
-  usdcToStroops,
-  type RewardStatus,
-} from '@/lib/rewards';
+import { claimReward, getRewardsFor, getUsdcBalance, stroopsToUsdc, usdcToStroops, type RewardStatus } from '@/lib/rewards';
 import {
   getAnchorConfig,
   getWithdrawalStatus,
@@ -30,11 +23,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { withTimeout, humanizeError } from '@/lib/utils';
 import { toast } from '@/components/ui/toaster';
 import { useTranslations } from '@/lib/i18n';
-import {
-  MoneyFlowConfirm,
-  isRealMoney,
-  type MoneyConfirmRequest,
-} from '@/components/MoneyFlowConfirm';
+import { MoneyFlowConfirm, isRealMoney, type MoneyConfirmRequest } from '@/components/MoneyFlowConfirm';
 
 // Rewards contract error codes → friendly copy (mirrors contracts/rewards Error enum).
 // Built from `t` so the copy follows the active locale. 15–17 and 19 are admin-only
@@ -145,8 +134,7 @@ export function Rewards({ address }: { address: string }) {
         <div className="mb-1 flex items-center justify-between">
           <h2 className="text-base font-semibold">{t('rewards.title')}</h2>
           <Badge variant="onchain">
-            {t('rewards.earnedXp')}:{' '}
-            {earned === null ? '…' : <NumberTicker value={earned} className="ml-0.5" />}
+            {t('rewards.earnedXp')}: {earned === null ? '…' : <NumberTicker value={earned} className="ml-0.5" />}
           </Badge>
         </div>
         <p className="mb-4 text-sm text-muted-foreground">{t('rewards.subtitle')}</p>
@@ -155,9 +143,7 @@ export function Rewards({ address }: { address: string }) {
             {t('rewards.dailyLeft', { amount: stroopsToUsdc(remainingToday) })}
           </p>
         )}
-        {walletBlock !== undefined && (
-          <p className="mb-3 text-sm text-destructive">{errors[walletBlock]}</p>
-        )}
+        {walletBlock !== undefined && <p className="mb-3 text-sm text-destructive">{errors[walletBlock]}</p>}
 
         {rows === null ? (
           <div className="flex flex-col gap-2">
@@ -181,9 +167,7 @@ export function Rewards({ address }: { address: string }) {
                 >
                   <span className="text-sm text-muted-foreground">
                     {Number(r.threshold)} XP →{' '}
-                    <span className="font-semibold text-primary">
-                      {stroopsToUsdc(r.amount)} USDC
-                    </span>
+                    <span className="font-semibold text-primary">{stroopsToUsdc(r.amount)} USDC</span>
                     {left !== null && (
                       <span className="ml-2 text-xs text-muted-foreground">
                         ·{' '}
@@ -349,12 +333,7 @@ function AnchorCashout({ address }: { address: string }) {
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
-            <Button
-              size="sm"
-              variant="onchain"
-              onClick={() => void cashOut()}
-              disabled={busy !== null || !amount}
-            >
+            <Button size="sm" variant="onchain" onClick={() => void cashOut()} disabled={busy !== null || !amount}>
               {busy === 'start' ? t('rewards.cashout.starting') : t('rewards.cashout.button')}
             </Button>
           </div>
@@ -379,10 +358,7 @@ function AnchorCashout({ address }: { address: string }) {
             >
               {busy === 'send'
                 ? t('rewards.cashout.sending')
-                : t('rewards.cashout.send', {
-                    amount: String(w?.amountIn ?? ''),
-                    domain: anchor.homeDomain,
-                  })}
+                : t('rewards.cashout.send', { amount: String(w?.amountIn ?? ''), domain: anchor.homeDomain })}
             </Button>
           )}
           {paidHash && (

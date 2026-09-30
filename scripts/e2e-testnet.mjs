@@ -18,22 +18,10 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import crypto from 'node:crypto';
 import { loadDeployment } from './lib/env.mjs';
-const require = createRequire(
-  join(dirname(fileURLToPath(import.meta.url)), '..', 'apps', 'web', 'package.json'),
-);
+const require = createRequire(join(dirname(fileURLToPath(import.meta.url)), '..', 'apps', 'web', 'package.json'));
 const {
-  Address,
-  Asset,
-  Contract,
-  Keypair,
-  Networks,
-  Operation,
-  TransactionBuilder,
-  nativeToScVal,
-  scValToNative,
-  rpc,
-  Horizon,
-  xdr,
+  Address, Asset, Contract, Keypair, Networks, Operation, TransactionBuilder,
+  nativeToScVal, scValToNative, rpc, Horizon, xdr,
 } = require('@stellar/stellar-sdk');
 
 const PASS = Networks.TESTNET; // testnet only: throwaway users come from Friendbot
@@ -43,12 +31,7 @@ const deployment = loadDeployment(['reputation', 'questRegistry', 'rewards', 'us
 });
 const RPC = deployment.rpcUrl;
 const HOR = deployment.horizonUrl;
-const {
-  reputation: REP,
-  questRegistry: QUEST,
-  rewards: REWARDS,
-  usdcSac: USDC_SAC,
-} = deployment.contracts;
+const { reputation: REP, questRegistry: QUEST, rewards: REWARDS, usdcSac: USDC_SAC } = deployment.contracts;
 
 const ADMIN = Keypair.fromSecret(reqEnv('ADMIN_SECRET_KEY'));
 const ATTESTER = Keypair.fromSecret(reqEnv('ATTESTER_SECRET_KEY'));
@@ -66,9 +49,7 @@ const str = (s) => nativeToScVal(s, { type: 'string' });
 function reqEnv(k) {
   const v = process.env[k];
   if (!v) {
-    console.error(
-      `Missing env ${k}. Run: ADMIN_SECRET_KEY=S… ATTESTER_SECRET_KEY=S… node scripts/e2e-testnet.mjs`,
-    );
+    console.error(`Missing env ${k}. Run: ADMIN_SECRET_KEY=S… ATTESTER_SECRET_KEY=S… node scripts/e2e-testnet.mjs`);
     process.exit(2);
   }
   return v;
@@ -85,10 +66,7 @@ async function newUser() {
 }
 async function classic(kp, op) {
   const acc = await hor.loadAccount(kp.publicKey());
-  const tx = new TransactionBuilder(acc, { fee: '2000', networkPassphrase: PASS })
-    .addOperation(op)
-    .setTimeout(60)
-    .build();
+  const tx = new TransactionBuilder(acc, { fee: '2000', networkPassphrase: PASS }).addOperation(op).setTimeout(60).build();
   tx.sign(kp);
   return hor.submitTransaction(tx);
 }
@@ -98,18 +76,13 @@ async function invoke(kp, id, method, args) {
   for (let attempt = 0; attempt < 5; attempt++) {
     const acc = await server.getAccount(kp.publicKey());
     const built = new TransactionBuilder(acc, { fee: '2000000', networkPassphrase: PASS })
-      .addOperation(new Contract(id).call(method, ...args))
-      .setTimeout(60)
-      .build();
+      .addOperation(new Contract(id).call(method, ...args)).setTimeout(60).build();
     const prepared = await server.prepareTransaction(built);
     prepared.sign(kp);
     const sent = await server.sendTransaction(prepared);
     if (sent.status === 'ERROR') {
       const code = JSON.stringify(sent.errorResult);
-      if (code.includes('txBadSeq') && attempt < 4) {
-        await sleep(1500);
-        continue;
-      }
+      if (code.includes('txBadSeq') && attempt < 4) { await sleep(1500); continue; }
       throw new Error('send: ' + code);
     }
     for (let i = 0; i < 30; i++) {
@@ -117,9 +90,7 @@ async function invoke(kp, id, method, args) {
         const r = await server.getTransaction(sent.hash);
         if (r.status === 'SUCCESS') return r.returnValue ? scValToNative(r.returnValue) : null;
         if (r.status === 'FAILED') throw new Error('tx failed on-chain ' + sent.hash);
-      } catch (e) {
-        if (String(e.message).includes('failed on-chain')) throw e;
-      }
+      } catch (e) { if (String(e.message).includes('failed on-chain')) throw e; }
       await sleep(1000);
     }
     throw new Error('not confirmed');
@@ -129,9 +100,7 @@ async function invoke(kp, id, method, args) {
 async function read(id, method, args) {
   const acc = await server.getAccount(ADMIN.publicKey());
   const tx = new TransactionBuilder(acc, { fee: '2000000', networkPassphrase: PASS })
-    .addOperation(new Contract(id).call(method, ...args))
-    .setTimeout(30)
-    .build();
+    .addOperation(new Contract(id).call(method, ...args)).setTimeout(30).build();
   const sim = await server.simulateTransaction(tx);
   if (rpc.Api.isSimulationError(sim)) throw new Error('sim: ' + sim.error);
   return sim.result?.retval ? scValToNative(sim.result.retval) : null;
@@ -141,43 +110,23 @@ const earned = (a) => read(REP, 'get_earned', [A(a)]).then(Number);
 const usdcBal = (a) => read(USDC_SAC, 'balance', [A(a)]).then((v) => BigInt(v ?? 0));
 async function trustAndMaybeFund(kp, fundUsdc = 0n) {
   await classic(kp, Operation.changeTrust({ asset: usdc }));
-  if (fundUsdc > 0n)
-    await classic(
-      ADMIN,
-      Operation.payment({
-        destination: kp.publicKey(),
-        asset: usdc,
-        amount: (Number(fundUsdc) / 1e7).toString(),
-      }),
-    );
+  if (fundUsdc > 0n) await classic(ADMIN, Operation.payment({ destination: kp.publicKey(), asset: usdc, amount: (Number(fundUsdc) / 1e7).toString() }));
 }
 function secretPair() {
   const s = crypto.randomBytes(32);
-  return {
-    secret: new Uint8Array(s),
-    hash: new Uint8Array(crypto.createHash('sha256').update(s).digest()),
-  };
+  return { secret: new Uint8Array(s), hash: new Uint8Array(crypto.createHash('sha256').update(s).digest()) };
 }
 
 // Like /api/attest: a signature valid for 10 minutes. The payload comes from the live
 // contract's `quest_payload` view, so this also checks the deployment's payload format.
 async function signQuest(questId, recipientPk, expiresAt) {
-  const payload = await read(QUEST, 'quest_payload', [
-    u32(questId),
-    A(recipientPk),
-    u64(expiresAt),
-  ]);
+  const payload = await read(QUEST, 'quest_payload', [u32(questId), A(recipientPk), u64(expiresAt)]);
   const sig = ATTESTER.sign(payload);
   const attesterBytes = ATTESTER.rawPublicKey();
   return { attesterBytes, sig };
 }
 
-async function awardQuest(
-  recipientKp,
-  questId,
-  overrideSig = null,
-  expiresAt = Math.floor(Date.now() / 1000) + 600,
-) {
+async function awardQuest(recipientKp, questId, overrideSig = null, expiresAt = Math.floor(Date.now() / 1000) + 600) {
   const { attesterBytes, sig } = await signQuest(questId, recipientKp.publicKey(), expiresAt);
   const finalSig = overrideSig ?? sig;
   return invoke(recipientKp, QUEST, 'award_quest', [
@@ -190,37 +139,22 @@ async function awardQuest(
 }
 
 // ── tiny test runner ──
-let pass = 0,
-  fail = 0;
+let pass = 0, fail = 0;
 const fails = [];
 async function test(name, fn) {
-  try {
-    await fn();
-    console.log(`✅ ${name}`);
-    pass++;
-  } catch (e) {
-    console.log(`❌ ${name}\n   ${String(e.message).split('Event log')[0].trim().slice(0, 160)}`);
-    fail++;
-    fails.push(name);
-  }
+  try { await fn(); console.log(`✅ ${name}`); pass++; }
+  catch (e) { console.log(`❌ ${name}\n   ${String(e.message).split('Event log')[0].trim().slice(0, 160)}`); fail++; fails.push(name); }
 }
-function assert(cond, msg) {
-  if (!cond) throw new Error(msg);
-}
+function assert(cond, msg) { if (!cond) throw new Error(msg); }
 async function expectRevert(code, fn) {
-  try {
-    await fn();
-    throw new Error('expected revert but it succeeded');
-  } catch (e) {
+  try { await fn(); throw new Error('expected revert but it succeeded'); }
+  catch (e) {
     const m = String(e.message);
     if (m.includes('expected revert')) throw e;
     // Extract the exact error code from "Error(Contract, #N)" format using regex.
     // If the regex doesn't match or the code doesn't match expected, fail the assertion.
     const hit = /Error\(Contract, #(\d+)\)/.exec(m);
-    assert(
-      hit && Number(hit[1]) === code,
-      `expected contract error #${code}, got: ${m.slice(0, 160)}`,
-    );
+    assert(hit && Number(hit[1]) === code, `expected contract error #${code}, got: ${m.slice(0, 160)}`);
   }
 }
 
@@ -228,17 +162,7 @@ async function expectRevert(code, fn) {
   console.log('e2e: provisioning users via friendbot…');
   const [Aw, Bw, Cw, Dw] = await Promise.all([newUser(), newUser(), newUser(), newUser()]);
   await sleep(2000);
-  console.log(
-    'A',
-    Aw.publicKey(),
-    '\nB',
-    Bw.publicKey(),
-    '\nC',
-    Cw.publicKey(),
-    '\nD',
-    Dw.publicKey(),
-    '\n',
-  );
+  console.log('A', Aw.publicKey(), '\nB', Bw.publicKey(), '\nC', Cw.publicKey(), '\nD', Dw.publicKey(), '\n');
 
   // ── HAPPY: vouch loop (asymmetric social XP, two-track) ──
   let vouchId;
@@ -246,18 +170,10 @@ async function expectRevert(code, fn) {
     const { secret, hash } = secretPair();
     const awBefore = await score(Aw.publicKey());
     const bwBefore = await score(Bw.publicKey());
-    vouchId = Number(
-      await invoke(Aw, REP, 'mint_vouch', [A(Aw.publicKey()), bytes(hash), str('gm')]),
-    );
+    vouchId = Number(await invoke(Aw, REP, 'mint_vouch', [A(Aw.publicKey()), bytes(hash), str('gm')]));
     await invoke(Bw, REP, 'claim_vouch', [A(Bw.publicKey()), u64(vouchId), bytes(secret)]);
-    assert(
-      (await score(Aw.publicKey())) - awBefore === 20,
-      'voucher social XP delta should be +20 (starter - stake + refund)',
-    );
-    assert(
-      (await score(Bw.publicKey())) - bwBefore === 30,
-      'claimer social XP delta should be +30 (starter + claim)',
-    );
+    assert((await score(Aw.publicKey())) - awBefore === 20, 'voucher social XP delta should be +20 (starter - stake + refund)');
+    assert((await score(Bw.publicKey())) - bwBefore === 30, 'claimer social XP delta should be +30 (starter + claim)');
     assert((await earned(Bw.publicKey())) === 0, 'claimer earned must stay 0 (keystone)');
   });
 
@@ -283,45 +199,27 @@ async function expectRevert(code, fn) {
     await trustAndMaybeFund(Cw, 0n);
     const before = await usdcBal(Cw.publicKey());
     await invoke(Cw, REWARDS, 'claim_reward', [A(Cw.publicKey()), u32(1)]);
-    assert(
-      (await usdcBal(Cw.publicKey())) - before === 5000000n,
-      'C should receive exactly 0.5 USDC',
-    );
-    assert(
-      (await read(REWARDS, 'is_claimed', [u32(1), A(Cw.publicKey())])) === true,
-      'is_claimed true',
-    );
+    assert((await usdcBal(Cw.publicKey())) - before === 5000000n, 'C should receive exactly 0.5 USDC');
+    assert((await read(REWARDS, 'is_claimed', [u32(1), A(Cw.publicKey())])) === true, 'is_claimed true');
   });
 
   // ── NEGATIVE: vouch guards ──
   await test('negative: self-vouch reverts (#6 SelfVouch)', async () => {
     const { secret, hash } = secretPair();
-    const id = Number(
-      await invoke(Aw, REP, 'mint_vouch', [A(Aw.publicKey()), bytes(hash), str('self')]),
-    );
-    await expectRevert(6, () =>
-      invoke(Aw, REP, 'claim_vouch', [A(Aw.publicKey()), u64(id), bytes(secret)]),
-    );
+    const id = Number(await invoke(Aw, REP, 'mint_vouch', [A(Aw.publicKey()), bytes(hash), str('self')]));
+    await expectRevert(6, () => invoke(Aw, REP, 'claim_vouch', [A(Aw.publicKey()), u64(id), bytes(secret)]));
   });
   await test('negative: wrong secret reverts (#8 BadSecret)', async () => {
     const { hash } = secretPair();
-    const id = Number(
-      await invoke(Aw, REP, 'mint_vouch', [A(Aw.publicKey()), bytes(hash), str('x')]),
-    );
+    const id = Number(await invoke(Aw, REP, 'mint_vouch', [A(Aw.publicKey()), bytes(hash), str('x')]));
     const wrong = new Uint8Array(crypto.randomBytes(32));
-    await expectRevert(8, () =>
-      invoke(Bw, REP, 'claim_vouch', [A(Bw.publicKey()), u64(id), bytes(wrong)]),
-    );
+    await expectRevert(8, () => invoke(Bw, REP, 'claim_vouch', [A(Bw.publicKey()), u64(id), bytes(wrong)]));
   });
   await test('negative: double-claim same vouch reverts (#5 AlreadyClaimed)', async () => {
     const { secret, hash } = secretPair();
-    const id = Number(
-      await invoke(Aw, REP, 'mint_vouch', [A(Aw.publicKey()), bytes(hash), str('dc')]),
-    );
+    const id = Number(await invoke(Aw, REP, 'mint_vouch', [A(Aw.publicKey()), bytes(hash), str('dc')]));
     await invoke(Cw, REP, 'claim_vouch', [A(Cw.publicKey()), u64(id), bytes(secret)]);
-    await expectRevert(5, () =>
-      invoke(Cw, REP, 'claim_vouch', [A(Cw.publicKey()), u64(id), bytes(secret)]),
-    );
+    await expectRevert(5, () => invoke(Cw, REP, 'claim_vouch', [A(Cw.publicKey()), u64(id), bytes(secret)]));
   });
 
   // ── NEGATIVE: quest replay & signature validation ──
@@ -339,10 +237,7 @@ async function expectRevert(code, fn) {
     } catch (e) {
       const m = String(e.message);
       if (m.includes('expected revert')) throw e;
-      assert(
-        m.includes('tx failed') || m.includes('send:') || m.includes('sim:'),
-        `expected tx/signature failure, got: ${m.slice(0, 160)}`,
-      );
+      assert(m.includes('tx failed') || m.includes('send:') || m.includes('sim:'), `expected tx/signature failure, got: ${m.slice(0, 160)}`);
     }
   });
 
@@ -379,36 +274,22 @@ async function expectRevert(code, fn) {
     await awardQuest(Cw, 2);
     // The cap can't go below an active payout, so switch off #3 (2 USDC) and cap at #2's own
     // 1 USDC: C's 0.5 USDC claim of #1 earlier today pushes #2 over it.
-    await invoke(ADMIN, REWARDS, 'set_reward_active', [
-      u32(3),
-      nativeToScVal(false, { type: 'bool' }),
-    ]);
+    await invoke(ADMIN, REWARDS, 'set_reward_active', [u32(3), nativeToScVal(false, { type: 'bool' })]);
     try {
       await invoke(ADMIN, REWARDS, 'set_daily_cap', [i128(10000000n)]);
       await expectRevert(9, () => invoke(Cw, REWARDS, 'claim_reward', [A(Cw.publicKey()), u32(2)]));
     } finally {
       await invoke(ADMIN, REWARDS, 'set_daily_cap', [i128(500000000n)]);
-      await invoke(ADMIN, REWARDS, 'set_reward_active', [
-        u32(3),
-        nativeToScVal(true, { type: 'bool' }),
-      ]);
+      await invoke(ADMIN, REWARDS, 'set_reward_active', [u32(3), nativeToScVal(true, { type: 'bool' })]);
     }
   });
 
   await test('negative: frozen account blocked from claim (#10), then unfreeze', async () => {
-    await invoke(ADMIN, REWARDS, 'set_frozen', [
-      A(Cw.publicKey()),
-      nativeToScVal(true, { type: 'bool' }),
-    ]);
+    await invoke(ADMIN, REWARDS, 'set_frozen', [A(Cw.publicKey()), nativeToScVal(true, { type: 'bool' })]);
     try {
-      await expectRevert(10, () =>
-        invoke(Cw, REWARDS, 'claim_reward', [A(Cw.publicKey()), u32(2)]),
-      );
+      await expectRevert(10, () => invoke(Cw, REWARDS, 'claim_reward', [A(Cw.publicKey()), u32(2)]));
     } finally {
-      await invoke(ADMIN, REWARDS, 'set_frozen', [
-        A(Cw.publicKey()),
-        nativeToScVal(false, { type: 'bool' }),
-      ]);
+      await invoke(ADMIN, REWARDS, 'set_frozen', [A(Cw.publicKey()), nativeToScVal(false, { type: 'bool' })]);
     }
   });
 
@@ -418,9 +299,7 @@ async function expectRevert(code, fn) {
     try {
       const row = (await read(REWARDS, 'get_rewards', [])).find((r) => Number(r.id) === 2);
       assert(Number(row?.min_streak) === 52, 'get_rewards should report min_streak 52 for #2');
-      await expectRevert(18, () =>
-        invoke(Cw, REWARDS, 'claim_reward', [A(Cw.publicKey()), u32(2)]),
-      );
+      await expectRevert(18, () => invoke(Cw, REWARDS, 'claim_reward', [A(Cw.publicKey()), u32(2)]));
     } finally {
       await invoke(ADMIN, REWARDS, 'set_reward_min_streak', [u32(2), u32(0)]);
     }
@@ -429,30 +308,16 @@ async function expectRevert(code, fn) {
   await test('happy+negative: proof-of-funding gate (on→NotFunded #12, set_funded→ok), reset', async () => {
     await invoke(ADMIN, REWARDS, 'set_require_funding', [nativeToScVal(true, { type: 'bool' })]);
     try {
-      await expectRevert(12, () =>
-        invoke(Cw, REWARDS, 'claim_reward', [A(Cw.publicKey()), u32(2)]),
-      );
-      await invoke(ADMIN, REWARDS, 'set_funded', [
-        A(Cw.publicKey()),
-        nativeToScVal(true, { type: 'bool' }),
-      ]);
+      await expectRevert(12, () => invoke(Cw, REWARDS, 'claim_reward', [A(Cw.publicKey()), u32(2)]));
+      await invoke(ADMIN, REWARDS, 'set_funded', [A(Cw.publicKey()), nativeToScVal(true, { type: 'bool' })]);
       const before = await usdcBal(Cw.publicKey());
       await invoke(Cw, REWARDS, 'claim_reward', [A(Cw.publicKey()), u32(2)]);
-      assert(
-        (await usdcBal(Cw.publicKey())) - before === 10000000n,
-        'C should receive 1 USDC for reward #2',
-      );
+      assert((await usdcBal(Cw.publicKey())) - before === 10000000n, 'C should receive 1 USDC for reward #2');
     } finally {
       await invoke(ADMIN, REWARDS, 'set_require_funding', [nativeToScVal(false, { type: 'bool' })]);
     }
   });
 
   console.log(`\n── e2e summary: ${pass} passed, ${fail} failed ──`);
-  if (fail) {
-    console.log('failed:', fails.join(', '));
-    process.exit(1);
-  }
-})().catch((e) => {
-  console.error('RUNNER CRASH ❌', e.message);
-  process.exit(1);
-});
+  if (fail) { console.log('failed:', fails.join(', ')); process.exit(1); }
+})().catch((e) => { console.error('RUNNER CRASH ❌', e.message); process.exit(1); });

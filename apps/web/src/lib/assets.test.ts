@@ -19,11 +19,7 @@ describe('asset registries', () => {
     }
   });
   it('stickers, tape, and brand entries are well-formed', () => {
-    for (const meta of [
-      ...Object.values(STICKER),
-      ...Object.values(TAPE),
-      ...Object.values(BRAND),
-    ]) {
+    for (const meta of [...Object.values(STICKER), ...Object.values(TAPE), ...Object.values(BRAND)]) {
       expect(meta.file).toMatch(/\.png$/);
       expect(meta.w).toBeGreaterThan(0);
       expect(meta.h).toBeGreaterThan(0);

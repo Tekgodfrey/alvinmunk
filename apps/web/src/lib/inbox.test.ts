@@ -31,12 +31,7 @@ const ME = 'GME';
 const ALICE = 'GALICE';
 const BOB = 'GBOB';
 
-const ev = (
-  topics: unknown[],
-  data: unknown,
-  ledger: number,
-  extra: Partial<RepEvent> = {},
-): RepEvent => ({
+const ev = (topics: unknown[], data: unknown, ledger: number, extra: Partial<RepEvent> = {}): RepEvent => ({
   topics,
   data,
   ledger,
@@ -114,10 +109,7 @@ describe('loadInbox', () => {
     expect(onRead).toHaveBeenCalledTimes(1);
     expect((await loadInbox(ME)).unread.size).toBe(0);
 
-    m.tips.mockResolvedValue([
-      ...TIPS,
-      ev(['tipped', ALICE, ME], 5_000_000n, 140, { id: 'tip-c' }),
-    ]);
+    m.tips.mockResolvedValue([...TIPS, ev(['tipped', ALICE, ME], 5_000_000n, 140, { id: 'tip-c' })]);
     const next = await loadInbox(ME);
     expect([...next.unread]).toEqual(['tip:tip-c']);
     expect(next.items[0].id).toBe('tip:tip-c');
@@ -163,9 +155,7 @@ describe('loadInbox', () => {
     m.reputation.mockRejectedValue(new Error('rpc down'));
     m.tips.mockRejectedValue(new Error('rpc down'));
     m.quests.mockRejectedValue(new Error('rpc down'));
-    await expect(loadInbox(ME)).resolves.toMatchObject({
-      items: expect.arrayContaining([expect.objectContaining({ id: 'tip:tip-a' })]),
-    });
+    await expect(loadInbox(ME)).resolves.toMatchObject({ items: expect.arrayContaining([expect.objectContaining({ id: 'tip:tip-a' })]) });
   });
 
   it('shares one load between the tab and the page mounting together', async () => {

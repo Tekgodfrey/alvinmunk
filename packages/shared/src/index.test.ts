@@ -124,8 +124,7 @@ const testnetEnv = (overrides: Record<string, string | undefined> = {}) => ({
   ...overrides,
 });
 
-const check = (env: Record<string, string | undefined>) =>
-  validateNetworkConfig(readNetworkConfig(env));
+const check = (env: Record<string, string | undefined>) => validateNetworkConfig(readNetworkConfig(env));
 
 describe('validateNetworkConfig', () => {
   it('accepts a fully-wired mainnet config', () => {
@@ -161,9 +160,7 @@ describe('validateNetworkConfig', () => {
     });
 
     it('rejects any other passphrase, quoting it', () => {
-      expect(
-        check(testnetEnv({ NEXT_PUBLIC_NETWORK_PASSPHRASE: 'Standalone Network ; February 2017' })),
-      ).toEqual([
+      expect(check(testnetEnv({ NEXT_PUBLIC_NETWORK_PASSPHRASE: 'Standalone Network ; February 2017' }))).toEqual([
         `NEXT_PUBLIC_NETWORK_PASSPHRASE is "Standalone Network ; February 2017", but the network is testnet ("${PASSPHRASE.testnet}")`,
       ]);
     });
@@ -206,19 +203,13 @@ describe('validateNetworkConfig', () => {
     });
 
     it('accepts a URL that names neither network (a local or third-party RPC)', () => {
-      expect(
-        check(testnetEnv({ NEXT_PUBLIC_RPC_URL: 'http://localhost:8000/soroban/rpc' })),
-      ).toEqual([]);
+      expect(check(testnetEnv({ NEXT_PUBLIC_RPC_URL: 'http://localhost:8000/soroban/rpc' }))).toEqual([]);
       expect(check(mainnetEnv({ NEXT_PUBLIC_RPC_URL: 'https://rpc.example.com' }))).toEqual([]);
     });
 
     it('reads a blank URL as unset: the network default on testnet, an error on mainnet', () => {
-      expect(check(testnetEnv({ NEXT_PUBLIC_RPC_URL: '', NEXT_PUBLIC_HORIZON_URL: '' }))).toEqual(
-        [],
-      );
-      expect(check(mainnetEnv({ NEXT_PUBLIC_RPC_URL: '' }))).toEqual([
-        'NEXT_PUBLIC_RPC_URL is empty',
-      ]);
+      expect(check(testnetEnv({ NEXT_PUBLIC_RPC_URL: '', NEXT_PUBLIC_HORIZON_URL: '' }))).toEqual([]);
+      expect(check(mainnetEnv({ NEXT_PUBLIC_RPC_URL: '' }))).toEqual(['NEXT_PUBLIC_RPC_URL is empty']);
     });
   });
 
@@ -284,7 +275,10 @@ describe('rankLeaderboard', () => {
   });
 
   it('marks flagged addresses', () => {
-    const board = rankLeaderboard([{ address: 'GX', total: 10, ledger: 1 }], new Set(['GX']));
+    const board = rankLeaderboard(
+      [{ address: 'GX', total: 10, ledger: 1 }],
+      new Set(['GX']),
+    );
     expect(board[0].flagged).toBe(true);
   });
 

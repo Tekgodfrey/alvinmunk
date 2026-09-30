@@ -45,10 +45,7 @@ export function ActivityFeed() {
       {visible === null ? (
         <div className="space-y-2 p-4">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div
-              key={i}
-              className="flex items-center gap-2 rounded-xl border border-border/60 bg-background/40 px-3 py-2.5"
-            >
+            <div key={i} className="flex items-center gap-2 rounded-xl border border-border/60 bg-background/40 px-3 py-2.5">
               <div className="size-8 animate-pulse rounded-full bg-muted/50" />
               <div className="h-2 flex-1 animate-pulse rounded bg-muted/40" />
             </div>
@@ -59,7 +56,9 @@ export function ActivityFeed() {
           <StateArt kind="vouch-sent" size={140} />
           <div>
             <p className="font-display text-lg text-foreground">{t('activityFeed.empty.title')}</p>
-            <p className="mt-1 text-sm text-muted-foreground">{t('activityFeed.empty.body')}</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {t('activityFeed.empty.body')}
+            </p>
           </div>
         </div>
       ) : (
@@ -79,9 +78,7 @@ export function ActivityFeed() {
                 </>
               ) : (
                 <>
-                  <span className="shrink-0 text-muted-foreground">
-                    {t('activityFeed.vouched')}
-                  </span>
+                  <span className="shrink-0 text-muted-foreground">{t('activityFeed.vouched')}</span>
                   <Avatar address={it.to} size={22} ring={false} />
                   <span className="truncate text-foreground">{name(it.to)}</span>
                 </>

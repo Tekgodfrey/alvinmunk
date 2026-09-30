@@ -39,26 +39,18 @@ under 60 seconds, then learns to build on the attestation primitive. Tool: **Fum
 > **alvinmunk turns trust into a number other apps can read. Here's how to read it.**
 
 ```ts
-import {
-  Contract,
-  TransactionBuilder,
-  Address,
-  scValToNative,
-  rpc,
-  Networks,
-} from '@stellar/stellar-sdk';
+import { Contract, TransactionBuilder, Address, scValToNative, rpc, Networks } from "@stellar/stellar-sdk";
 
-const REPUTATION = 'CBNIZ…SZM'; // testnet
-const server = new rpc.Server('https://soroban-testnet.stellar.org');
+const REPUTATION = "CBNIZ…SZM";                 // testnet
+const server = new rpc.Server("https://soroban-testnet.stellar.org");
 
 const account = await server.getAccount(SOME_FUNDED_ADDRESS);
-const tx = new TransactionBuilder(account, { fee: '1000000', networkPassphrase: Networks.TESTNET })
-  .addOperation(new Contract(REPUTATION).call('get_score', new Address(WHO).toScVal()))
-  .setTimeout(30)
-  .build();
+const tx = new TransactionBuilder(account, { fee: "1000000", networkPassphrase: Networks.TESTNET })
+  .addOperation(new Contract(REPUTATION).call("get_score", new Address(WHO).toScVal()))
+  .setTimeout(30).build();
 
 const sim = await server.simulateTransaction(tx);
-const score = scValToNative(sim.result.retval); // → 42
+const score = scValToNative(sim.result.retval);  // → 42
 ```
 
 Paste your own address as `WHO`, get a real score back. That's the hook → then "now gate a

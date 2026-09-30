@@ -29,10 +29,7 @@ export async function sendXlm(wallet: Wallet, to: string, amount: string): Promi
   // The payment is already submitted, so a failed status read must never reject: keep polling
   // through transient RPC/decode errors and report PENDING when the budget runs out (#193).
   for (let i = 0; i < 15; i++) {
-    const status = await server.getTransaction(hash).then(
-      (r) => r.status,
-      () => null,
-    );
+    const status = await server.getTransaction(hash).then((r) => r.status, () => null);
     if (status === 'SUCCESS') return { hash, status: 'SUCCESS' };
     if (status === 'FAILED') return { hash, status: 'FAILED' };
     await new Promise((r) => setTimeout(r, 1000));

@@ -60,10 +60,7 @@ interface Stored {
 const storageKey = (me: string) => `alvinmunk.inbox.${config.network}.${me}`;
 function load(me: string): Stored {
   const s = readJSON<Partial<Stored> | null>(storageKey(me), null);
-  return {
-    items: Array.isArray(s?.items) ? s.items : [],
-    seen: Array.isArray(s?.seen) ? s.seen : [],
-  };
+  return { items: Array.isArray(s?.items) ? s.items : [], seen: Array.isArray(s?.seen) ? s.seen : [] };
 }
 
 const at = (ev: RepEvent) => (ev.closedAt ? { at: ev.closedAt } : {});
@@ -78,57 +75,30 @@ export function itemsFromEvents(
   const out: InboxItem[] = [];
   for (const ev of reputation) {
     // ('vouch','claimed') → (id, from, claimer)
-    if (ev.topics[0] !== EVENTS.VOUCH || ev.topics[1] !== 'claimed' || !Array.isArray(ev.data))
-      continue;
+    if (ev.topics[0] !== EVENTS.VOUCH || ev.topics[1] !== 'claimed' || !Array.isArray(ev.data)) continue;
     if (String(ev.data[1]) !== me) continue;
     const vouchId = Number(ev.data[0]);
-    out.push({
-      id: `claim:${vouchId}`,
-      kind: 'claim',
-      ledger: ev.ledger,
-      ...at(ev),
-      peer: String(ev.data[2]),
-      vouchId,
-    });
+    out.push({ id: `claim:${vouchId}`, kind: 'claim', ledger: ev.ledger, ...at(ev), peer: String(ev.data[2]), vouchId });
   }
   for (const ev of tips) {
     // ('tipped', from, to) → amount
     if (ev.topics[0] !== EVENTS.TIPPED || String(ev.topics[2]) !== me) continue;
     const from = String(ev.topics[1]);
     const amount = String(ev.data ?? '0');
-    out.push({
-      id: `tip:${eventKey(ev, `${from}:${amount}`)}`,
-      kind: 'tip',
-      ledger: ev.ledger,
-      ...at(ev),
-      peer: from,
-      amount,
-    });
+    out.push({ id: `tip:${eventKey(ev, `${from}:${amount}`)}`, kind: 'tip', ledger: ev.ledger, ...at(ev), peer: from, amount });
   }
   for (const ev of quests) {
     if (ev.topics[0] === EVENTS.QUEST && ev.topics[1] === 'awarded' && Array.isArray(ev.data)) {
       // ('quest','awarded') → (quest_id, recipient)
       if (String(ev.data[1]) !== me) continue;
       const questId = Number(ev.data[0]);
-      out.push({
-        id: `quest:${eventKey(ev, String(questId))}`,
-        kind: 'quest',
-        ledger: ev.ledger,
-        ...at(ev),
-        questId,
-      });
+      out.push({ id: `quest:${eventKey(ev, String(questId))}`, kind: 'quest', ledger: ev.ledger, ...at(ev), questId });
     } else if (ev.topics[0] === STREAK && String(ev.topics[1]) === me && Array.isArray(ev.data)) {
       // ('streak', player) → (weeks, best). Week 1 is just the award above; only a streak
       // that carried on is news.
       const weeks = Number(ev.data[0]);
       if (weeks < 2) continue;
-      out.push({
-        id: `streak:${eventKey(ev, String(weeks))}`,
-        kind: 'streak',
-        ledger: ev.ledger,
-        ...at(ev),
-        weeks,
-      });
+      out.push({ id: `streak:${eventKey(ev, String(weeks))}`, kind: 'streak', ledger: ev.ledger, ...at(ev), weeks });
     }
   }
   return out;

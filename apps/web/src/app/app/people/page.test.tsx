@@ -9,18 +9,19 @@ import type { Suggestion } from '@/lib/constellation';
 
 const ME = 'G'.padEnd(56, 'M');
 
-const { store, fetchEventsMock, suggestPeopleMock, reverseHandlesMock, resolveHandleMock } =
-  vi.hoisted(() => ({
-    store: {
-      profile: { address: 'G'.padEnd(56, 'M'), handle: 'me', createdAt: 1 } as {
-        address: string;
-      } | null,
-    },
-    fetchEventsMock: vi.fn(),
-    suggestPeopleMock: vi.fn(),
-    reverseHandlesMock: vi.fn(),
-    resolveHandleMock: vi.fn(),
-  }));
+const {
+  store,
+  fetchEventsMock,
+  suggestPeopleMock,
+  reverseHandlesMock,
+  resolveHandleMock,
+} = vi.hoisted(() => ({
+  store: { profile: { address: 'G'.padEnd(56, 'M'), handle: 'me', createdAt: 1 } as { address: string } | null },
+  fetchEventsMock: vi.fn(),
+  suggestPeopleMock: vi.fn(),
+  reverseHandlesMock: vi.fn(),
+  resolveHandleMock: vi.fn(),
+}));
 
 vi.mock('@/components/wallet/wallet-provider', () => ({
   useWallet: () => ({ profile: store.profile }),
@@ -113,20 +114,14 @@ describe('PeoplePage suggestions (idle state)', () => {
     expect(container.textContent).toContain('1 person you know vouched for them');
 
     // alice has a handle → a real, enabled profile link.
-    const aliceLink = Array.from(container.querySelectorAll('a')).find(
-      (a) => a.getAttribute('href') === '/u/alice',
-    );
+    const aliceLink = Array.from(container.querySelectorAll('a')).find((a) => a.getAttribute('href') === '/u/alice');
     expect(aliceLink).toBeTruthy();
 
     // B has no claimed handle yet → `/u/[handle]` would 404 on a raw address, so the
     // View action must be a disabled button, never a link to a broken profile page.
-    const brokenLink = Array.from(container.querySelectorAll('a')).find(
-      (a) => a.getAttribute('href') === `/u/${B1}`,
-    );
+    const brokenLink = Array.from(container.querySelectorAll('a')).find((a) => a.getAttribute('href') === `/u/${B1}`);
     expect(brokenLink).toBeUndefined();
-    const disabledButtons = Array.from(container.querySelectorAll('button')).filter(
-      (b) => b.disabled,
-    );
+    const disabledButtons = Array.from(container.querySelectorAll('button')).filter((b) => b.disabled);
     expect(disabledButtons.length).toBeGreaterThan(0);
   });
 });

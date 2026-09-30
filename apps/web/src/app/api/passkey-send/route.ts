@@ -31,8 +31,7 @@ export const runtime = 'nodejs';
 // reasoning as /api/health.
 export const dynamic = 'force-dynamic';
 
-const PASSPHRASE =
-  process.env.NEXT_PUBLIC_NETWORK_PASSPHRASE ?? 'Test SDF Network ; September 2015';
+const PASSPHRASE = process.env.NEXT_PUBLIC_NETWORK_PASSPHRASE ?? 'Test SDF Network ; September 2015';
 
 /**
  * passkey-kit deploys every smart wallet from a single shared deployer account whose seed is
@@ -64,10 +63,7 @@ export const POST = withRoute('POST /api/passkey-send', async (req: Request): Pr
   const relayerApiKey = process.env.PASSKEY_RELAYER_API_KEY;
   if (!relayerUrl || !relayerApiKey) {
     return json(
-      {
-        error:
-          'Passkey relayer not configured (set PASSKEY_RELAYER_URL + PASSKEY_RELAYER_API_KEY).',
-      },
+      { error: 'Passkey relayer not configured (set PASSKEY_RELAYER_URL + PASSKEY_RELAYER_API_KEY).' },
       503,
     );
   }
@@ -89,20 +85,14 @@ export const POST = withRoute('POST /api/passkey-send', async (req: Request): Pr
     try {
       xdr.SorobanAuthorizedFunction.fromXDR(body.func, 'base64');
     } catch {
-      return json(
-        { error: 'func must be valid base64-encoded SorobanAuthorizedFunction XDR.' },
-        400,
-      );
+      return json({ error: 'func must be valid base64-encoded SorobanAuthorizedFunction XDR.' }, 400);
     }
     // Validate each auth entry is valid XDR
     for (let i = 0; i < body.auth.length; i++) {
       try {
         xdr.SorobanAuthorizationEntry.fromXDR(body.auth[i], 'base64');
       } catch {
-        return json(
-          { error: `auth[${i}] must be valid base64-encoded SorobanAuthorizationEntry XDR.` },
-          400,
-        );
+        return json({ error: `auth[${i}] must be valid base64-encoded SorobanAuthorizationEntry XDR.` }, 400);
       }
     }
   } else if (typeof body.xdr === 'string') {
@@ -145,37 +135,22 @@ export const POST = withRoute('POST /api/passkey-send', async (req: Request): Pr
     // request config carries the relayer API key. withRoute already logs the status.
     if (e instanceof PluginExecutionError) {
       // The relayer answered and refused: simulation failure, bad auth, fee limit, …
-      return json(
-        {
-          error: e.message || 'Relayer rejected the transaction.',
-          code: 'RELAYER_EXECUTION_ERROR',
-        },
-        422,
-      );
+      return json({ error: e.message || 'Relayer rejected the transaction.', code: 'RELAYER_EXECUTION_ERROR' }, 422);
     }
     if (e instanceof PluginTransportError) {
       // No usable answer. A timeout (axios ECONNABORTED/ETIMEDOUT, or 408/504) is a 504;
       // a dropped connection or an upstream HTTP error with no body is a 502.
       const code = (e.errorDetails as { code?: string } | undefined)?.code;
       const timedOut =
-        code === 'ECONNABORTED' ||
-        code === 'ETIMEDOUT' ||
-        e.statusCode === 408 ||
-        e.statusCode === 504;
+        code === 'ECONNABORTED' || code === 'ETIMEDOUT' || e.statusCode === 408 || e.statusCode === 504;
       const upstream = e.statusCode ? ` (upstream ${e.statusCode})` : '';
       return json(
-        {
-          error: timedOut ? `Relayer timed out${upstream}.` : `Relayer unreachable${upstream}.`,
-          code: 'RELAYER_TRANSPORT_ERROR',
-        },
+        { error: timedOut ? `Relayer timed out${upstream}.` : `Relayer unreachable${upstream}.`, code: 'RELAYER_TRANSPORT_ERROR' },
         timedOut ? 504 : 502,
       );
     }
     if (e instanceof PluginUnexpectedError) {
-      return json(
-        { error: 'Relayer returned a malformed response.', code: 'RELAYER_UNEXPECTED_ERROR' },
-        502,
-      );
+      return json({ error: 'Relayer returned a malformed response.', code: 'RELAYER_UNEXPECTED_ERROR' }, 502);
     }
     // Anything else: refeeDeploy on a malformed deploy, or a missing hash.
     const msg = e instanceof Error ? e.message : 'relayer submit failed';

@@ -104,9 +104,7 @@ beforeEach(async () => {
   submitSorobanTxMock = vi.fn(async () => ({ hash: 'mockhash123' }));
   submitTxMock = vi.fn(async () => ({ hash: 'mockhash456' }));
 
-  vi.spyOn(ChannelsClient.prototype, 'submitSorobanTransaction').mockImplementation(
-    submitSorobanTxMock,
-  );
+  vi.spyOn(ChannelsClient.prototype, 'submitSorobanTransaction').mockImplementation(submitSorobanTxMock);
   vi.spyOn(ChannelsClient.prototype, 'submitTransaction').mockImplementation(submitTxMock);
 
   // Mock console methods to suppress logs during tests
@@ -173,10 +171,7 @@ describe('POST /api/passkey-send — input validation', () => {
   });
 
   it('400 when func is valid base64 but not valid SorobanAuthorizedFunction XDR', async () => {
-    const res = await passkeySend({
-      func: Buffer.from('random bytes').toString('base64'),
-      auth: [],
-    });
+    const res = await passkeySend({ func: Buffer.from('random bytes').toString('base64'), auth: [] });
     expect(res.status).toBe(400);
     const body = (await res.json()) as { error: string };
     expect(body.error).toMatch(/func must be valid/i);
@@ -235,12 +230,7 @@ describe('POST /api/passkey-send — input validation', () => {
       .setTimeout(0)
       .build();
     inner.sign(source);
-    const xdrStr = TransactionBuilder.buildFeeBumpTransaction(
-      source,
-      '200',
-      inner,
-      PASSPHRASE,
-    ).toXDR();
+    const xdrStr = TransactionBuilder.buildFeeBumpTransaction(source, '200', inner, PASSPHRASE).toXDR();
 
     const res = await passkeySend({ xdr: xdrStr });
     expect(res.status).toBe(400);
@@ -277,9 +267,7 @@ describe('POST /api/passkey-send — relayer error mapping', () => {
 
   it('502 when the connection drops without a status', async () => {
     submitSorobanTxMock.mockRejectedValueOnce(
-      new PluginTransportError('Network error: connect ECONNREFUSED', undefined, {
-        code: 'ECONNREFUSED',
-      }),
+      new PluginTransportError('Network error: connect ECONNREFUSED', undefined, { code: 'ECONNREFUSED' }),
     );
     const res = await passkeySend({ func: validFunc(), auth: [validAuth()] });
     expect(res.status).toBe(502);
@@ -291,9 +279,7 @@ describe('POST /api/passkey-send — relayer error mapping', () => {
     ['an upstream 504', 504, undefined],
     ['an upstream 408', 408, undefined],
   ])('504 on %s', async (_label, status, code) => {
-    submitSorobanTxMock.mockRejectedValueOnce(
-      new PluginTransportError('Network error: timeout', status, { code }),
-    );
+    submitSorobanTxMock.mockRejectedValueOnce(new PluginTransportError('Network error: timeout', status, { code }));
     const res = await passkeySend({ func: validFunc(), auth: [validAuth()] });
     expect(res.status).toBe(504);
     const body = (await res.json()) as { error: string; code: string };
@@ -302,13 +288,8 @@ describe('POST /api/passkey-send — relayer error mapping', () => {
   });
 
   it('never echoes or logs the transport error details (they carry the API key)', async () => {
-    const axiosLike = {
-      code: 'ECONNABORTED',
-      config: { headers: { Authorization: 'Bearer test-api-key' } },
-    };
-    submitSorobanTxMock.mockRejectedValueOnce(
-      new PluginTransportError('Network error: timeout', undefined, axiosLike),
-    );
+    const axiosLike = { code: 'ECONNABORTED', config: { headers: { Authorization: 'Bearer test-api-key' } } };
+    submitSorobanTxMock.mockRejectedValueOnce(new PluginTransportError('Network error: timeout', undefined, axiosLike));
     const res = await passkeySend({ func: validFunc(), auth: [validAuth()] });
     expect(await res.text()).not.toContain('test-api-key');
     const logged = [...(console.log as Mock).mock.calls, ...(console.error as Mock).mock.calls]
@@ -319,9 +300,7 @@ describe('POST /api/passkey-send — relayer error mapping', () => {
   });
 
   it('502 when PluginUnexpectedError (malformed relayer response)', async () => {
-    submitSorobanTxMock.mockRejectedValueOnce(
-      new PluginUnexpectedError('Malformed response: missing success field'),
-    );
+    submitSorobanTxMock.mockRejectedValueOnce(new PluginUnexpectedError('Malformed response: missing success field'));
     const res = await passkeySend({ func: validFunc(), auth: [validAuth()] });
     expect(res.status).toBe(502);
     const body = (await res.json()) as { error: string; code: string };

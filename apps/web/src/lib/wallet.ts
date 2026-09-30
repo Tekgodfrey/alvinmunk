@@ -220,7 +220,7 @@ export async function fundWithFriendbot(publicKey: string, tries = 4): Promise<v
   }
   throw new Error(
     `Couldn't fund your testnet wallet (Friendbot ${lastStatus || 'unreachable'}). ` +
-      'Friendbot is busy — wait a moment and try again.',
+    'Friendbot is busy — wait a moment and try again.',
   );
 }
 
@@ -445,13 +445,7 @@ async function buildPasskeyDeploy(
     {
       signer: {
         tag: 'Secp256r1',
-        values: [
-          key.keyId,
-          key.publicKey,
-          [undefined],
-          [undefined],
-          { tag: 'Persistent', values: undefined },
-        ],
+        values: [key.keyId, key.publicKey, [undefined], [undefined], { tag: 'Persistent', values: undefined }],
       },
     } as unknown as Parameters<typeof PasskeyClient.deploy>[0],
     {
@@ -493,12 +487,9 @@ async function deployPasskeyWallet(key: PasskeyKey, wasmHash: string): Promise<v
     const landed = contractId ? await passkeyContractExists(contractId).catch(() => false) : false;
     if (!landed) {
       const reason = (e instanceof Error ? e.message : String(e)).split('\n')[0];
-      throw new Error(
-        `Wallet setup didn't finish — try again, your passkey is saved. (${reason})`,
-        {
-          cause: e,
-        },
-      );
+      throw new Error(`Wallet setup didn't finish — try again, your passkey is saved. (${reason})`, {
+        cause: e,
+      });
     }
   }
   settlePasskeyRecord();
@@ -564,8 +555,8 @@ export async function connectPasskey(mode: ConnectMode = 'create'): Promise<Wall
   if (!wasmHash) {
     throw new Error(
       'Passkey infra not configured. Set NEXT_PUBLIC_PASSKEY_WALLET_WASM_HASH (+ the ' +
-        'server-side PASSKEY_RELAYER_* secrets; see docs/PASSKEY_HANDOFF.md), or use the ' +
-        'dev wallet on testnet (default).',
+      'server-side PASSKEY_RELAYER_* secrets; see docs/PASSKEY_HANDOFF.md), or use the ' +
+      'dev wallet on testnet (default).',
     );
   }
 
@@ -595,11 +586,7 @@ export async function connectPasskey(mode: ConnectMode = 'create'): Promise<Wall
   // saved and the app has no record of. Persisting the key material first (with a pendingDeploy
   // marker) is what lets a retry resume with the SAME passkey (issue #186).
   let storedKeyId = mode === 'recover' ? null : safeLocalGet(PK_KEYID);
-  if (
-    storedKeyId &&
-    safeLocalGet(PK_PENDING) &&
-    !(await resumePasskeyDeploy(storedKeyId, wasmHash))
-  ) {
+  if (storedKeyId && safeLocalGet(PK_PENDING) && !(await resumePasskeyDeploy(storedKeyId, wasmHash))) {
     // The pending record is corrupted and its wallet never landed, so it can't be resumed. Drop
     // it and enroll afresh instead of leaving every later connect stuck on it.
     clearPasskeyRecord();
@@ -618,8 +605,7 @@ export async function connectPasskey(mode: ConnectMode = 'create'): Promise<Wall
     keyId = created.keyIdBase64;
     const publicKeyB64 = u8ToB64(created.publicKey);
     const key = decodePasskeyKey(keyId, publicKeyB64);
-    if (!key)
-      throw new Error("This passkey can't secure a wallet — try again or use another device.");
+    if (!key) throw new Error("This passkey can't secure a wallet — try again or use another device.");
     clearPasskeyRecord(); // nothing left over from an earlier record (e.g. its contract id) applies
     safeLocalSet(PK_PENDING, '1');
     safeLocalSet(PK_KEYID, keyId);
@@ -685,9 +671,7 @@ export async function connectPasskey(mode: ConnectMode = 'create'): Promise<Wall
     },
     sign: async () => {
       // Passkey wallets author actions via `invoke` (Soroban auth), never raw classic XDR.
-      throw new Error(
-        'This action needs a classic wallet; passkey wallets sign on-chain calls only.',
-      );
+      throw new Error('This action needs a classic wallet; passkey wallets sign on-chain calls only.');
     },
   };
 }

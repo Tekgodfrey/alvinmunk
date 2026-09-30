@@ -192,9 +192,7 @@ describe('push-store with KV configured', () => {
   it('moveSubscription refuses an unknown old endpoint and a foreign wallet through KV', async () => {
     await store.saveSubscription(sub(A), 'GABC', 7);
 
-    expect(await store.moveSubscription('https://push.example/none', B, sub(B), 'GABC')).toBe(
-      'not_found',
-    );
+    expect(await store.moveSubscription('https://push.example/none', B, sub(B), 'GABC')).toBe('not_found');
     expect(await store.moveSubscription(A, B, sub(B), 'GOTHER')).toBe('forbidden');
     // Nothing was written or reindexed.
     expect(fake.strings.has(`sub:${B}`)).toBe(false);
@@ -351,9 +349,7 @@ describe('push-store without KV', () => {
   it('moveSubscription reports not_found / forbidden without touching storage', async () => {
     await store.saveSubscription(sub(A), 'GABC', 7);
 
-    expect(await store.moveSubscription('https://push.example/none', B, sub(B), 'GABC')).toBe(
-      'not_found',
-    );
+    expect(await store.moveSubscription('https://push.example/none', B, sub(B), 'GABC')).toBe('not_found');
     expect(await store.moveSubscription(A, B, sub(B), 'GOTHER')).toBe('forbidden');
     expect(store.memGet(`sub:${A}`)).not.toBeNull(); // record untouched at the old key
     expect(store.memGet(`sub:${B}`)).toBeNull();

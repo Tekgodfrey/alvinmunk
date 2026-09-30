@@ -34,9 +34,7 @@ export function LoopHealth({ funnel, error, loading }: Props) {
           <span
             className={cn(
               'rounded-full px-3 py-1 text-xs font-semibold',
-              funnel.completionRate >= GATE
-                ? 'bg-primary/15 text-primary'
-                : 'bg-muted text-muted-foreground',
+              funnel.completionRate >= GATE ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground',
             )}
           >
             {funnel.completionRate >= GATE ? 'Gate reached' : 'Below gate'}
@@ -47,28 +45,16 @@ export function LoopHealth({ funnel, error, loading }: Props) {
       {funnel ? (
         <>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            <Tile
-              label="Minted"
-              value={funnel.minted.toLocaleString()}
-              hint={`${funnel.open.toLocaleString()} still open`}
-            />
+            <Tile label="Minted" value={funnel.minted.toLocaleString()} hint={`${funnel.open.toLocaleString()} still open`} />
             <Tile label="Claimed" value={funnel.claimed.toLocaleString()} />
-            <Tile
-              label="Completion"
-              value={pct(funnel.completionRate)}
-              hint={`Target: ${GATE_LABEL}`}
-            />
+            <Tile label="Completion" value={pct(funnel.completionRate)} hint={`Target: ${GATE_LABEL}`} />
             <Tile
               label="Expired unclaimed"
               value={funnel.expiredUnclaimed.toLocaleString()}
               hint={pct(funnel.expiredRate)}
             />
             <Tile label="Distinct vouchers" value={funnel.distinctVouchers.toLocaleString()} />
-            <Tile
-              label="Repeat-pair share"
-              value={pct(funnel.repeatPairShare)}
-              hint="claims of a pair already claimed"
-            />
+            <Tile label="Repeat-pair share" value={pct(funnel.repeatPairShare)} hint="claims of a pair already claimed" />
           </div>
           <div className="mt-5 overflow-x-auto rounded-2xl border border-border/50">
             <table className="w-full min-w-[560px] text-left text-sm">
@@ -113,14 +99,9 @@ export function LoopHealth({ funnel, error, loading }: Props) {
           </p>
         </>
       ) : loading ? (
-        <p className="rounded-2xl border border-border/50 p-4 text-sm text-muted-foreground">
-          Reading vouch state…
-        </p>
+        <p className="rounded-2xl border border-border/50 p-4 text-sm text-muted-foreground">Reading vouch state…</p>
       ) : (
-        <p
-          role={error ? 'alert' : undefined}
-          className="rounded-2xl border border-border/50 p-4 text-sm text-muted-foreground"
-        >
+        <p role={error ? 'alert' : undefined} className="rounded-2xl border border-border/50 p-4 text-sm text-muted-foreground">
           {error ?? 'The reputation contract is not configured for this network.'}
         </p>
       )}

@@ -41,7 +41,7 @@ describe('getGates', () => {
       { id: 2, track: 1, min: 50n, label: 'Pros', active: false },
     ]);
     const gates = await getGates();
-
+    
     expect(gates).toEqual([
       { id: 1, track: 0, min: 10, label: 'Noobs', active: true },
       { id: 2, track: 1, min: 50, label: 'Pros', active: false },
@@ -144,28 +144,12 @@ describe('getGateStatus', () => {
 
   it('reads every gate with passes/unlocked in one get_status call', async () => {
     readPublicMock.mockResolvedValueOnce([
-      {
-        gate: { id: 1, track: 0, min: 10n, label: 'Noobs', active: true },
-        passes: true,
-        unlocked: true,
-      },
-      {
-        gate: { id: 2, track: 1, min: 50n, label: 'Pros', active: false },
-        passes: false,
-        unlocked: false,
-      },
+      { gate: { id: 1, track: 0, min: 10n, label: 'Noobs', active: true }, passes: true, unlocked: true },
+      { gate: { id: 2, track: 1, min: 50n, label: 'Pros', active: false }, passes: false, unlocked: false },
     ]);
     await expect(getGateStatus('GADDR')).resolves.toEqual([
-      {
-        gate: { id: 1, track: 0, min: 10, label: 'Noobs', active: true },
-        passes: true,
-        unlocked: true,
-      },
-      {
-        gate: { id: 2, track: 1, min: 50, label: 'Pros', active: false },
-        passes: false,
-        unlocked: false,
-      },
+      { gate: { id: 1, track: 0, min: 10, label: 'Noobs', active: true }, passes: true, unlocked: true },
+      { gate: { id: 2, track: 1, min: 50, label: 'Pros', active: false }, passes: false, unlocked: false },
     ]);
     expect(readPublicMock).toHaveBeenCalledTimes(1);
     expect(readPublicMock).toHaveBeenCalledWith('CGATEID', 'get_status', [{ __addr: 'GADDR' }]);
@@ -194,12 +178,12 @@ describe('unlockGate', () => {
   it('invokes unlock on the contract', async () => {
     const mockWallet = { address: 'WADDR' } as Wallet;
     await unlockGate(mockWallet, 3);
-
+    
     expect(invokeAndWaitMock).toHaveBeenCalledWith(
       'CGATEID',
       'unlock',
       [{ __addr: 'WADDR' }, { __u32: 3 }],
-      mockWallet,
+      mockWallet
     );
   });
 });

@@ -27,9 +27,7 @@ export function GenesisStamp({
   return (
     <figure
       className="relative aspect-[1.6/1] w-full overflow-hidden rounded-2xl border border-white/10 shadow-2xl"
-      style={{
-        background: `linear-gradient(135deg, hsl(${dna.hue} 70% 18%), hsl(${dna.hue2} 70% 12%))`,
-      }}
+      style={{ background: `linear-gradient(135deg, hsl(${dna.hue} 70% 18%), hsl(${dna.hue2} 70% 12%))` }}
       aria-label={`Genesis profile stamp for ${handle}, a ${dna.vertices}-point sigil`}
     >
       <svg viewBox="0 0 100 100" className="absolute right-3 top-3 h-20 w-20 opacity-90" role="img">
@@ -43,7 +41,9 @@ export function GenesisStamp({
       </svg>
 
       <figcaption className="absolute inset-0 flex flex-col justify-between p-4">
-        <span className="text-[11px] uppercase tracking-widest text-white/40">alvinmunk</span>
+        <span className="text-[11px] uppercase tracking-widest text-white/40">
+          alvinmunk
+        </span>
         <div className="flex items-center gap-3">
           <Avatar address={address} handle={handle} size={48} />
           <div>

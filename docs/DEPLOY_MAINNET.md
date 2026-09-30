@@ -11,7 +11,6 @@ This is the step-by-step for taking the five Soroban contracts from testnet to *
 Tick a box only with a link to its evidence: a CI run, a test, or a code line. A box that is blocked stays unticked and links the issue that blocks it.
 
 **Contract correctness**
-
 - [ ] Full test suite green: `cargo test` in `contracts/` (incl. property/fuzz) and `pnpm test` (web + shared). CI green on every push: tick with a link to the green [CI run](https://github.com/mericcintosun/alvinmunk/actions/workflows/ci.yml?query=branch%3Amain) of the commit you deploy. Not met yet: CI on `main` is still red.
 - [ ] End-to-end integration test exists: `scripts/e2e-testnet.mjs` (deploy → invoke vouch/quest/tip/reward → assert state, happy + negative paths). Blocked: it never runs in CI ([#62](https://github.com/mericcintosun/alvinmunk/issues/62)).
 - [ ] Storage/TTL: every contract bumps TTL on long-lived keys (`BUMP_THRESHOLD`/`BUMP_EXTEND`); daily counters use temporary storage that auto-GCs. Re-profile before deploy with `scripts/bump-ttl.sh`. Blocked: instance storage is never extended ([#65](https://github.com/mericcintosun/alvinmunk/issues/65)), nor are the attester allowlists ([#66](https://github.com/mericcintosun/alvinmunk/issues/66), [#67](https://github.com/mericcintosun/alvinmunk/issues/67)).
@@ -19,7 +18,6 @@ Tick a box only with a link to its evidence: a CI run, a test, or a code line. A
 - [x] Cross-contract calls are read-only where they should be (`rewards`→`get_earned` [rewards/src/lib.rs:371-373](../contracts/rewards/src/lib.rs#L371-L373), `gate`→`get_score/get_earned` [gate/src/lib.rs:316-326](../contracts/gate/src/lib.rs#L316-L326)) and write only via the allowlisted attester (`quest_registry`→`award_xp` [quest_registry/src/lib.rs:344-347](../contracts/quest_registry/src/lib.rs#L344-L347)).
 
 **Security**
-
 - [ ] Grep for `unwrap()` on user-controlled paths; prefer `?` + typed errors. (Storage `get().unwrap()` on admin-set instance keys is acceptable; document each.)
 - [ ] Confirm no panic on malformed input (fuzz already covers the XP math and payout).
 - [x] Integer math: XP uses `u64` ([reputation/src/lib.rs:349](../contracts/reputation/src/lib.rs#L349)), USDC uses `i128` ([rewards/src/lib.rs:75](../contracts/rewards/src/lib.rs#L75)); payout paths use registered amounts (caller can never set the amount: `claim_reward` pays `entry.amount`, [rewards/src/lib.rs:410](../contracts/rewards/src/lib.rs#L410)). Property test: `daily_cap_is_never_exceeded` ([rewards/src/test.rs:293](../contracts/rewards/src/test.rs#L293)). Re-check for any raw `+`/`-` that should be `checked_*`.
@@ -27,13 +25,11 @@ Tick a box only with a link to its evidence: a CI run, a test, or a code line. A
 - [x] USDC handled via the Stellar Asset Contract (SAC) `token::Client`, not a custom token: `tip` [rewards/src/lib.rs:161](../contracts/rewards/src/lib.rs#L161), `claim_reward` [rewards/src/lib.rs:410](../contracts/rewards/src/lib.rs#L410).
 
 **Security review (mandatory for Black — pick one)**
-
 - [ ] Third-party audit, OR
 - [ ] Mentor/team security review approved. Capture the reviewer, date, and sign-off in `deployment-log.md`.
 - [ ] Run `/security-review` on the contracts branch and resolve findings before deploy.
 
 **Operational**
-
 - [ ] Admin + attester keys generated fresh for mainnet and held in a **hardware wallet**, never in CI secrets or `.env`.
 - [x] Upgrade path: all five contracts expose admin-gated `upgrade(new_wasm_hash)`. Tested by `upgrade_to_identical_wasm_preserves_*` in each: [reputation](../contracts/reputation/src/test.rs#L1229), [quest_registry](../contracts/quest_registry/src/test.rs#L877), [rewards](../contracts/rewards/src/test.rs#L394), [registry](../contracts/registry/src/test.rs#L543), [gate](../contracts/gate/src/test.rs#L162).
 - [x] Emergency controls: `rewards.set_paused`, `set_daily_cap`, `set_frozen`, `set_require_funding` (turn proof-of-funding ON for mainnet): [rewards/src/lib.rs:421-485](../contracts/rewards/src/lib.rs#L421-L485). Tests: [`a_paused_contract_reports_paused_before_tip_validation`](../contracts/rewards/src/test.rs#L969), [`daily_cap_blocks_over_limit_payout`](../contracts/rewards/src/test.rs#L196), [`frozen_account_cannot_claim`](../contracts/rewards/src/test.rs#L221), [`proof_of_funding_blocks_unfunded_claim_when_enabled`](../contracts/rewards/src/test.rs#L242). Pausing `claim_reward` is not tested yet ([#99](https://github.com/mericcintosun/alvinmunk/issues/99)).
@@ -68,7 +64,6 @@ stellar keys generate attester --network mainnet   # fund minimally
 It also checks, before any network call: every input is present and well-formed, `ADMIN` and `ATTESTER` are identity names (never secret keys), the attester is a different key from the admin, and `contracts/` has no uncommitted changes, so the logged commit is the code that ships (a dry run only warns).
 
 Then it:
-
 - builds with `stellar contract build --locked` into a fresh temporary directory and records each wasm's sha256;
 - for each contract in order (reputation, quest_registry, rewards, registry, gate): uploads the wasm (checking the on-chain hash equals the local sha256) and deploys it with its constructor arguments (`-- --admin <G…>`, plus `--reputation` / `--usdc` where the contract takes them). The constructor sets the admin and wiring inside the deploy transaction itself (#127), so the contract never exists without its admin and there is no `init` for anyone to call first. A deploy is never retried;
 - sets `rewards.set_daily_cap(DAILY_CAP)` and `rewards.set_require_funding(true)`;
@@ -104,13 +99,13 @@ ADMIN=admin ATTESTER=attester \
 
 **Inputs** (env vars only; the script takes no arguments besides `--help`):
 
-| Variable    | Required | Meaning                                                                                                                                                                                                                                                                      |
-| ----------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ADMIN`     | yes      | `stellar keys` identity name of the funded mainnet deployer. It becomes admin of all five contracts and signs every transaction.                                                                                                                                             |
-| `ATTESTER`  | yes      | Identity name or `G...` public key of the off-chain attester (its secret goes in `ATTESTER_SECRET_KEY` on the server). Must differ from `ADMIN`.                                                                                                                             |
-| `USDC_SAC`  | yes      | Circle's mainnet USDC SAC, `CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75`. Anything else aborts at the USDC gate.                                                                                                                                                |
-| `DAILY_CAP` | yes      | Max treasury payout per UTC day, in USDC stroops (1 USDC = `10000000`, so `500000000` = 50 USDC). Must be positive: `0` would mean no cap. Must also be at least the largest reward in the table (`20000000` = 2 USDC), because `add_reward` rejects a payout above the cap. |
-| `DRY_RUN`   | no       | `1` for a dry run, `0` or unset for a real run. Any other value aborts.                                                                                                                                                                                                      |
+| Variable | Required | Meaning |
+| --- | --- | --- |
+| `ADMIN` | yes | `stellar keys` identity name of the funded mainnet deployer. It becomes admin of all five contracts and signs every transaction. |
+| `ATTESTER` | yes | Identity name or `G...` public key of the off-chain attester (its secret goes in `ATTESTER_SECRET_KEY` on the server). Must differ from `ADMIN`. |
+| `USDC_SAC` | yes | Circle's mainnet USDC SAC, `CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75`. Anything else aborts at the USDC gate. |
+| `DAILY_CAP` | yes | Max treasury payout per UTC day, in USDC stroops (1 USDC = `10000000`, so `500000000` = 50 USDC). Must be positive: `0` would mean no cap. Must also be at least the largest reward in the table (`20000000` = 2 USDC), because `add_reward` rejects a payout above the cap. |
+| `DRY_RUN` | no | `1` for a dry run, `0` or unset for a real run. Any other value aborts. |
 
 Needs `stellar` (with `strkey decode`), `jq` and `git`. Offline tests for the gates and the dry run: `bash scripts/deploy-mainnet.test.sh` (stubs the CLI; needs `python3`).
 
@@ -128,7 +123,6 @@ Needs `stellar` (with `strkey decode`), `jq` and `git`. Offline tests for the ga
 ## Gate 3 — Post-deployment
 
 **App cutover**
-
 - [ ] In Vercel prod env, flip `NEXT_PUBLIC_STELLAR_NETWORK=mainnet`, set the mainnet RPC/Horizon, the five mainnet contract ids, and the Circle USDC SAC id.
 - [ ] The dev wallet is hard-disabled on mainnet, so passkey infra must be live: set `NEXT_PUBLIC_PASSKEY_WALLET_WASM_HASH` + the relayer secrets (already configured on Vercel).
 - [ ] Remove/disable the testnet faucet route on mainnet (it already refuses when network=mainnet).
@@ -137,20 +131,17 @@ Needs `stellar` (with `strkey decode`), `jq` and `git`. Offline tests for the ga
 - [ ] Testnet history stays readable through `?network=testnet` on `/u/<handle>`, `/score/<address>` and `/leaderboard` (read-only, [lib/read-network.ts](../apps/web/src/lib/read-network.ts)). It reads the SDK's built-in testnet deployment (`NETWORKS.testnet` in `packages/sdk`); if the final testnet ids differ, pin them with `NEXT_PUBLIC_TESTNET_REPUTATION_CONTRACT_ID` / `NEXT_PUBLIC_TESTNET_REGISTRY_CONTRACT_ID` (and `NEXT_PUBLIC_TESTNET_RPC_URL` for a keyed RPC). Check the README evidence links render their testnet profiles.
 
 **Monitoring**
-
 - [x] Product analytics wired: Vercel Analytics + Speed Insights ([components/analytics.tsx](../apps/web/src/components/analytics.tsx)); `lib/track.ts` custom events require a Pro plan and are no-ops on Hobby. Per-user funnel/retention analytics needs a dedicated product-analytics tool (e.g. PostHog — a separate future feature).
 - [ ] Error tracking: API routes log every 5xx to Vercel's runtime logs (`withRoute`, [lib/api-route.ts](../apps/web/src/lib/api-route.ts)), but nothing alerts on them. Add Vercel alerts on error-rate spikes.
 - [ ] Add contract-event monitoring (RPC `getEvents` cron, or Mercury/Subquery) alerting on: admin ops, `set_paused`, large `reward`/`tipped` amounts.
 - [ ] A simple metrics page (TVL paid, users, vouch loops/week) — even a Notion/Streamlit board.
 
 **Advanced feature (Black requires ≥1 — already satisfied)**
-
 - [x] **Fee Sponsorship** — gasless via the OZ Channels relayer + fee-bump (`/api/passkey-send`: [route](../apps/web/src/app/api/passkey-send/route.ts), [tests](../apps/web/src/app/api/passkey-send/route.test.ts); `lib/wallet.ts`).
 - [x] **Account Abstraction** — passkey smart wallet with secp256r1 custom auth ([lib/wallet.ts](../apps/web/src/lib/wallet.ts), [tests](../apps/web/src/lib/wallet.passkey.test.ts)).
 - [ ] Optional second: **SEP-24/SEP-31 anchor** cross-border off-ramp (issue #1).
 
 **Ecosystem + marketing**
-
 - [ ] X/Twitter launch thread with the mainnet contract ids + stellar.expert links (see `docs/MARKETING.md`).
 - [ ] Submit alvinmunk to the Stellar ecosystem directory (stellar.org/ecosystem) and lumenloop.com.
 - [ ] Ecosystem contribution: the 26 open Wave-Program issues + a technical blog (`docs/MARKETING.md`) satisfy this.

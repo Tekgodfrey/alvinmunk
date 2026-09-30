@@ -24,20 +24,20 @@ The **fundable primitive** (00-strategy §4). Emitted whenever an allowlisted
 attester credits Earned XP. Versioned so future B2B consumers read the version
 first and can evolve safely.
 
-| Field         | Type                | Description              |
-| ------------- | ------------------- | ------------------------ |
-| **topics[0]** | `Symbol("att_set")` | Event discriminator      |
-| **topics[1]** | `Address`           | The subject (who earned) |
+| Field | Type | Description |
+|-------|------|-------------|
+| **topics[0]** | `Symbol("att_set")` | Event discriminator |
+| **topics[1]** | `Address` | The subject (who earned) |
 
 **Data tuple** (schema_version = 1):
 
-| Index | Type      | Description                                                                                                                                                                                                               |
-| ----- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0     | `u32`     | `schema_version` (currently `1`)                                                                                                                                                                                          |
-| 1     | `Address` | `issuer` — the allowlisted attester contract/account                                                                                                                                                                      |
-| 2     | `u32`     | `schema_id` — off-chain agreed namespace, passed through from `award_xp`. Every deployed quest uses `2` (QUEST). `1` is reserved and never emitted: vouches credit only the Social track, so they never produce `att_set` |
-| 3     | `u64`     | `amount` — XP credited by this award (a delta, not the running total; for the per-schema total read [`get_attestation`](#attestation))                                                                                    |
-| 4     | `u64`     | `timestamp` — ledger timestamp at emission                                                                                                                                                                                |
+| Index | Type | Description |
+|-------|------|-------------|
+| 0 | `u32` | `schema_version` (currently `1`) |
+| 1 | `Address` | `issuer` — the allowlisted attester contract/account |
+| 2 | `u32` | `schema_id` — off-chain agreed namespace, passed through from `award_xp`. Every deployed quest uses `2` (QUEST). `1` is reserved and never emitted: vouches credit only the Social track, so they never produce `att_set` |
+| 3 | `u64` | `amount` — XP credited by this award (a delta, not the running total; for the per-schema total read [`get_attestation`](#attestation)) |
+| 4 | `u64` | `timestamp` — ledger timestamp at emission |
 
 **Contract source**: `reputation/src/lib.rs` → `fn add_earned()`
 
@@ -58,17 +58,17 @@ env.events().publish(
 Running total of the Earned (cashable) track for an address. A monotonic
 sequence — indexers fold to get the latest balance per address.
 
-| Field         | Type           | Description         |
-| ------------- | -------------- | ------------------- |
+| Field | Type | Description |
+|-------|------|-------------|
 | **topics[0]** | `Symbol("xp")` | Event discriminator |
-| **topics[1]** | `Address`      | The subject         |
+| **topics[1]** | `Address` | The subject |
 
 **Data tuple**:
 
-| Index | Type  | Description                        |
-| ----- | ----- | ---------------------------------- |
-| 0     | `u64` | `amount` — the delta just added    |
-| 1     | `u64` | `newTotal` — the new running total |
+| Index | Type | Description |
+|-------|------|-------------|
+| 0 | `u64` | `amount` — the delta just added |
+| 1 | `u64` | `newTotal` — the new running total |
 
 **Contract source**: `reputation/src/lib.rs` → `fn add_earned()`
 
@@ -89,17 +89,17 @@ Running total of the Social (non-cashable, vouch-based) track. This is the
 does NOT emit a `social` event, so brand-new wallets don't clutter the
 event-sourced leaderboard until they first act.
 
-| Field         | Type               | Description                   |
-| ------------- | ------------------ | ----------------------------- |
-| **topics[0]** | `Symbol("social")` | Event discriminator           |
-| **topics[1]** | `Address`          | The subject (who gained/lost) |
+| Field | Type | Description |
+|-------|------|-------------|
+| **topics[0]** | `Symbol("social")` | Event discriminator |
+| **topics[1]** | `Address` | The subject (who gained/lost) |
 
 **Data tuple**:
 
-| Index | Type  | Description                                                                                                                                                                                                                                  |
-| ----- | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0     | `u64` | `amount` — an unsigned magnitude. The direction comes from comparing `newTotal` with the previous total (the address's prior `social` event, or the silent `STARTER_SOCIAL` balance for its first one): higher is a credit, lower is a debit |
-| 1     | `u64` | `newTotal` — the new running total                                                                                                                                                                                                           |
+| Index | Type | Description |
+|-------|------|-------------|
+| 0 | `u64` | `amount` — an unsigned magnitude. The direction comes from comparing `newTotal` with the previous total (the address's prior `social` event, or the silent `STARTER_SOCIAL` balance for its first one): higher is a credit, lower is a debit |
+| 1 | `u64` | `newTotal` — the new running total |
 
 **Contract source**: `reputation/src/lib.rs` → `fn add_social()` / `fn sub_social()`
 
@@ -124,15 +124,15 @@ env.events().publish(
 Emitted when an attester contract/account is added to or removed from the
 allowlist.
 
-| Field         | Type                              | Description         |
-| ------------- | --------------------------------- | ------------------- |
-| **topics[0]** | `Symbol("attester")`              | Event discriminator |
-| **topics[1]** | `Symbol("add")` or `Symbol("rm")` | Operation           |
+| Field | Type | Description |
+|-------|------|-------------|
+| **topics[0]** | `Symbol("attester")` | Event discriminator |
+| **topics[1]** | `Symbol("add")` or `Symbol("rm")` | Operation |
 
 **Data**:
 
-| Type      | Description                                 |
-| --------- | ------------------------------------------- |
+| Type | Description |
+|------|-------------|
 | `Address` | The attester address being added or removed |
 
 **Contract source**: `reputation/src/lib.rs` → `fn add_attester()` / `fn remove_attester()`
@@ -163,17 +163,17 @@ claim key (`mint_vouch_signed`) or, on the legacy path, to `sha256(secret)`
 right after that card's `social` stake debit — exactly the events of the same cards
 minted one `mint_vouch_signed` call at a time, all in one transaction.
 
-| Field         | Type               | Description         |
-| ------------- | ------------------ | ------------------- |
-| **topics[0]** | `Symbol("vouch")`  | Event discriminator |
-| **topics[1]** | `Symbol("minted")` | Sub-type            |
+| Field | Type | Description |
+|-------|------|-------------|
+| **topics[0]** | `Symbol("vouch")` | Event discriminator |
+| **topics[1]** | `Symbol("minted")` | Sub-type |
 
 **Data tuple**:
 
-| Index | Type      | Description                      |
-| ----- | --------- | -------------------------------- |
-| 0     | `u64`     | `id` — auto-incremented vouch ID |
-| 1     | `Address` | `from` — the voucher             |
+| Index | Type | Description |
+|-------|------|-------------|
+| 0 | `u64` | `id` — auto-incremented vouch ID |
+| 1 | `Address` | `from` — the voucher |
 
 #### `vouch` / `claimed`
 
@@ -182,18 +182,18 @@ A recipient claims a half-card with a claim-key signature that names them
 secret (`claim_vouch`). Both emit this same event. See
 [Claim keys](#claim-keys-mint_vouch_signed--claim_vouch_signed--get_claim_key).
 
-| Field         | Type                | Description         |
-| ------------- | ------------------- | ------------------- |
-| **topics[0]** | `Symbol("vouch")`   | Event discriminator |
-| **topics[1]** | `Symbol("claimed")` | Sub-type            |
+| Field | Type | Description |
+|-------|------|-------------|
+| **topics[0]** | `Symbol("vouch")` | Event discriminator |
+| **topics[1]** | `Symbol("claimed")` | Sub-type |
 
 **Data tuple**:
 
-| Index | Type      | Description                           |
-| ----- | --------- | ------------------------------------- |
-| 0     | `u64`     | `vouch_id`                            |
-| 1     | `Address` | `from` — the original voucher         |
-| 2     | `Address` | `claimer` — the recipient who claimed |
+| Index | Type | Description |
+|-------|------|-------------|
+| 0 | `u64` | `vouch_id` |
+| 1 | `Address` | `from` — the original voucher |
+| 2 | `Address` | `claimer` — the recipient who claimed |
 
 #### `vouch` / `slashed`
 
@@ -211,18 +211,18 @@ emit this event:
 
 Both paths store `slashed: true` on the vouch and emit the same event shape:
 
-| Field         | Type                | Description         |
-| ------------- | ------------------- | ------------------- |
-| **topics[0]** | `Symbol("vouch")`   | Event discriminator |
-| **topics[1]** | `Symbol("slashed")` | Sub-type            |
+| Field | Type | Description |
+|-------|------|-------------|
+| **topics[0]** | `Symbol("vouch")` | Event discriminator |
+| **topics[1]** | `Symbol("slashed")` | Sub-type |
 
 **Data tuple**:
 
-| Index | Type      | Description                                  |
-| ----- | --------- | -------------------------------------------- |
-| 0     | `u64`     | `vouch_id`                                   |
-| 1     | `Address` | `from` — the voucher whose stake was slashed |
-| 2     | `u64`     | `stake` — the slashed amount                 |
+| Index | Type | Description |
+|-------|------|-------------|
+| 0 | `u64` | `vouch_id` |
+| 1 | `Address` | `from` — the voucher whose stake was slashed |
+| 2 | `u64` | `stake` — the slashed amount |
 
 **Contract source**: `reputation/src/lib.rs` → `fn mint()` (shared by `mint_vouch_signed` / `mint_vouches` / `mint_vouch`) / `fn settle_claim()` (shared by `claim_vouch_signed` / `claim_vouch`) / `fn expire_vouch()`
 
@@ -258,15 +258,15 @@ env.events().publish(
 
 A new quest is registered by the admin.
 
-| Field         | Type                | Description         |
-| ------------- | ------------------- | ------------------- |
-| **topics[0]** | `Symbol("quest")`   | Event discriminator |
-| **topics[1]** | `Symbol("created")` | Sub-type            |
+| Field | Type | Description |
+|-------|------|-------------|
+| **topics[0]** | `Symbol("quest")` | Event discriminator |
+| **topics[1]** | `Symbol("created")` | Sub-type |
 
 **Data**:
 
-| Type  | Description         |
-| ----- | ------------------- |
+| Type | Description |
+|------|-------------|
 | `u32` | `id` — the quest ID |
 
 ### `quest` / `awarded`
@@ -275,17 +275,17 @@ A quest is awarded to a recipient after off-chain attester verification.
 Note: this event is emitted **after** the cross-contract call to
 `Reputation.award_xp`, which itself emits `att_set` and `xp` events.
 
-| Field         | Type                | Description         |
-| ------------- | ------------------- | ------------------- |
-| **topics[0]** | `Symbol("quest")`   | Event discriminator |
-| **topics[1]** | `Symbol("awarded")` | Sub-type            |
+| Field | Type | Description |
+|-------|------|-------------|
+| **topics[0]** | `Symbol("quest")` | Event discriminator |
+| **topics[1]** | `Symbol("awarded")` | Sub-type |
 
 **Data tuple**:
 
-| Index | Type      | Description |
-| ----- | --------- | ----------- |
-| 0     | `u32`     | `quest_id`  |
-| 1     | `Address` | `recipient` |
+| Index | Type | Description |
+|-------|------|-------------|
+| 0 | `u32` | `quest_id` |
+| 1 | `Address` | `recipient` |
 
 ### `quest` / `period` (Quest Repeat Period Set)
 
@@ -293,17 +293,17 @@ The admin changed how often a quest can be completed with `set_quest_period(ques
 period_secs)` (#154): `0` makes it one-shot again, `604_800` weekly. See
 [Repeatable quests](#repeatable-quests-set_quest_period--get_quest_periods).
 
-| Field         | Type               | Description         |
-| ------------- | ------------------ | ------------------- |
-| **topics[0]** | `Symbol("quest")`  | Event discriminator |
-| **topics[1]** | `Symbol("period")` | Sub-type            |
+| Field | Type | Description |
+|-------|------|-------------|
+| **topics[0]** | `Symbol("quest")` | Event discriminator |
+| **topics[1]** | `Symbol("period")` | Sub-type |
 
 **Data tuple**:
 
-| Index | Type  | Description                                            |
-| ----- | ----- | ------------------------------------------------------ |
-| 0     | `u32` | `quest_id`                                             |
-| 1     | `u64` | `period_secs` — the new repeat period (`0` = one-shot) |
+| Index | Type | Description |
+|-------|------|-------------|
+| 0 | `u32` | `quest_id` |
+| 1 | `u64` | `period_secs` — the new repeat period (`0` = one-shot) |
 
 ```rust
 env.events().publish(
@@ -317,17 +317,17 @@ From then on `award_quest` accepts only that key's signature for the quest, and 
 global `AttesterKey` allowlist no longer applies to it. Rebinding emits this again with
 the new key. Monitoring should alert on it: it changes who can mint Earned XP.
 
-| Field         | Type                 | Description         |
-| ------------- | -------------------- | ------------------- |
-| **topics[0]** | `Symbol("quest")`    | Event discriminator |
-| **topics[1]** | `Symbol("att_bind")` | Sub-type            |
+| Field | Type | Description |
+|-------|------|-------------|
+| **topics[0]** | `Symbol("quest")` | Event discriminator |
+| **topics[1]** | `Symbol("att_bind")` | Sub-type |
 
 **Data tuple**:
 
-| Index | Type         | Description                                                    |
-| ----- | ------------ | -------------------------------------------------------------- |
-| 0     | `u32`        | `quest_id`                                                     |
-| 1     | `BytesN<32>` | `key` — the ed25519 attester public key now bound to the quest |
+| Index | Type | Description |
+|-------|------|-------------|
+| 0 | `u32` | `quest_id` |
+| 1 | `BytesN<32>` | `key` — the ed25519 attester public key now bound to the quest |
 
 ### `quest` / `att_clear` (Quest Attester Cleared)
 
@@ -335,17 +335,17 @@ The admin removed a quest's bound key with `clear_quest_attester(quest_id)`; the
 falls back to the global allowlist. Clearing a quest with no binding is a no-op and emits
 nothing.
 
-| Field         | Type                  | Description         |
-| ------------- | --------------------- | ------------------- |
-| **topics[0]** | `Symbol("quest")`     | Event discriminator |
-| **topics[1]** | `Symbol("att_clear")` | Sub-type            |
+| Field | Type | Description |
+|-------|------|-------------|
+| **topics[0]** | `Symbol("quest")` | Event discriminator |
+| **topics[1]** | `Symbol("att_clear")` | Sub-type |
 
 **Data tuple**:
 
-| Index | Type         | Description                              |
-| ----- | ------------ | ---------------------------------------- |
-| 0     | `u32`        | `quest_id`                               |
-| 1     | `BytesN<32>` | `key` — the key that was bound until now |
+| Index | Type | Description |
+|-------|------|-------------|
+| 0 | `u32` | `quest_id` |
+| 1 | `BytesN<32>` | `key` — the key that was bound until now |
 
 **Contract source**: `quest_registry/src/lib.rs` → `fn set_quest_attester()` / `fn clear_quest_attester()`
 
@@ -365,17 +365,17 @@ Emitted whenever a player's consecutive-week streak is updated (after a quest
 award bumps it). A run that lapses without a new award emits nothing; see
 [`Streak`](#streak) for how `get_streak` reports it.
 
-| Field         | Type               | Description                   |
-| ------------- | ------------------ | ----------------------------- |
-| **topics[0]** | `Symbol("streak")` | Event discriminator           |
-| **topics[1]** | `Address`          | `player` — the streak subject |
+| Field | Type | Description |
+|-------|------|-------------|
+| **topics[0]** | `Symbol("streak")` | Event discriminator |
+| **topics[1]** | `Address` | `player` — the streak subject |
 
 **Data tuple**:
 
-| Index | Type  | Description                              |
-| ----- | ----- | ---------------------------------------- |
-| 0     | `u32` | `weeks` — the new consecutive-week count |
-| 1     | `u32` | `best` — the all-time high               |
+| Index | Type | Description |
+|-------|------|-------------|
+| 0 | `u32` | `weeks` — the new consecutive-week count |
+| 1 | `u32` | `best` — the all-time high |
 
 **Contract source**: `quest_registry/src/lib.rs` → `fn bump_streak()`
 
@@ -390,17 +390,17 @@ The admin set an attester key's daily Earned-XP budget with
 `set_attester_budget(key, budget)`; `0` removes the budget (unlimited). See
 [`AttesterUsage`](#attesterusage-get_attester_usage).
 
-| Field         | Type                | Description         |
-| ------------- | ------------------- | ------------------- |
+| Field | Type | Description |
+|-------|------|-------------|
 | **topics[0]** | `Symbol("att_key")` | Event discriminator |
-| **topics[1]** | `Symbol("budget")`  | Sub-type            |
+| **topics[1]** | `Symbol("budget")` | Sub-type |
 
 **Data tuple**:
 
-| Index | Type         | Description                                                          |
-| ----- | ------------ | -------------------------------------------------------------------- |
-| 0     | `BytesN<32>` | `key` — the ed25519 attester public key                              |
-| 1     | `u64`        | `budget` — Earned XP the key may award per UTC day (`0` = unlimited) |
+| Index | Type | Description |
+|-------|------|-------------|
+| 0 | `BytesN<32>` | `key` — the ed25519 attester public key |
+| 1 | `u64` | `budget` — Earned XP the key may award per UTC day (`0` = unlimited) |
 
 ### `att_key` / `near_cap` (Attester Budget 80%)
 
@@ -409,18 +409,18 @@ more. Only the award that crosses the line emits it (so once per key per day, un
 budget is raised above the usage again), letting monitoring alert before awards start
 reverting with `AttesterBudgetExceeded` (#7). Keys without a budget never emit it.
 
-| Field         | Type                 | Description         |
-| ------------- | -------------------- | ------------------- |
-| **topics[0]** | `Symbol("att_key")`  | Event discriminator |
-| **topics[1]** | `Symbol("near_cap")` | Sub-type            |
+| Field | Type | Description |
+|-------|------|-------------|
+| **topics[0]** | `Symbol("att_key")` | Event discriminator |
+| **topics[1]** | `Symbol("near_cap")` | Sub-type |
 
 **Data tuple**:
 
-| Index | Type         | Description                                                        |
-| ----- | ------------ | ------------------------------------------------------------------ |
-| 0     | `BytesN<32>` | `key` — the attester public key                                    |
-| 1     | `u64`        | `used` — Earned XP the key has awarded today, including this award |
-| 2     | `u64`        | `budget` — the key's daily budget                                  |
+| Index | Type | Description |
+|-------|------|-------------|
+| 0 | `BytesN<32>` | `key` — the attester public key |
+| 1 | `u64` | `used` — Earned XP the key has awarded today, including this award |
+| 2 | `u64` | `budget` — the key's daily budget |
 
 **Contract source**: `quest_registry/src/lib.rs` → `fn set_attester_budget()` / `fn spend_attester_budget()`
 
@@ -445,17 +445,17 @@ old handle is announced with `handle` / `released` in the same transaction,
 immediately before this event. Re-claiming the handle the wallet already holds
 changes nothing and emits no event.
 
-| Field         | Type                | Description         |
-| ------------- | ------------------- | ------------------- |
-| **topics[0]** | `Symbol("handle")`  | Event discriminator |
-| **topics[1]** | `Symbol("claimed")` | Sub-type            |
+| Field | Type | Description |
+|-------|------|-------------|
+| **topics[0]** | `Symbol("handle")` | Event discriminator |
+| **topics[1]** | `Symbol("claimed")` | Sub-type |
 
 **Data tuple**:
 
-| Index | Type      | Description                    |
-| ----- | --------- | ------------------------------ |
-| 0     | `Address` | `caller` — the claiming wallet |
-| 1     | `Symbol`  | `handle` — the claimed handle  |
+| Index | Type | Description |
+|-------|------|-------------|
+| 0 | `Address` | `caller` — the claiming wallet |
+| 1 | `Symbol` | `handle` — the claimed handle |
 
 ### `handle` / `released`
 
@@ -466,18 +466,18 @@ Either way the handle no longer resolves and enters a 30-day cooldown
 `claim()` by anyone else reverts with `HandleCoolingDown` (#9). From `until` on,
 anyone may claim it.
 
-| Field         | Type                 | Description         |
-| ------------- | -------------------- | ------------------- |
-| **topics[0]** | `Symbol("handle")`   | Event discriminator |
-| **topics[1]** | `Symbol("released")` | Sub-type            |
+| Field | Type | Description |
+|-------|------|-------------|
+| **topics[0]** | `Symbol("handle")` | Event discriminator |
+| **topics[1]** | `Symbol("released")` | Sub-type |
 
 **Data tuple**:
 
-| Index | Type      | Description                                                    |
-| ----- | --------- | -------------------------------------------------------------- |
-| 0     | `Address` | `caller` — the wallet that held the handle                     |
-| 1     | `Symbol`  | `handle` — the freed handle                                    |
-| 2     | `u64`     | `until` — ledger timestamp (unix seconds) the cooldown ends at |
+| Index | Type | Description |
+|-------|------|-------------|
+| 0 | `Address` | `caller` — the wallet that held the handle |
+| 1 | `Symbol` | `handle` — the freed handle |
+| 2 | `u64` | `until` — ledger timestamp (unix seconds) the cooldown ends at |
 
 Index 2 was appended when handle cooldowns landed; readers that only look at
 indexes 0–1 are unaffected. A registry deployed before then emits two fields and
@@ -491,18 +491,18 @@ emitted for it and it starts no cooldown. When `from` had a profile, `meta` / `c
 `meta` / `set` for `to` follow in the same transaction: the profile moves with
 the handle.
 
-| Field         | Type               | Description         |
-| ------------- | ------------------ | ------------------- |
+| Field | Type | Description |
+|-------|------|-------------|
 | **topics[0]** | `Symbol("handle")` | Event discriminator |
-| **topics[1]** | `Symbol("moved")`  | Sub-type            |
+| **topics[1]** | `Symbol("moved")` | Sub-type |
 
 **Data tuple**:
 
-| Index | Type      | Description                                               |
-| ----- | --------- | --------------------------------------------------------- |
-| 0     | `Address` | `from` — the wallet that held the handle (now holds none) |
-| 1     | `Address` | `to` — the wallet that holds it now                       |
-| 2     | `Symbol`  | `handle` — the moved handle                               |
+| Index | Type | Description |
+|-------|------|-------------|
+| 0 | `Address` | `from` — the wallet that held the handle (now holds none) |
+| 1 | `Address` | `to` — the wallet that holds it now |
+| 2 | `Symbol` | `handle` — the moved handle |
 
 `transfer_handle(from, to)` needs `from`'s and `to`'s authorization for that exact
 call, so a handle can't be pushed onto an address that didn't accept it. It
@@ -554,18 +554,18 @@ Also emitted for `to` by `transfer_handle()` when the profile moves with the
 handle (right after `meta` / `cleared` for `from`). The stored shape is
 [`ProfileMeta`](#profilemeta-get_meta).
 
-| Field         | Type             | Description         |
-| ------------- | ---------------- | ------------------- |
+| Field | Type | Description |
+|-------|------|-------------|
 | **topics[0]** | `Symbol("meta")` | Event discriminator |
-| **topics[1]** | `Symbol("set")`  | Sub-type            |
+| **topics[1]** | `Symbol("set")` | Sub-type |
 
 **Data tuple**:
 
-| Index | Type      | Description                                             |
-| ----- | --------- | ------------------------------------------------------- |
-| 0     | `Address` | `caller` — the handle holder (`to` for a transfer)      |
-| 1     | `u64`     | `avatar` — the packed face (layout under `ProfileMeta`) |
-| 2     | `String`  | `bio` — plain text, may be empty                        |
+| Index | Type | Description |
+|-------|------|-------------|
+| 0 | `Address` | `caller` — the handle holder (`to` for a transfer) |
+| 1 | `u64` | `avatar` — the packed face (layout under `ProfileMeta`) |
+| 2 | `String` | `bio` — plain text, may be empty |
 
 ### `meta` / `cleared`
 
@@ -575,15 +575,15 @@ An address's profile is deleted because it gave up its handle: `release()`
 Emitted only when there was a profile to delete. Meta is keyed by address, so
 whoever claims a freed handle next starts with none.
 
-| Field         | Type                | Description         |
-| ------------- | ------------------- | ------------------- |
-| **topics[0]** | `Symbol("meta")`    | Event discriminator |
-| **topics[1]** | `Symbol("cleared")` | Sub-type            |
+| Field | Type | Description |
+|-------|------|-------------|
+| **topics[0]** | `Symbol("meta")` | Event discriminator |
+| **topics[1]** | `Symbol("cleared")` | Sub-type |
 
 **Data**:
 
-| Type      | Description                           |
-| --------- | ------------------------------------- |
+| Type | Description |
+|------|-------------|
 | `Address` | The address whose profile was deleted |
 
 An indexer keyed by address folds both in order: `set` replaces the profile,
@@ -618,15 +618,15 @@ An access gate is defined or replaced by the admin, with `create_gate` (one rule
 exists it marks a new definition: the gate's version (`get_gate_version`) goes up by one
 and unlocks made under the previous definition stop counting.
 
-| Field         | Type                | Description         |
-| ------------- | ------------------- | ------------------- |
-| **topics[0]** | `Symbol("gate")`    | Event discriminator |
-| **topics[1]** | `Symbol("created")` | Sub-type            |
+| Field | Type | Description |
+|-------|------|-------------|
+| **topics[0]** | `Symbol("gate")` | Event discriminator |
+| **topics[1]** | `Symbol("created")` | Sub-type |
 
 **Data**:
 
-| Type  | Description        |
-| ----- | ------------------ |
+| Type | Description |
+|------|-------------|
 | `u32` | `id` — the gate ID |
 
 ### `unlocked`
@@ -636,15 +636,15 @@ definition the gate had at that moment: a later `gate`/`created` for the same `i
 supersedes it (the user must `unlock` again), and it doesn't count while the gate is
 inactive. See `UnlockRecord` below for the stored record.
 
-| Field         | Type                 | Description                      |
-| ------------- | -------------------- | -------------------------------- |
-| **topics[0]** | `Symbol("unlocked")` | Event discriminator              |
-| **topics[1]** | `Address`            | `caller` — the user who unlocked |
+| Field | Type | Description |
+|-------|------|-------------|
+| **topics[0]** | `Symbol("unlocked")` | Event discriminator |
+| **topics[1]** | `Address` | `caller` — the user who unlocked |
 
 **Data**:
 
-| Type  | Description        |
-| ----- | ------------------ |
+| Type | Description |
+|------|-------------|
 | `u32` | `id` — the gate ID |
 
 **Contract source**: `gate/src/lib.rs` → `fn put_gate()` (via `create_gate()` / `create_gate_rules()`) / `fn unlock()`
@@ -668,16 +668,16 @@ env.events().publish(
 A direct USDC transfer from one wallet to another, with a social
 "thank-you" event for the feed.
 
-| Field         | Type               | Description         |
-| ------------- | ------------------ | ------------------- |
+| Field | Type | Description |
+|-------|------|-------------|
 | **topics[0]** | `Symbol("tipped")` | Event discriminator |
-| **topics[1]** | `Address`          | `from` — sender     |
-| **topics[2]** | `Address`          | `to` — receiver     |
+| **topics[1]** | `Address` | `from` — sender |
+| **topics[2]** | `Address` | `to` — receiver |
 
 **Data**:
 
-| Type   | Description                         |
-| ------ | ----------------------------------- |
+| Type | Description |
+|------|-------------|
 | `i128` | `amount` — USDC stroops transferred |
 
 > **Reading it**: RPC `getEvents` topic filters only match events with exactly as many
@@ -699,17 +699,17 @@ A direct USDC transfer from one wallet to another, with a social
 
 An admin registers or updates a reward row in the unlock table.
 
-| Field         | Type                | Description                     |
-| ------------- | ------------------- | ------------------------------- |
-| **topics[0]** | `Symbol("rwd_set")` | Event discriminator             |
-| **topics[1]** | `u32`               | `reward_id` — the reward row ID |
+| Field | Type | Description |
+|-------|------|-------------|
+| **topics[0]** | `Symbol("rwd_set")` | Event discriminator |
+| **topics[1]** | `u32` | `reward_id` — the reward row ID |
 
 **Data tuple**:
 
-| Index | Type   | Description                      |
-| ----- | ------ | -------------------------------- |
-| 0     | `u64`  | `threshold` — Earned XP required |
-| 1     | `i128` | `amount` — USDC stroops payout   |
+| Index | Type | Description |
+|-------|------|-------------|
+| 0 | `u64` | `threshold` — Earned XP required |
+| 1 | `i128` | `amount` — USDC stroops payout |
 
 `add_reward` reverts, and emits nothing, for a zero `threshold` (`InvalidThreshold` #15)
 or, while a daily cap is set, an `amount` above the cap (`AmountExceedsCap` #16). So every
@@ -722,18 +722,18 @@ cap can't be lowered below an active row's `amount` either (`set_daily_cap` reve
 A user claims a registered reward. Note: the payout amount is the
 **admin-stored** amount — the caller can never dictate it (anti-drain).
 
-| Field         | Type               | Description         |
-| ------------- | ------------------ | ------------------- |
+| Field | Type | Description |
+|-------|------|-------------|
 | **topics[0]** | `Symbol("reward")` | Event discriminator |
-| **topics[1]** | `Address`          | `to` — the claimant |
+| **topics[1]** | `Address` | `to` — the claimant |
 
 **Data tuple**:
 
-| Index | Type   | Description                                                       |
-| ----- | ------ | ----------------------------------------------------------------- |
-| 0     | `u32`  | `reward_id`                                                       |
-| 1     | `i128` | `amount` — USDC stroops paid                                      |
-| 2     | `u32`  | `claims` — claims paid for this reward so far, including this one |
+| Index | Type | Description |
+|-------|------|-------------|
+| 0 | `u32` | `reward_id` |
+| 1 | `i128` | `amount` — USDC stroops paid |
+| 2 | `u32` | `claims` — claims paid for this reward so far, including this one |
 
 Index 2 was appended when fixed-size pools landed; readers that only look at
 indexes 0–1 are unaffected.
@@ -744,15 +744,15 @@ An admin caps how many wallets can claim a reward (a fixed-size bounty pool), or
 removes the cap with `0`. Once `claims` reaches the cap, `claim_reward` reverts with
 `RewardExhausted` (#13).
 
-| Field         | Type                | Description                     |
-| ------------- | ------------------- | ------------------------------- |
-| **topics[0]** | `Symbol("rwd_cap")` | Event discriminator             |
-| **topics[1]** | `u32`               | `reward_id` — the reward row ID |
+| Field | Type | Description |
+|-------|------|-------------|
+| **topics[0]** | `Symbol("rwd_cap")` | Event discriminator |
+| **topics[1]** | `u32` | `reward_id` — the reward row ID |
 
 **Data**:
 
-| Type  | Description                                  |
-| ----- | -------------------------------------------- |
+| Type | Description |
+|------|-------------|
 | `u32` | `max_claims` — the new cap (`0` = unlimited) |
 
 ### `rwd_strk` (Reward Streak Requirement Set)
@@ -767,15 +767,15 @@ QuestRegistry call. A non-zero minimum reverts with `QuestRegistryNotSet` (#19) 
 `set_quest_registry` has run; the minimum lives under its own key, so stored `RewardEntry`
 rows keep their shape.
 
-| Field         | Type                 | Description                     |
-| ------------- | -------------------- | ------------------------------- |
-| **topics[0]** | `Symbol("rwd_strk")` | Event discriminator             |
-| **topics[1]** | `u32`                | `reward_id` — the reward row ID |
+| Field | Type | Description |
+|-------|------|-------------|
+| **topics[0]** | `Symbol("rwd_strk")` | Event discriminator |
+| **topics[1]** | `u32` | `reward_id` — the reward row ID |
 
 **Data**:
 
-| Type  | Description                                         |
-| ----- | --------------------------------------------------- |
+| Type | Description |
+|------|-------------|
 | `u32` | `weeks` — the live streak now required (`0` = none) |
 
 **Contract source**: `rewards/src/lib.rs` → `fn tip()` / `fn add_reward()` / `fn set_reward_supply()` / `fn set_reward_min_streak()` / `fn claim_reward()`
@@ -808,25 +808,25 @@ env.events().publish(
 
 Quick-reference table of all event discriminators and their sub-types.
 
-| Discriminator | Sub-type                                                | Contract      | Page                                         |
-| ------------- | ------------------------------------------------------- | ------------- | -------------------------------------------- |
-| `att_set`     | _(none)_                                                | Reputation    | [↑](#att_set-attestation-set)                |
-| `xp`          | _(none)_                                                | Reputation    | [↑](#xp-earned-track-total)                  |
-| `social`      | _(none)_                                                | Reputation    | [↑](#social-social-track-total)              |
-| `attester`    | `add`, `rm`                                             | Reputation    | [↑](#attester-allowlist-change)              |
-| `vouch`       | `minted`, `claimed`, `slashed`                          | Reputation    | [↑](#vouch-async-half-card-lifecycle)        |
-| `quest`       | `created`, `awarded`, `period`, `att_bind`, `att_clear` | QuestRegistry | [↑](#2-questregistry-contract)               |
-| `streak`      | _(none)_                                                | QuestRegistry | [↑](#streak-weekly-retention)                |
-| `att_key`     | `budget`, `near_cap`                                    | QuestRegistry | [↑](#att_key--budget-attester-budget-set)    |
-| `handle`      | `claimed`, `released`, `moved`                          | Registry      | [↑](#3-registry-contract-handles)            |
-| `meta`        | `set`, `cleared`                                        | Registry      | [↑](#meta--set)                              |
-| `gate`        | `created`                                               | Gate          | [↑](#4-gate-contract)                        |
-| `unlocked`    | _(none)_                                                | Gate          | [↑](#unlocked)                               |
-| `tipped`      | _(none)_                                                | Rewards       | [↑](#tipped)                                 |
-| `rwd_set`     | _(none)_                                                | Rewards       | [↑](#rwd_set-reward-registeredupdated)       |
-| `rwd_cap`     | _(none)_                                                | Rewards       | [↑](#rwd_cap-reward-supply-set)              |
-| `rwd_strk`    | _(none)_                                                | Rewards       | [↑](#rwd_strk-reward-streak-requirement-set) |
-| `reward`      | _(none)_                                                | Rewards       | [↑](#reward-reward-claimed)                  |
+| Discriminator | Sub-type | Contract | Page |
+|---------------|----------|----------|------|
+| `att_set` | *(none)* | Reputation | [↑](#att_set-attestation-set) |
+| `xp` | *(none)* | Reputation | [↑](#xp-earned-track-total) |
+| `social` | *(none)* | Reputation | [↑](#social-social-track-total) |
+| `attester` | `add`, `rm` | Reputation | [↑](#attester-allowlist-change) |
+| `vouch` | `minted`, `claimed`, `slashed` | Reputation | [↑](#vouch-async-half-card-lifecycle) |
+| `quest` | `created`, `awarded`, `period`, `att_bind`, `att_clear` | QuestRegistry | [↑](#2-questregistry-contract) |
+| `streak` | *(none)* | QuestRegistry | [↑](#streak-weekly-retention) |
+| `att_key` | `budget`, `near_cap` | QuestRegistry | [↑](#att_key--budget-attester-budget-set) |
+| `handle` | `claimed`, `released`, `moved` | Registry | [↑](#3-registry-contract-handles) |
+| `meta` | `set`, `cleared` | Registry | [↑](#meta--set) |
+| `gate` | `created` | Gate | [↑](#4-gate-contract) |
+| `unlocked` | *(none)* | Gate | [↑](#unlocked) |
+| `tipped` | *(none)* | Rewards | [↑](#tipped) |
+| `rwd_set` | *(none)* | Rewards | [↑](#rwd_set-reward-registeredupdated) |
+| `rwd_cap` | *(none)* | Rewards | [↑](#rwd_cap-reward-supply-set) |
+| `rwd_strk` | *(none)* | Rewards | [↑](#rwd_strk-reward-streak-requirement-set) |
+| `reward` | *(none)* | Rewards | [↑](#reward-reward-claimed) |
 
 ---
 
@@ -923,13 +923,13 @@ address instead:
 
 **Claim message** — the XDR encoding of this `ScVal::Vec`:
 
-| Index | ScVal        | Value                                                               |
-| ----- | ------------ | ------------------------------------------------------------------- |
-| 0     | `Symbol`     | `"alvinmunk_vouch_claim"` — domain tag (`CLAIM_DOMAIN`)             |
-| 1     | `Bytes` (32) | network id = `sha256(network passphrase)`, as the ledger reports it |
-| 2     | `Address`    | the Reputation contract being called                                |
-| 3     | `U64`        | `vouch_id`                                                          |
-| 4     | `Address`    | `claimer` (a `G…` account or a `C…` passkey smart wallet)           |
+| Index | ScVal | Value |
+|-------|-------|-------|
+| 0 | `Symbol` | `"alvinmunk_vouch_claim"` — domain tag (`CLAIM_DOMAIN`) |
+| 1 | `Bytes` (32) | network id = `sha256(network passphrase)`, as the ledger reports it |
+| 2 | `Address` | the Reputation contract being called |
+| 3 | `U64` | `vouch_id` |
+| 4 | `Address` | `claimer` (a `G…` account or a `C…` passkey smart wallet) |
 
 Each element closes one replay: a signature seen in a pending claim is useless for another
 claimer (index 4), another card, even one minted with the same key (3), another deployment
@@ -981,11 +981,11 @@ shared with single mints), the starter grant (once), one `VOUCH_STAKE` escrow, t
 `vouch` / `minted` events. Each card claims on its own with `claim_vouch_signed` and the
 seed in its own link, so an indexer or the feed cannot tell a batch from single mints.
 
-| Error                                                   | Code           | When                                          |
-| ------------------------------------------------------- | -------------- | --------------------------------------------- |
-| `LengthMismatch`                                        | #14            | `claim_keys` and `notes` differ in length     |
-| `BadBatchSize`                                          | #15            | no cards, or more than `MAX_BATCH_VOUCH` (10) |
-| `NoteTooLong` / `DailyCapReached` / `InsufficientStake` | #12 / #9 / #11 | any one card fails its single-mint check      |
+| Error | Code | When |
+|-------|------|------|
+| `LengthMismatch` | #14 | `claim_keys` and `notes` differ in length |
+| `BadBatchSize` | #15 | no cards, or more than `MAX_BATCH_VOUCH` (10) |
+| `NoteTooLong` / `DailyCapReached` / `InsufficientStake` | #12 / #9 / #11 | any one card fails its single-mint check |
 
 Any failure reverts the **whole** batch — no card is minted, no stake escrowed, no daily
 slot used, no event emitted. So 19 mints earlier in the day plus a batch of 2 reverts with
@@ -1019,10 +1019,10 @@ contract, a generated binding). New per-address data ships as its own view inste
 
 `get_counts(addr) -> (u32, u32)` returns `(vouched_by, backed)`:
 
-| Index | Type  | Description                                           |
-| ----- | ----- | ----------------------------------------------------- |
-| 0     | `u32` | `vouched_by` — distinct people who vouched for `addr` |
-| 1     | `u32` | `backed` — distinct people `addr` vouched for         |
+| Index | Type | Description |
+|-------|------|-------------|
+| 0 | `u32` | `vouched_by` — distinct people who vouched for `addr` |
+| 1 | `u32` | `backed` — distinct people `addr` vouched for |
 
 Both are persistent counters (`DataKey::VouchedBy(addr)` / `DataKey::Backed(addr)`) that
 a claim (`claim_vouch_signed` or `claim_vouch`) increments only on a **fresh first pair** —
@@ -1120,15 +1120,15 @@ character (C0, DEL, C1), U+2028/U+2029, or a bidi embedding/override/isolate mar
 (U+202A–U+202E, U+2066–U+2069), and `BadAvatar` (#7) for any `avatar` outside this
 layout — one byte per field, every unlisted byte zero:
 
-| Byte | Face (`byte 7 = 0`)                   | Kit (`byte 7 = 1`)    |
-| ---- | ------------------------------------- | --------------------- |
-| 7    | kind `0`                              | kind `1`              |
-| 5    | —                                     | `skin` 1–6            |
-| 4    | —                                     | `hair` 1–10           |
-| 3    | —                                     | `eyes` 1–10           |
-| 2    | —                                     | `mouth` 1–9           |
-| 1    | —                                     | `acc` 0–13 (0 = none) |
-| 0    | face number 1–5 (`face-01`…`face-05`) | `bg` 0–5 (0 = none)   |
+| Byte | Face (`byte 7 = 0`) | Kit (`byte 7 = 1`) |
+|------|---------------------|--------------------|
+| 7 | kind `0` | kind `1` |
+| 5 | — | `skin` 1–6 |
+| 4 | — | `hair` 1–10 |
+| 3 | — | `eyes` 1–10 |
+| 2 | — | `mouth` 1–9 |
+| 1 | — | `acc` 0–13 (0 = none) |
+| 0 | face number 1–5 (`face-01`…`face-05`) | `bg` 0–5 (0 = none) |
 
 So `face-03` is `0x0000000000000003` and the kit skin 3 / hair 7 / eyes 5 / mouth 4 /
 acc 9 / bg 2 is `0x0100030705040902`. The ranges are the portrait assets the web app
@@ -1199,10 +1199,10 @@ one-shot, and the app and attester read a failed `get_quest_periods` as "all one
 `get_quest_attester(quest_id) -> Option<BytesN<32>>` returns the ed25519 key bound to a
 quest, or `None` when the quest uses the global allowlist. Admin functions:
 
-| Function                            | Effect                                                                                                                                   |
-| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Function | Effect |
+|----------|--------|
 | `set_quest_attester(quest_id, key)` | Bind the quest to `key`, replacing any previous key. Reverts with `QuestNotFound` (#4) for an unknown quest. Emits `quest` / `att_bind`. |
-| `clear_quest_attester(quest_id)`    | Remove the binding. Emits `quest` / `att_clear` when one existed.                                                                        |
+| `clear_quest_attester(quest_id)` | Remove the binding. Emits `quest` / `att_clear` when one existed. |
 
 `award_quest` then authorizes the signing key like this:
 
@@ -1227,14 +1227,14 @@ deployment.
 
 **Payload** — the XDR encoding of this `ScVal::Vec`:
 
-| Index | ScVal        | Value                                                                               |
-| ----- | ------------ | ----------------------------------------------------------------------------------- |
-| 0     | `Symbol`     | `"alvinmunk_award_quest_v1"` — domain tag (`AWARD_DOMAIN`)                          |
-| 1     | `Bytes` (32) | network id = `sha256(network passphrase)`, as the ledger reports it                 |
-| 2     | `Address`    | the QuestRegistry contract being called                                             |
-| 3     | `U32`        | `quest_id`                                                                          |
-| 4     | `Address`    | `recipient` (a `G…` account or a `C…` passkey smart wallet)                         |
-| 5     | `U64`        | `expires_at` — unix seconds, the last ledger timestamp the signature is accepted at |
+| Index | ScVal | Value |
+|-------|-------|-------|
+| 0 | `Symbol` | `"alvinmunk_award_quest_v1"` — domain tag (`AWARD_DOMAIN`) |
+| 1 | `Bytes` (32) | network id = `sha256(network passphrase)`, as the ledger reports it |
+| 2 | `Address` | the QuestRegistry contract being called |
+| 3 | `U32` | `quest_id` |
+| 4 | `Address` | `recipient` (a `G…` account or a `C…` passkey smart wallet) |
+| 5 | `U64` | `expires_at` — unix seconds, the last ledger timestamp the signature is accepted at |
 
 Each element closes one replay: the signature is useless on another network (index 1),
 against another deployment (2), for another quest (3) or wallet (4), or after its expiry
@@ -1259,13 +1259,13 @@ For a `C…` recipient (32 × `0x33`) index 4 is
 **Repeatable quests** sign a vec of 8 instead, tagged `"alvinmunk_award_quest_v2"`
 (`AWARD_DOMAIN_V2`), with the period and its index inserted before the expiry:
 
-| Index | ScVal    | Value                                                              |
-| ----- | -------- | ------------------------------------------------------------------ |
-| 0     | `Symbol` | `"alvinmunk_award_quest_v2"`                                       |
-| 1–4   |          | as above: network id, contract, `quest_id`, `recipient`            |
-| 5     | `U64`    | `period_secs` — the quest's repeat period                          |
-| 6     | `U64`    | `epoch` — `ledger timestamp / period_secs` when `award_quest` runs |
-| 7     | `U64`    | `expires_at`                                                       |
+| Index | ScVal | Value |
+|-------|-------|-------|
+| 0 | `Symbol` | `"alvinmunk_award_quest_v2"` |
+| 1–4 | | as above: network id, contract, `quest_id`, `recipient` |
+| 5 | `U64` | `period_secs` — the quest's repeat period |
+| 6 | `U64` | `epoch` — `ledger timestamp / period_secs` when `award_quest` runs |
+| 7 | `U64` | `expires_at` |
 
 `award_quest` rebuilds it with the epoch of the ledger it runs in, so a signature issued in
 one period never verifies in the next, and one issued before the period changed never
@@ -1308,7 +1308,8 @@ traps in the host with `Error(Crypto, InvalidInput)`, not a contract code. Then 
 (#5) and `AttesterBudgetExceeded` (#7). A rejected award records no claim. `InvalidPeriod`
 (#9) comes only from `set_quest_period`.
 
-**Migration.** Before issue #142 the payload was `[quest_id, recipient, contract]` (a vec of 3) and `award_quest` took four arguments. Signatures over that payload never verify on the
+**Migration.** Before issue #142 the payload was `[quest_id, recipient, contract]` (a vec of
+3) and `award_quest` took four arguments. Signatures over that payload never verify on the
 upgraded contract, so grants issued but not redeemed before the upgrade are void. Upgrade
 the contract first, then deploy the web app, whose attester and `award_quest` call both
 need the new code.
@@ -1338,10 +1339,10 @@ epoch. 1970-01-01 was a Thursday, so every week runs **Thursday 00:00:00 to Wedn
 
 `get_week_bounds() -> (u64, u64)` returns the current week as UTC unix timestamps:
 
-| Index | Type  | Description                                                                                   |
-| ----- | ----- | --------------------------------------------------------------------------------------------- |
-| 0     | `u64` | `start` — the week's first second (`get_week() * WEEK_SECS`, a Thursday 00:00:00)             |
-| 1     | `u64` | `end` — the week's last second, **inclusive** (`start + WEEK_SECS - 1`, a Wednesday 23:59:59) |
+| Index | Type | Description |
+|-------|------|-------------|
+| 0 | `u64` | `start` — the week's first second (`get_week() * WEEK_SECS`, a Thursday 00:00:00) |
+| 1 | `u64` | `end` — the week's last second, **inclusive** (`start + WEEK_SECS - 1`, a Wednesday 23:59:59) |
 
 The next week starts at `end + 1`, and a live run with no completion yet this week lapses
 then. The bounds follow the ledger time the read is simulated at, which trails wall-clock
@@ -1609,16 +1610,16 @@ test.
 
 ## Versioning & Migration Policy
 
-| Event      | Schema Version | Frozen Since | Notes                                                                                                 |
-| ---------- | -------------- | ------------ | ----------------------------------------------------------------------------------------------------- |
-| `att_set`  | 1              | Yellow belt  | Versioned — add fields by bumping to v2                                                               |
-| All others | N/A            | Yellow belt  | Not explicitly versioned; add new fields by appending to the data tuple or introducing a new sub-type |
+| Event | Schema Version | Frozen Since | Notes |
+|-------|---------------|--------------|-------|
+| `att_set` | 1 | Yellow belt | Versioned — add fields by bumping to v2 |
+| All others | N/A | Yellow belt | Not explicitly versioned; add new fields by appending to the data tuple or introducing a new sub-type |
 
 **Rules:**
-
 1. **Never** change the topic tuple shape — indexers key on topics.
 2. **Never** reorder existing fields in the data tuple — append only.
 3. For `att_set`: increment `schema_version` if the data tuple gains new
    fields. Old indexers read the version first and can skip unknown formats.
 4. Introduce new event discriminators (e.g. `att_revoke`) over overloading
    existing ones with incompatible data.
+

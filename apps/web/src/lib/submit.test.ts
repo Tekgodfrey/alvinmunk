@@ -78,11 +78,7 @@ describe('submitSigned', () => {
   });
 
   it('ERROR without a readable result: still a plain sentence, never an XDR dump', async () => {
-    server.sendTransaction.mockResolvedValue({
-      status: 'ERROR',
-      hash: 'H7',
-      errorResult: { code: 'x' },
-    });
+    server.sendTransaction.mockResolvedValue({ status: 'ERROR', hash: 'H7', errorResult: { code: 'x' } });
     const err = await submitSigned(tx, 'payment').catch((e: unknown) => e);
     expect(err).toMatchObject({
       code: 'unknown',

@@ -99,10 +99,7 @@ export function MoneyFlowConfirm({
             <p className="font-medium">
               {request.handle ? `@${request.handle}` : tip ? t('moneyFlowConfirm.noHandle') : null}
             </p>
-            <p
-              className="break-all font-mono text-xs text-muted-foreground"
-              data-testid="money-confirm-address"
-            >
+            <p className="break-all font-mono text-xs text-muted-foreground" data-testid="money-confirm-address">
               {request.to}
             </p>
           </div>
@@ -133,9 +130,7 @@ export function MoneyFlowConfirm({
                   checked={ack}
                   onChange={(e) => setAck(e.target.checked)}
                 />
-                <span className="text-sm text-muted-foreground">
-                  {t('moneyFlowConfirm.firstTipCheckbox')}
-                </span>
+                <span className="text-sm text-muted-foreground">{t('moneyFlowConfirm.firstTipCheckbox')}</span>
               </label>
             )}
             <div className="flex gap-2">

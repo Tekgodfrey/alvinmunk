@@ -152,26 +152,22 @@ describe('Navbar', () => {
     const mobile = await openPanel();
 
     // Tapping the account chip opens its menu instead of unmounting the whole panel.
-    await act(async () =>
-      mobile.querySelector<HTMLButtonElement>('button[aria-haspopup="menu"]')!.click(),
-    );
+    await act(async () => mobile.querySelector<HTMLButtonElement>('button[aria-haspopup="menu"]')!.click());
     expect(panel()).not.toBeNull();
-    const disconnect = Array.from(
-      mobile.querySelectorAll<HTMLButtonElement>('[role="menuitem"]'),
-    ).find((el) => el.textContent?.includes('Disconnect'));
+    const disconnect = Array.from(mobile.querySelectorAll<HTMLButtonElement>('[role="menuitem"]')).find(
+      (el) => el.textContent?.includes('Disconnect'),
+    );
     expect(disconnect).toBeDefined();
 
     await act(async () => disconnect!.click());
     expect(wallet.disconnect).toHaveBeenCalledTimes(1);
   });
 
-  it("closes the panel when the account menu's View profile link is followed", async () => {
+  it('closes the panel when the account menu\'s View profile link is followed', async () => {
     wallet.profile = { handle: 'damian', address: 'G'.padEnd(56, 'A'), createdAt: 0 };
     await mount();
     const mobile = await openPanel();
-    await act(async () =>
-      mobile.querySelector<HTMLButtonElement>('button[aria-haspopup="menu"]')!.click(),
-    );
+    await act(async () => mobile.querySelector<HTMLButtonElement>('button[aria-haspopup="menu"]')!.click());
 
     await act(async () => mobile.querySelector<HTMLAnchorElement>('a[href="/u/damian"]')!.click());
     expect(panel()).toBeNull();

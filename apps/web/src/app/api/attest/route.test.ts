@@ -16,16 +16,7 @@
  *     or down is a retryable 5xx, never a 422 (which says the evidence is wrong).
  */
 import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from 'vitest';
-import {
-  Address,
-  Keypair,
-  Networks,
-  StrKey,
-  nativeToScVal,
-  rpc,
-  scValToNative,
-  xdr,
-} from '@stellar/stellar-sdk';
+import { Address, Keypair, Networks, StrKey, nativeToScVal, rpc, scValToNative, xdr } from '@stellar/stellar-sdk';
 import { QUEST_SIG_TTL_SECS, WEEK_SECS, questPayload, questWindow } from '../../../lib/attest';
 
 const RECIPIENT = Keypair.random().publicKey();
@@ -94,9 +85,8 @@ afterEach(() => {
 /** The contract functions simulated so far, in call order. */
 const methods = () =>
   simulateSpy.mock.calls.map(([tx]) => {
-    const op = (
-      tx as unknown as { operations: { func: { invokeContract(): { functionName(): Buffer } } }[] }
-    ).operations[0];
+    const op = (tx as unknown as { operations: { func: { invokeContract(): { functionName(): Buffer } } }[] })
+      .operations[0];
     return op.func.invokeContract().functionName().toString();
   });
 
@@ -215,10 +205,7 @@ describe('POST /api/attest referral_tx via the registry invite binding', () => {
       .mockResolvedValueOnce(open())
       .mockResolvedValueOnce(score(5))
       .mockResolvedValueOnce(address(RECIPIENT));
-    const res = await attest({
-      questId: 2,
-      evidence: { type: 'referral_tx', ref: PASSKEY_REFERRED },
-    });
+    const res = await attest({ questId: 2, evidence: { type: 'referral_tx', ref: PASSKEY_REFERRED } });
     expect(res.status).toBe(200);
     expect(((await res.json()) as { sig: string }).sig).toBeTruthy();
     expect(methods()).toEqual(['get_quest_periods', 'is_completed', 'get_score', 'invited_by']);
@@ -245,10 +232,7 @@ describe('POST /api/attest referral_tx via the registry invite binding', () => {
       .mockResolvedValueOnce(open())
       .mockResolvedValueOnce(score(0))
       .mockResolvedValueOnce(address(RECIPIENT));
-    const res = await attest({
-      questId: 2,
-      evidence: { type: 'referral_tx', ref: PASSKEY_REFERRED },
-    });
+    const res = await attest({ questId: 2, evidence: { type: 'referral_tx', ref: PASSKEY_REFERRED } });
     expect(res.status).toBe(422);
     expect(await res.json()).toEqual({
       error: 'that wallet hasn’t done anything here yet — no referral credit',
@@ -265,9 +249,7 @@ describe('POST /api/attest referral_tx via the registry invite binding', () => {
       .mockResolvedValueOnce(open())
       .mockResolvedValueOnce(score(5))
       .mockResolvedValueOnce(
-        simError(
-          'HostError: Error(WasmVm, MissingValue) trying to invoke non-existent contract function',
-        ),
+        simError('HostError: Error(WasmVm, MissingValue) trying to invoke non-existent contract function'),
       );
     const res = await attest({ questId: 2, evidence: { type: 'referral_tx', ref: REFERRED } });
     expect(res.status).toBe(200);
@@ -444,9 +426,7 @@ describe('POST /api/attest — status codes (issue #180)', () => {
   });
 
   it('400 when recipient is not a G/C address', async () => {
-    const res = await POST(
-      rawRequest({ questId: 1, recipient: 'notanaddress' }, { ip: '1.2.3.4' }),
-    );
+    const res = await POST(rawRequest({ questId: 1, recipient: 'notanaddress' }, { ip: '1.2.3.4' }));
     expect(res.status).toBe(400);
   });
 
@@ -468,10 +448,7 @@ describe('POST /api/attest — status codes (issue #180)', () => {
   });
 
   it('422 when referral_tx ref is not a G or C address', async () => {
-    const res = await attest({
-      questId: 2,
-      evidence: { type: 'referral_tx', ref: 'NOTANADDRESS' },
-    });
+    const res = await attest({ questId: 2, evidence: { type: 'referral_tx', ref: 'NOTANADDRESS' } });
     expect(res.status).toBe(422);
     expect(await res.json()).toEqual({ error: 'ref must be a G or C address' });
   });
@@ -501,9 +478,7 @@ describe('POST /api/attest — status codes (issue #180)', () => {
     vi.resetModules();
     vi.stubEnv('QUEST_GITHUB_ID', '1');
     ({ POST } = (await import('./route')) as { POST: Post });
-    fetchSpy.mockResolvedValueOnce(
-      new Response(JSON.stringify({ merged: false }), { status: 200 }),
-    );
+    fetchSpy.mockResolvedValueOnce(new Response(JSON.stringify({ merged: false }), { status: 200 }));
     const res = await attest({ questId: 1, evidence: { type: 'github_pr', ref: 'owner/repo#42' } });
     expect(res.status).toBe(422);
     const body = (await res.json()) as { error: string };
@@ -661,10 +636,7 @@ describe('POST /api/attest — upstream failures (issue #173)', () => {
       async setup() {
         // One-shot, not completed yet (#156), then a wallet with a score and no registry binding: the
         // manageData marker decides.
-        simulateSpy
-          .mockResolvedValueOnce(oneShot())
-          .mockResolvedValueOnce(open())
-          .mockResolvedValueOnce(score(5));
+        simulateSpy.mockResolvedValueOnce(oneShot()).mockResolvedValueOnce(open()).mockResolvedValueOnce(score(5));
       },
       request: { questId: 2, evidence: { type: 'referral_tx', ref: REFERRED } },
     },
@@ -748,10 +720,7 @@ describe('POST /api/attest — upstream failures (issue #173)', () => {
 
   it('a Horizon outage does not hide that the referred wallet has no score yet', async () => {
     // judgeReferral decides on the score first: with none, Horizon's answer can't matter.
-    simulateSpy
-      .mockResolvedValueOnce(oneShot())
-      .mockResolvedValueOnce(open())
-      .mockResolvedValueOnce(score(0));
+    simulateSpy.mockResolvedValueOnce(oneShot()).mockResolvedValueOnce(open()).mockResolvedValueOnce(score(0));
     fetchSpy.mockRejectedValueOnce(new TypeError('fetch failed'));
     const res = await attest({ questId: 2, evidence: { type: 'referral_tx', ref: REFERRED } });
     expect(res.status).toBe(422);
@@ -786,9 +755,8 @@ describe('POST /api/attest already-completed quests (issue #156)', () => {
     // GitHub or other RPC call.
     expect(methods()).toEqual(['get_quest_periods', 'is_completed']);
     const [tx] = simulateSpy.mock.calls[1];
-    const call = (
-      tx as unknown as { operations: { func: { invokeContract(): { args(): unknown[] } } }[] }
-    ).operations[0].func.invokeContract();
+    const call = (tx as unknown as { operations: { func: { invokeContract(): { args(): unknown[] } } }[] })
+      .operations[0].func.invokeContract();
     expect(call.args().map((a) => scValToNative(a as never))).toEqual([2, RECIPIENT]);
     expect(fetchSpy).not.toHaveBeenCalled();
   });
@@ -861,10 +829,7 @@ describe('POST /api/attest repeatable quests (issue #154)', () => {
           : pr(merged),
       );
       simulateSpy.mockResolvedValueOnce(period(WEEK_SECS)).mockResolvedValueOnce(open());
-      const res = await attest({
-        questId: 1,
-        evidence: { type: 'github_pr', ref: 'owner/repo#7' },
-      });
+      const res = await attest({ questId: 1, evidence: { type: 'github_pr', ref: 'owner/repo#7' } });
       expect(res.status).toBe(422);
       expect(((await res.json()) as { error: string }).error).toMatch(/merged before this round/);
     }
@@ -884,10 +849,7 @@ describe('POST /api/attest repeatable quests (issue #154)', () => {
     simulateSpy.mockResolvedValueOnce(period(WEEK_SECS)).mockResolvedValueOnce(open());
     const res = await attest({ questId: 1, evidence: { type: 'github_pr', ref: 'owner/repo#7' } });
     expect(res.status).toBe(503);
-    expect(await res.json()).toEqual({
-      error: 'github unavailable (503) — try again',
-      retryable: true,
-    });
+    expect(await res.json()).toEqual({ error: 'github unavailable (503) — try again', retryable: true });
   });
 
   it('refuses a referral for a repeatable quest before reading any evidence', async () => {
@@ -921,9 +883,7 @@ describe('POST /api/attest repeatable quests (issue #154)', () => {
       ({ events: list, cursor: undefined }) as unknown as rpc.Api.GetEventsResponse;
 
     // Two claims this week and one last week: short of three.
-    events.mockResolvedValueOnce(
-      page([claim(1, a, THU + 10), claim(2, b, THU + 20), claim(3, c, THU - 10)]),
-    );
+    events.mockResolvedValueOnce(page([claim(1, a, THU + 10), claim(2, b, THU + 20), claim(3, c, THU - 10)]));
     simulateSpy.mockResolvedValueOnce(period(WEEK_SECS)).mockResolvedValueOnce(open());
     const short = await attest({ questId: 4, evidence: { type: 'vouch_back', ref: '' } });
     expect(short.status).toBe(422);
@@ -932,9 +892,7 @@ describe('POST /api/attest repeatable quests (issue #154)', () => {
     );
 
     // All three this week.
-    events.mockResolvedValueOnce(
-      page([claim(1, a, THU + 10), claim(2, b, THU + 20), claim(3, c, THU + 30)]),
-    );
+    events.mockResolvedValueOnce(page([claim(1, a, THU + 10), claim(2, b, THU + 20), claim(3, c, THU + 30)]));
     simulateSpy.mockResolvedValueOnce(period(WEEK_SECS)).mockResolvedValueOnce(open());
     const ok = await attest({ questId: 4, evidence: { type: 'vouch_back', ref: '' } });
     expect(ok.status).toBe(200);

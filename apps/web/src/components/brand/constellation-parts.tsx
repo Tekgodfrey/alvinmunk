@@ -221,9 +221,10 @@ export function useFrameloop(
   useEffect(() => {
     const el = containerRef.current;
     if (!el || typeof IntersectionObserver === 'undefined') return;
-    const io = new IntersectionObserver(([entry]) => setIntersecting(entry.isIntersecting), {
-      rootMargin: '100px',
-    });
+    const io = new IntersectionObserver(
+      ([entry]) => setIntersecting(entry.isIntersecting),
+      { rootMargin: '100px' },
+    );
     io.observe(el);
     return () => io.disconnect();
   }, [containerRef]);

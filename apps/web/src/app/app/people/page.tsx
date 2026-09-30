@@ -73,9 +73,7 @@ export default function PeoplePage() {
 
         // Batch-resolve handles for all suggested addresses
         const addrs = raw.map((s) => s.address);
-        const handleMap = await reverseHandles(addrs).catch(
-          () => ({}) as Record<string, string | null>,
-        );
+        const handleMap = await reverseHandles(addrs).catch(() => ({} as Record<string, string | null>));
         if (!alive) return;
 
         setSuggestions(raw.map((s) => ({ ...s, handle: handleMap[s.address] ?? null })));
@@ -160,7 +158,11 @@ export default function PeoplePage() {
           )}
 
           {state === 'idle' && (
-            <SuggestionPanel suggestions={suggestions} loading={suggestionsLoading} t={t} />
+            <SuggestionPanel
+              suggestions={suggestions}
+              loading={suggestionsLoading}
+              t={t}
+            />
           )}
 
           {state === 'not-found' && (
@@ -179,9 +181,7 @@ export default function PeoplePage() {
 
           {state === 'error' && (
             <div className="flex flex-col items-center gap-4 py-10 text-center">
-              <p className="text-sm text-destructive">
-                Something went wrong — try again in a moment.
-              </p>
+              <p className="text-sm text-destructive">Something went wrong — try again in a moment.</p>
             </div>
           )}
 
@@ -189,26 +189,23 @@ export default function PeoplePage() {
             <div className="space-y-4">
               {/* Result card */}
               <div className="flex items-center gap-4 rounded-xl border border-border/60 bg-surface/40 p-4">
-                <Avatar address={result.address} handle={result.handle} size={56} ring />
+                <Avatar
+                  address={result.address}
+                  handle={result.handle}
+                  size={56}
+                  ring
+                />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-display text-lg font-semibold">@{result.handle}</p>
+                  <p className="truncate font-display text-lg font-semibold">
+                    @{result.handle}
+                  </p>
                   <div className="mt-1.5 flex items-center gap-4 font-mono text-xs text-muted-foreground">
                     <span className="inline-flex items-center gap-1">
-                      <Star
-                        className={cn(
-                          'size-3.5',
-                          result.social > 0 ? 'text-yellow-400' : 'text-muted-foreground/40',
-                        )}
-                      />
+                      <Star className={cn('size-3.5', result.social > 0 ? 'text-yellow-400' : 'text-muted-foreground/40')} />
                       {result.social} Social
                     </span>
                     <span className="inline-flex items-center gap-1">
-                      <Sparkles
-                        className={cn(
-                          'size-3.5',
-                          result.earned > 0 ? 'text-lime' : 'text-muted-foreground/40',
-                        )}
-                      />
+                      <Sparkles className={cn('size-3.5', result.earned > 0 ? 'text-lime' : 'text-muted-foreground/40')} />
                       {result.earned} Earned
                     </span>
                   </div>
@@ -306,9 +303,7 @@ function SuggestionPanel({ suggestions, loading, t }: SuggestionPanelProps) {
       </div>
 
       {/* Attribution footnote — when #109's read API lands, this note can be removed. */}
-      <p className="pt-1 text-center text-[11px] text-muted-foreground">
-        {t('people.suggest.footnote')}
-      </p>
+      <p className="pt-1 text-center text-[11px] text-muted-foreground">{t('people.suggest.footnote')}</p>
     </div>
   );
 }
@@ -321,7 +316,12 @@ function SuggestionCard({ suggestion: s, t }: { suggestion: Suggestion; t: TFn }
 
   return (
     <div className="flex items-center gap-3 rounded-xl border border-border/60 bg-surface/30 p-3 transition-colors hover:bg-surface/50">
-      <Avatar address={s.address} handle={s.handle ?? undefined} size={40} ring />
+      <Avatar
+        address={s.address}
+        handle={s.handle ?? undefined}
+        size={40}
+        ring
+      />
 
       <div className="min-w-0 flex-1">
         <p className="truncate font-display text-sm font-semibold">{label}</p>

@@ -46,22 +46,8 @@ describe('aggregateVouchFunnel', () => {
       repeatPairShare: 1 / 3,
       unread: 0,
       weeklyCohorts: [
-        {
-          week: '2026-01-05',
-          minted: 4,
-          claimed: 2,
-          completionRate: 0.5,
-          open: 0,
-          expiredUnclaimed: 2,
-        },
-        {
-          week: '2026-01-12',
-          minted: 2,
-          claimed: 1,
-          completionRate: 0.5,
-          open: 1,
-          expiredUnclaimed: 0,
-        },
+        { week: '2026-01-05', minted: 4, claimed: 2, completionRate: 0.5, open: 0, expiredUnclaimed: 2 },
+        { week: '2026-01-12', minted: 2, claimed: 1, completionRate: 0.5, open: 1, expiredUnclaimed: 0 },
       ],
     });
   });
@@ -73,12 +59,9 @@ describe('aggregateVouchFunnel', () => {
   });
 
   it('counts a late claim — even one after a slash — as claimed, not expired', () => {
-    const result = aggregateVouchFunnel(
-      [record(1, { slashed: true, claimed: true, claimer: 'B' })],
-      {
-        now: MON + 30 * DAY,
-      },
-    );
+    const result = aggregateVouchFunnel([record(1, { slashed: true, claimed: true, claimer: 'B' })], {
+      now: MON + 30 * DAY,
+    });
     expect(result).toMatchObject({ claimed: 1, completionRate: 1, expiredUnclaimed: 0, open: 0 });
   });
 
@@ -98,11 +81,7 @@ describe('aggregateVouchFunnel', () => {
   it('buckets by Monday-start UTC weeks, oldest first', () => {
     const sundayNight = MON + 7 * DAY - 1;
     const result = aggregateVouchFunnel(
-      [
-        record(1, { created: MON + 7 * DAY }),
-        record(2, { created: sundayNight }),
-        record(3, { created: MON - 1 }),
-      ],
+      [record(1, { created: MON + 7 * DAY }), record(2, { created: sundayNight }), record(3, { created: MON - 1 })],
       { now: MON },
     );
     expect(result.weeklyCohorts.map((c) => [c.week, c.minted])).toEqual([
@@ -190,8 +169,7 @@ function instanceEntry(vouchSeq: number | null): rpc.Api.LedgerEntryResult {
 
 // The Vouch struct, a map keyed by field name as #[contracttype] encodes it.
 function vouchEntry(id: number, claimed: boolean): rpc.Api.LedgerEntryResult {
-  const field = (name: string, val: xdr.ScVal) =>
-    new xdr.ScMapEntry({ key: xdr.ScVal.scvSymbol(name), val });
+  const field = (name: string, val: xdr.ScVal) => new xdr.ScMapEntry({ key: xdr.ScVal.scvSymbol(name), val });
   return dataEntry(
     xdr.ScVal.scvVec([xdr.ScVal.scvSymbol('Vouch'), nativeToScVal(id, { type: 'u64' })]),
     xdr.ScVal.scvMap([
@@ -259,10 +237,7 @@ describe('readVouchRecords', () => {
     const total = MAX_VOUCH_READS + 5;
     const { server, getLedgerEntries } = fakeServer([instanceEntry(total)]);
     await readVouchRecords(server, CONTRACT);
-    const requested = getLedgerEntries.mock.calls
-      .slice(1)
-      .flat()
-      .map((k) => k.toXDR('base64'));
+    const requested = getLedgerEntries.mock.calls.slice(1).flat().map((k) => k.toXDR('base64'));
     expect(requested).toHaveLength(MAX_VOUCH_READS);
     expect(requested[0]).toBe(vouchStorageKey(6));
     expect(requested.at(-1)).toBe(vouchStorageKey(total));

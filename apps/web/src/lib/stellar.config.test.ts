@@ -59,25 +59,17 @@ describe('lib/stellar — the resolved config', () => {
 
     expect(s.configErrors).toEqual([REASON]);
     expect(error).toHaveBeenCalledWith(`[config] inconsistent network config: ${REASON}`);
-    expect(() => s.assertNetworkConfig()).toThrow(
-      `This deployment is misconfigured, so nothing can be sent: ${REASON}`,
-    );
+    expect(() => s.assertNetworkConfig()).toThrow(`This deployment is misconfigured, so nothing can be sent: ${REASON}`);
 
     const res = s.misconfiguredResponse()!;
     expect(res.status).toBe(503);
-    expect(await res.json()).toEqual({
-      error: 'network config is inconsistent',
-      configErrors: [REASON],
-    });
+    expect(await res.json()).toEqual({ error: 'network config is inconsistent', configErrors: [REASON] });
   });
 
   it('signs with the configured passphrase override — and flags one that disagrees', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
     const s = await loadWith<Stellar>(
-      {
-        NEXT_PUBLIC_STELLAR_NETWORK: 'testnet',
-        NEXT_PUBLIC_NETWORK_PASSPHRASE: PASSPHRASE.mainnet,
-      },
+      { NEXT_PUBLIC_STELLAR_NETWORK: 'testnet', NEXT_PUBLIC_NETWORK_PASSPHRASE: PASSPHRASE.mainnet },
       './stellar',
     );
 
@@ -96,12 +88,7 @@ describe('on an inconsistent config', () => {
     const wallet = await loadWith<typeof import('./wallet')>(HALF_CUTOVER, './wallet');
     const kit = (await import('./wallet-kit')) as typeof import('./wallet-kit');
 
-    for (const connect of [
-      wallet.getWallet,
-      wallet.connectFreighter,
-      wallet.connectAlbedo,
-      kit.connectViaKit,
-    ]) {
+    for (const connect of [wallet.getWallet, wallet.connectFreighter, wallet.connectAlbedo, kit.connectViaKit]) {
       await expect(connect()).rejects.toThrow(/^This deployment is misconfigured/);
     }
     expect(fetchMock).not.toHaveBeenCalled(); // no Friendbot, no relayer
@@ -119,17 +106,11 @@ describe('on an inconsistent config', () => {
     const route = await loadWith<{ POST: (req: Request) => Promise<Response> }>(HALF_CUTOVER, path);
 
     const res = await route.POST(
-      new Request(`http://localhost${url}`, {
-        method: 'POST',
-        body: JSON.stringify({ recipient: G }),
-      }),
+      new Request(`http://localhost${url}`, { method: 'POST', body: JSON.stringify({ recipient: G }) }),
     );
 
     expect(res.status).toBe(503);
-    expect(await res.json()).toEqual({
-      error: 'network config is inconsistent',
-      configErrors: [REASON],
-    });
+    expect(await res.json()).toEqual({ error: 'network config is inconsistent', configErrors: [REASON] });
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });

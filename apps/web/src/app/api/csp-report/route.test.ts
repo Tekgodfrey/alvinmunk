@@ -95,27 +95,20 @@ describe('POST /api/csp-report', () => {
     const res = await post('{}', { 'content-length': String(MAX_CSP_REPORT_BYTES + 1) });
     expect(res.status).toBe(413);
     expect(await res.text()).toBe('');
-    const big = await post(
-      JSON.stringify({
-        'csp-report': { 'effective-directive': 'img-src', pad: 'x'.repeat(MAX_CSP_REPORT_BYTES) },
-      }),
-    );
+    const big = await post(JSON.stringify({ 'csp-report': { 'effective-directive': 'img-src', pad: 'x'.repeat(MAX_CSP_REPORT_BYTES) } }));
     expect(big.status).toBe(413);
     expect(warn).not.toHaveBeenCalled();
   });
 
-  it.each([
-    'not json',
-    '{}',
-    '[]',
-    '{"csp-report":{"effective-directive":"img-src; script-src *"}}',
-    '{"csp-report":{"blocked-uri":"x"}}',
-  ])('rejects what is not a report (%s) with a 400 and logs no violation', async (body) => {
-    const res = await post(body);
-    expect(res.status).toBe(400);
-    expect(await res.text()).toBe('');
-    expect(warn).not.toHaveBeenCalled();
-  });
+  it.each(['not json', '{}', '[]', '{"csp-report":{"effective-directive":"img-src; script-src *"}}', '{"csp-report":{"blocked-uri":"x"}}'])(
+    'rejects what is not a report (%s) with a 400 and logs no violation',
+    async (body) => {
+      const res = await post(body);
+      expect(res.status).toBe(400);
+      expect(await res.text()).toBe('');
+      expect(warn).not.toHaveBeenCalled();
+    },
+  );
 });
 
 describe('parseCspReports', () => {
@@ -141,10 +134,7 @@ describe('parseCspReports', () => {
   });
 
   it('logs at most ten violations from one batch', () => {
-    const one = {
-      type: 'csp-violation',
-      body: { effectiveDirective: 'img-src', blockedURL: 'data' },
-    };
+    const one = { type: 'csp-violation', body: { effectiveDirective: 'img-src', blockedURL: 'data' } };
     expect(parseCspReports(Array(50).fill(one))).toHaveLength(10);
   });
 });

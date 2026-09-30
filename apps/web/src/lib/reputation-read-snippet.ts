@@ -28,10 +28,7 @@ type SnippetConfig = Pick<typeof config, 'network' | 'rpcUrl'> & {
 };
 
 /** The snippet source for `address`, pointed at the app's own network and reputation contract. */
-export function reputationReadSnippet(
-  address: string = SAMPLE_ADDRESS,
-  cfg: SnippetConfig = config,
-): string {
+export function reputationReadSnippet(address: string = SAMPLE_ADDRESS, cfg: SnippetConfig = config): string {
   const passphrase = cfg.network === 'mainnet' ? 'Networks.PUBLIC' : 'Networks.TESTNET';
   return `import {
   Account,

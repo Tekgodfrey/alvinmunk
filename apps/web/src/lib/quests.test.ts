@@ -36,14 +36,7 @@ vi.mock('./contracts', async (importOriginal) => ({
   args: argsMock,
 }));
 
-import {
-  completeQuest,
-  getCompleted,
-  getQuestPeriods,
-  getStreak,
-  getWeekBounds,
-  timeUntilReset,
-} from './quests';
+import { completeQuest, getCompleted, getQuestPeriods, getStreak, getWeekBounds, timeUntilReset } from './quests';
 import type { Wallet } from './wallet';
 
 describe('completeQuest', () => {
@@ -290,13 +283,7 @@ describe('getCompleted', () => {
   it('reads one flag per quest id, keyed by id, with one get_completed call', async () => {
     readContractMock.mockResolvedValueOnce([true, false, true]);
     const done = await getCompleted(OWNER, [2, 3, 4], OWNER);
-    expect(done).toEqual(
-      new Map([
-        [2, true],
-        [3, false],
-        [4, true],
-      ]),
-    );
+    expect(done).toEqual(new Map([[2, true], [3, false], [4, true]]));
     expect(readContractMock).toHaveBeenCalledOnce();
     const [contract, method, callArgs, source] = readContractMock.mock.calls[0];
     expect([contract, method, source]).toEqual(['CQUEST', 'get_completed', OWNER]);
@@ -307,11 +294,7 @@ describe('getCompleted', () => {
   it('encodes the ids as a vector of u32, the type get_completed takes', async () => {
     const { args } = await vi.importActual<typeof import('./contracts')>('./contracts');
     const ids = args.u32s([2, 3, 4]);
-    expect(ids.vec()!.map((v: xdr.ScVal) => v.switch().name)).toEqual([
-      'scvU32',
-      'scvU32',
-      'scvU32',
-    ]);
+    expect(ids.vec()!.map((v: xdr.ScVal) => v.switch().name)).toEqual(['scvU32', 'scvU32', 'scvU32']);
     expect(scValToNative(ids)).toEqual([2, 3, 4]);
   });
 
@@ -489,18 +472,9 @@ describe('getQuestPeriods', () => {
   it('reads one period per quest id, keyed by id, with one get_quest_periods call', async () => {
     readContractMock.mockResolvedValueOnce([0n, 604_800n, 0n]);
     await expect(getQuestPeriods([2, 3, 4], OWNER)).resolves.toEqual(
-      new Map([
-        [2, 0],
-        [3, 604_800],
-        [4, 0],
-      ]),
+      new Map([[2, 0], [3, 604_800], [4, 0]]),
     );
-    expect(readContractMock).toHaveBeenCalledWith(
-      'CQUEST',
-      'get_quest_periods',
-      [[2, 3, 4]],
-      OWNER,
-    );
+    expect(readContractMock).toHaveBeenCalledWith('CQUEST', 'get_quest_periods', [[2, 3, 4]], OWNER);
   });
 
   it('reads wallet-free when no source is given', async () => {

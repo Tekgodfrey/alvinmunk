@@ -1,7 +1,7 @@
 # How we built a sybil-resistant proof-of-people reputation on Stellar
 
-_A technical write-up of [alvinmunk](https://alvinmunk.vercel.app) — an open-source reputation
-game on Stellar/Soroban. Code: [github.com/mericcintosun/alvinmunk](https://github.com/mericcintosun/alvinmunk)._
+*A technical write-up of [alvinmunk](https://alvinmunk.vercel.app) — an open-source reputation
+game on Stellar/Soroban. Code: [github.com/mericcintosun/alvinmunk](https://github.com/mericcintosun/alvinmunk).*
 
 ---
 
@@ -14,12 +14,12 @@ pointers into the code.
 ## 1. The cold-start problem, and the asynchronous vouch
 
 A solo builder can't ask two strangers to stand next to each other and tap. So the core action
-is a **one-sided, asynchronous vouch**. You pick someone you trust, write one line about _why_,
+is a **one-sided, asynchronous vouch**. You pick someone you trust, write one line about *why*,
 and mint a **half-card** bound to `sha256(secret)`. Crucially, **you never enter their
 address** — you might not even know it.
 
 The claim-secret rides in the **share link fragment** (`#...`), which browsers never send to a
-server. Whoever opens the link binds _their own_ address at claim time, and the contract checks
+server. Whoever opens the link binds *their own* address at claim time, and the contract checks
 `sha256(secret)` against the stored hash. Two consequences fall out of this design:
 
 1. **The link is the install funnel.** Every vouch is an invite; growth is built into the
@@ -36,15 +36,15 @@ The lethal version of this product pays **both** sides of a free, self-initiable
 cashable value. That's a money printer for sybils. So we split reputation into two tracks:
 
 - **Social XP** — comes from vouches, drives the leaderboard, and is **never cashable**.
-- **Earned XP** — comes _only_ from attester-verified quests, and is the **only** track the
+- **Earned XP** — comes *only* from attester-verified quests, and is the **only** track the
   `rewards` contract reads.
 
 On top of the split, the anti-sybil design layers several independent guards:
 
 - **First-pair-only** rewards (repeat vouches between the same pair grant 0 XP).
 - **Per-day caps** on vouches.
-- An **XP stake** that is _slashed_ if a vouch is never claimed (spam has a cost).
-- A **second-order gate** that only pays the voucher after the claimer does something _verified_.
+- An **XP stake** that is *slashed* if a vouch is never claimed (spam has a cost).
+- A **second-order gate** that only pays the voucher after the claimer does something *verified*.
 - A **proof-of-funding gate** plus a **treasury circuit breaker** (daily cap + frozen set) on the
   payout side.
 
@@ -59,12 +59,12 @@ scale, backed by real revenue — not by minting.
 Three production concerns, three deliberate choices:
 
 - **No seed phrase.** Onboarding uses **passkey smart wallets** (secp256r1 / WebAuthn) through
-  passkey-kit — an _account-abstraction_ smart account. The user signs with Face ID; there's no
+  passkey-kit — an *account-abstraction* smart account. The user signs with Face ID; there's no
   mnemonic to lose.
 - **No gas.** Every contract call is **fee-sponsored and fee-bumped** through an OpenZeppelin
   Channels relayer, so a brand-new user never holds XLM to transact.
 - **No standing backend.** The leaderboard, activity feed, and public profiles all read Soroban
-  **events directly over RPC** — there's no always-on indexer to run. The _only_ server-side
+  **events directly over RPC** — there's no always-on indexer to run. The *only* server-side
   secret is a single serverless **attester** that verifies off-chain evidence and signs it, with
   the contract verifying that signature on-chain.
 
@@ -83,7 +83,7 @@ sybil-resistant, spendable, and open source.
 
 ---
 
-_Built for the Rise In "Stellar Journey to Mastery" program. Try it on testnet:
+*Built for the Rise In "Stellar Journey to Mastery" program. Try it on testnet:
 [alvinmunk.vercel.app](https://alvinmunk.vercel.app) · Code:
 [github.com/mericcintosun/alvinmunk](https://github.com/mericcintosun/alvinmunk) · Tag
-`#Stellar #Soroban`._
+`#Stellar #Soroban`.*

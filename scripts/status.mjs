@@ -17,36 +17,16 @@ import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { loadDeployment } from './lib/env.mjs';
-const require = createRequire(
-  join(dirname(fileURLToPath(import.meta.url)), '..', 'apps', 'web', 'package.json'),
-);
-const {
-  Account,
-  Address,
-  Contract,
-  Keypair,
-  TransactionBuilder,
-  scValToNative,
-  rpc,
-} = require('@stellar/stellar-sdk');
+const require = createRequire(join(dirname(fileURLToPath(import.meta.url)), '..', 'apps', 'web', 'package.json'));
+const { Account, Address, Contract, Keypair, TransactionBuilder, scValToNative, rpc } = require('@stellar/stellar-sdk');
 
-const deployment = loadDeployment(['reputation', 'questRegistry', 'rewards', 'usdcSac'], {
-  settings: ['rpcUrl'],
-});
+const deployment = loadDeployment(['reputation', 'questRegistry', 'rewards', 'usdcSac'], { settings: ['rpcUrl'] });
 const RPC = deployment.rpcUrl;
 const PASSPHRASE = deployment.passphrase;
-const {
-  reputation: REP,
-  questRegistry: QUEST,
-  rewards: REWARDS,
-  usdcSac: USDC,
-} = deployment.contracts;
+const { reputation: REP, questRegistry: QUEST, rewards: REWARDS, usdcSac: USDC } = deployment.contracts;
 const server = new rpc.Server(RPC, { allowHttp: RPC.startsWith('http://') });
 
-const firstLine = (s) =>
-  String(s ?? '')
-    .split('\n')[0]
-    .trim() || 'unknown error';
+const firstLine = (s) => String(s ?? '').split('\n')[0].trim() || 'unknown error';
 const isInt = (v) => typeof v === 'bigint' || Number.isSafeInteger(v);
 // Exact stroops → USDC (7 decimals), no float rounding and no NaN.
 const usdc = (n) => {
@@ -93,12 +73,7 @@ const amount = (v) => (isInt(v) ? `${usdc(v)} USDC` : undefined);
 // A reward row from `get_rewards`. The supply counters (`max_claims`, `claims`) are absent
 // on rewards contracts deployed before per-reward supply caps; the row still prints.
 const isReward = (r) =>
-  r !== null &&
-  typeof r === 'object' &&
-  isInt(r.id) &&
-  isInt(r.threshold) &&
-  isInt(r.amount) &&
-  typeof r.active === 'boolean';
+  r !== null && typeof r === 'object' && isInt(r.id) && isInt(r.threshold) && isInt(r.amount) && typeof r.active === 'boolean';
 function supply(r) {
   if (!isInt(r.max_claims) || !isInt(r.claims)) return '';
   if (BigInt(r.max_claims) === 0n) return `  ${r.claims} claimed (no cap)`;
@@ -110,23 +85,14 @@ function supply(r) {
   let ledger;
   try {
     const latest = await server.getLatestLedger();
-    ledger = isInt(latest?.sequence)
-      ? latest.sequence
-      : fail('getLatestLedger', `unexpected value ${show(latest)}`);
+    ledger = isInt(latest?.sequence) ? latest.sequence : fail('getLatestLedger', `unexpected value ${show(latest)}`);
   } catch (e) {
     ledger = fail('getLatestLedger', firstLine(e?.message ?? e));
   }
 
   console.log('\n📊 Stellar Passport — ops status');
   console.log('   RPC', RPC, '· ledger', ledger);
-  console.log(
-    '   contracts: reputation',
-    REP.slice(0, 6),
-    '· quest',
-    QUEST.slice(0, 6),
-    '· rewards',
-    REWARDS.slice(0, 6),
-  );
+  console.log('   contracts: reputation', REP.slice(0, 6), '· quest', QUEST.slice(0, 6), '· rewards', REWARDS.slice(0, 6));
 
   const [bal, cap, paid, reqFund, week, table] = await Promise.all([
     read(USDC, 'balance', () => [new Address(REWARDS).toScVal()]),
@@ -139,38 +105,19 @@ function supply(r) {
 
   console.log('\n💰 treasury');
   console.log('   USDC balance   ', field('balance', bal, amount));
-  console.log(
-    '   daily cap      ',
-    field('get_daily_cap', cap, (v) => (isInt(v) && BigInt(v) === 0n ? 'unlimited' : amount(v))),
-  );
+  console.log('   daily cap      ', field('get_daily_cap', cap, (v) => (isInt(v) && BigInt(v) === 0n ? 'unlimited' : amount(v))));
   console.log('   paid today     ', field('get_daily_paid', paid, amount));
-  console.log(
-    '   proof-of-funding gate',
-    field('get_require_funding', reqFund, (v) =>
-      typeof v === 'boolean' ? (v ? 'ON' : 'off (testnet)') : undefined,
-    ),
-  );
-  console.log(
-    '\n🗓  weekly epoch',
-    field('get_week', week, (v) => (isInt(v) ? String(v) : undefined)),
-  );
+  console.log('   proof-of-funding gate', field('get_require_funding', reqFund, (v) => (typeof v === 'boolean' ? (v ? 'ON' : 'off (testnet)') : undefined)));
+  console.log('\n🗓  weekly epoch', field('get_week', week, (v) => (isInt(v) ? String(v) : undefined)));
   console.log('\n🏅 rank → reward table');
-  const rows =
-    table.ok && Array.isArray(table.value) && table.value.every(isReward) ? table.value : undefined;
+  const rows = table.ok && Array.isArray(table.value) && table.value.every(isReward) ? table.value : undefined;
   if (!rows) {
-    console.log(
-      '  ',
-      table.ok
-        ? fail('get_rewards', `unexpected value ${show(table.value)}`)
-        : fail('get_rewards', table.error),
-    );
+    console.log('  ', table.ok ? fail('get_rewards', `unexpected value ${show(table.value)}`) : fail('get_rewards', table.error));
   } else if (rows.length === 0) {
     console.log('   (no rewards registered)');
   }
   for (const r of rows ?? []) {
-    console.log(
-      `   #${r.id}  ${r.threshold} XP → ${usdc(r.amount)} USDC${supply(r)}${r.active ? '' : '  (inactive)'}`,
-    );
+    console.log(`   #${r.id}  ${r.threshold} XP → ${usdc(r.amount)} USDC${supply(r)}${r.active ? '' : '  (inactive)'}`);
   }
   console.log('');
 
@@ -178,7 +125,4 @@ function supply(r) {
     console.error(`❌ ${failures} read${failures === 1 ? '' : 's'} failed`);
     process.exitCode = 1;
   }
-})().catch((e) => {
-  console.error('FAILED ❌', e.message);
-  process.exit(1);
-});
+})().catch((e) => { console.error('FAILED ❌', e.message); process.exit(1); });

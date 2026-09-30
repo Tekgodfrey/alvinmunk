@@ -114,9 +114,7 @@ describe('money-flow i18n (#238)', () => {
     expect(container.textContent).toContain('harca // bahşiş');
     expect(container.textContent).toContain('gerçek test ağı USDC');
     expect(container.textContent).toContain('5 test USDC al');
-    const placeholders = [...container.querySelectorAll('input')].map((i) =>
-      i.getAttribute('placeholder'),
-    );
+    const placeholders = [...container.querySelectorAll('input')].map((i) => i.getAttribute('placeholder'));
     expect(placeholders).toContain('@kullanıcı adı veya adres (G… / C…)');
     expect(container.textContent).not.toContain('Send a tip');
     expect(container.textContent).not.toContain('Looking up handle');
@@ -136,31 +134,14 @@ describe('money-flow i18n (#238)', () => {
     mocks.getEarnedScore.mockResolvedValue(5);
     mocks.getRewardsFor.mockResolvedValue({
       rows: [
+        { entry: { id: 1, threshold: 3n, amount: 1000000n, active: true }, claimed: false, eligible: true, reason: 0 },
         {
-          entry: { id: 1, threshold: 3n, amount: 1000000n, active: true },
-          claimed: false,
-          eligible: true,
-          reason: 0,
-        },
-        {
-          entry: {
-            id: 2,
-            threshold: 50n,
-            amount: 2000000n,
-            active: true,
-            max_claims: 3,
-            claims: 1,
-          },
+          entry: { id: 2, threshold: 50n, amount: 2000000n, active: true, max_claims: 3, claims: 1 },
           claimed: false,
           eligible: false,
           reason: 3,
         },
-        {
-          entry: { id: 3, threshold: 3n, amount: 9000000n, active: true },
-          claimed: false,
-          eligible: false,
-          reason: 9,
-        },
+        { entry: { id: 3, threshold: 3n, amount: 9000000n, active: true }, claimed: false, eligible: false, reason: 9 },
       ],
       remainingToday: 5000000n,
     });
@@ -182,17 +163,9 @@ describe('money-flow i18n (#238)', () => {
     mocks.getScores.mockResolvedValue({ social: 10, earned: 2 });
     mocks.getGateStatus.mockResolvedValue([
       // Earned, not passed
-      {
-        gate: { id: 1, track: 1, min: 5, label: 'VIP', active: true },
-        passes: false,
-        unlocked: false,
-      },
+      { gate: { id: 1, track: 1, min: 5, label: 'VIP', active: true }, passes: false, unlocked: false },
       // Social, passed + unlocked
-      {
-        gate: { id: 2, track: 0, min: 5, label: 'OG', active: true },
-        passes: true,
-        unlocked: true,
-      },
+      { gate: { id: 2, track: 0, min: 5, label: 'OG', active: true }, passes: true, unlocked: true },
     ]);
     await render(<Unlockables address={OWNER} />);
     expect(container.textContent).toContain('İtibar erişimin kilidini açar');

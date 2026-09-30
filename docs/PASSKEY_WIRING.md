@@ -7,15 +7,15 @@ vouch/quest/tip loop._
 
 ## Status (updated)
 
-| Piece                                      | State                                                                         |
-| ------------------------------------------ | ----------------------------------------------------------------------------- |
-| **Vercel build blocker**                   | ✅ **SOLVED** — see below                                                     |
-| Wallet seam + `connectPasskey()`           | ✅ implemented (`apps/web/src/lib/wallet.ts`)                                 |
-| Contract calls via smart account           | ✅ routed (`invoke` branch in `contracts.ts`)                                 |
-| Genesis for passkey                        | ✅ handled (skipped; registry `claim` is the identity binding)                |
-| Testnet infra (WASM hash + verifier)       | ✅ **live OZ contracts, env pre-filled** (no deploy needed; relayer optional) |
-| Quests via passkey (`signMessage`)         | ⏳ deferred follow-up (attester signer change)                                |
-| USDC trustline / tip-receiving for passkey | ⏳ deferred follow-up                                                         |
+| Piece | State |
+| --- | --- |
+| **Vercel build blocker** | ✅ **SOLVED** — see below |
+| Wallet seam + `connectPasskey()` | ✅ implemented (`apps/web/src/lib/wallet.ts`) |
+| Contract calls via smart account | ✅ routed (`invoke` branch in `contracts.ts`) |
+| Genesis for passkey | ✅ handled (skipped; registry `claim` is the identity binding) |
+| Testnet infra (WASM hash + verifier) | ✅ **live OZ contracts, env pre-filled** (no deploy needed; relayer optional) |
+| Quests via passkey (`signMessage`) | ⏳ deferred follow-up (attester signer change) |
+| USDC trustline / tip-receiving for passkey | ⏳ deferred follow-up |
 
 ## ✅ The Vercel build blocker — how it was solved
 
@@ -29,7 +29,7 @@ The fix — **switch to [`smart-account-kit`](https://github.com/kalepail/smart-
 1. It ships **compiled ESM JS** (not raw TS) and has **zero native deps** — it added only
    4 pure-JS packages (`@simplewebauthn/browser`, `base64url`, `smart-account-kit-bindings`).
    So the node-gyp install-time break is gone **by construction**.
-2. It _lazy_-imports the **optional** external-wallet adapter
+2. It *lazy*-imports the **optional** external-wallet adapter
    (`@creit-tech/stellar-wallets-kit`, hyphen scope) only when you connect a Freighter/LOBSTR
    signer. We use the passkey path only, so that adapter is **stubbed to an empty module** in
    [`apps/web/next.config.mjs`](../apps/web/next.config.mjs) (`resolve.alias … = false`).
@@ -45,13 +45,11 @@ Every caller depends only on the `Wallet` interface in
 
 ```ts
 interface Wallet {
-  kind;
-  address;
-  sign(xdr);
-  signMessage(message);
-  invoke?(contractId, method, args); // ← passkey-only: smart-account-mediated call
+  kind; address;
+  sign(xdr); signMessage(message);
+  invoke?(contractId, method, args);  // ← passkey-only: smart-account-mediated call
 }
-getWallet(); // -> connectPasskey() when isPasskeyConfigured(), else getDevWallet()
+getWallet() // -> connectPasskey() when isPasskeyConfigured(), else getDevWallet()
 ```
 
 A passkey wallet's `address` is a **contract** (`C…`), which can't be a classic tx source.
@@ -71,11 +69,11 @@ WebAuthn verifier deployed, and the kit pays fees from a shared, well-known depl
 relayer is **optional** on testnet; just set the two values below (already filled in
 `apps/web/.env.local`), and add the same two to Vercel:
 
-| Env var                                | What it is                                    | Testnet value (live, verified)                                                                                                                     |
-| -------------------------------------- | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `NEXT_PUBLIC_SMART_ACCOUNT_WASM_HASH`  | OZ smart-account WASM hash                    | `8537b8166c0078440a5324c12f6db48d6340d157c306a54c5ea81405abcc2611`                                                                                 |
-| `NEXT_PUBLIC_WEBAUTHN_VERIFIER_ID`     | WebAuthn (secp256r1) verifier contract (`C…`) | `CCMR63YE5T7MPWREF3PC5XNTTGXFSB4GYUGUIT5POHP2UGCS65TBIUUU`                                                                                         |
-| `NEXT_PUBLIC_RELAYER_URL` _(optional)_ | Fee-sponsoring submitter                      | OZ Relayer **Channels** — testnet `https://channels.openzeppelin.com/testnet` (key at `/gen`). Required on **mainnet** (no shared deployer there). |
+| Env var | What it is | Testnet value (live, verified) |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SMART_ACCOUNT_WASM_HASH` | OZ smart-account WASM hash | `8537b8166c0078440a5324c12f6db48d6340d157c306a54c5ea81405abcc2611` |
+| `NEXT_PUBLIC_WEBAUTHN_VERIFIER_ID` | WebAuthn (secp256r1) verifier contract (`C…`) | `CCMR63YE5T7MPWREF3PC5XNTTGXFSB4GYUGUIT5POHP2UGCS65TBIUUU` |
+| `NEXT_PUBLIC_RELAYER_URL` _(optional)_ | Fee-sponsoring submitter | OZ Relayer **Channels** — testnet `https://channels.openzeppelin.com/testnet` (key at `/gen`). Required on **mainnet** (no shared deployer there). |
 
 > Testnet values come from the smart-account-kit demo (`demo/.env.example`) and were verified
 > live with `stellar contract info` (the WASM hash resolves a spec; the verifier exposes
@@ -91,7 +89,6 @@ wallet automatically — onboarding becomes FaceID/passkey enroll → smart acco
 created → handle claimed on-chain. No other code change needed.
 
 ### Mainnet note
-
 There is no shared funded deployer on mainnet, so set `NEXT_PUBLIC_RELAYER_URL` (and deploy/point
 to a mainnet smart-account WASM + verifier) before going live. The dev wallet stays
 hard-disabled on mainnet, so passkey is the only mainnet provider.

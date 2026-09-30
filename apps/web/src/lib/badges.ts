@@ -54,13 +54,7 @@ export interface BadgeInput {
   firstTipTo?: BadgePerson;
 }
 
-export type BadgeId =
-  | 'firstStar'
-  | 'connector'
-  | 'constellation'
-  | 'verified'
-  | 'fourWeeks'
-  | 'generous';
+export type BadgeId = 'firstStar' | 'connector' | 'constellation' | 'verified' | 'fourWeeks' | 'generous';
 
 /** Where a badge's next step happens — FOCUS_MODE hides everything but `social`. */
 export type BadgeSurface = 'social' | 'quests' | 'tips';
@@ -102,13 +96,7 @@ export function computeBadges(input: BadgeInput): Badge[] {
   const lit = input.vouchedBy >= 1;
   return [
     // First Star — the first claimed vouch RECEIVED, named after whoever lit it.
-    {
-      id: 'firstStar',
-      sticker: 'star-lime',
-      surface: 'social',
-      earned: lit,
-      person: lit ? input.firstVoucher : undefined,
-    },
+    { id: 'firstStar', sticker: 'star-lime', surface: 'social', earned: lit, person: lit ? input.firstVoucher : undefined },
     // Connector — vouched FOR 5 people (giving, not receiving).
     countBadge('connector', 'hand-shake', 'social', input.vouchedFor, THRESHOLDS.CONNECTOR),
     // Constellation — vouched BY 10 people.
@@ -118,13 +106,7 @@ export function computeBadges(input: BadgeInput): Badge[] {
     // Four Weeks — a 4-week best streak on the weekly quests.
     countBadge('fourWeeks', 'stamp-strip', 'quests', input.streakBest, THRESHOLDS.FOUR_WEEKS),
     // Generous — the first USDC tip SENT, named after its recipient.
-    {
-      id: 'generous',
-      sticker: 'ticker-coin',
-      surface: 'tips',
-      earned: input.tipped,
-      person: input.tipped ? input.firstTipTo : undefined,
-    },
+    { id: 'generous', sticker: 'ticker-coin', surface: 'tips', earned: input.tipped, person: input.tipped ? input.firstTipTo : undefined },
   ];
 }
 
@@ -176,10 +158,7 @@ export function foldVouchEdges(events: ChainEvent[], address: string): VouchEdge
 }
 
 /** Fold `tipped` events — topics ('tipped', from, to) — into "has `address` tipped, and whom first". */
-export function foldTips(
-  events: ChainEvent[],
-  address: string,
-): { tipped: boolean; firstTipTo?: string } {
+export function foldTips(events: ChainEvent[], address: string): { tipped: boolean; firstTipTo?: string } {
   for (const { topics } of events) {
     if (topics[0] === EVENTS.TIPPED && topics.length >= 3 && String(topics[1]) === address) {
       return { tipped: true, firstTipTo: String(topics[2]) };
@@ -205,10 +184,7 @@ const union = (a: string[], b: string[]) => [...new Set([...a, ...b])];
  * first voucher / first tip recipient seen EARLIER stays first (a later window's "first"
  * is just its oldest event).
  */
-export function mergeBadgeSnapshot(
-  prev: BadgeSnapshot | null,
-  fresh: BadgeSnapshot,
-): BadgeSnapshot {
+export function mergeBadgeSnapshot(prev: BadgeSnapshot | null, fresh: BadgeSnapshot): BadgeSnapshot {
   if (!prev) return fresh;
   return {
     vouchedBy: union(prev.vouchedBy, fresh.vouchedBy),
@@ -219,8 +195,7 @@ export function mergeBadgeSnapshot(
   };
 }
 
-const isStrings = (v: unknown): v is string[] =>
-  Array.isArray(v) && v.every((x) => typeof x === 'string');
+const isStrings = (v: unknown): v is string[] => Array.isArray(v) && v.every((x) => typeof x === 'string');
 const optString = (v: unknown) => (typeof v === 'string' ? v : undefined);
 
 /** The snapshot for `address`, or null when absent, unreadable, or not in the current shape. */
@@ -270,10 +245,7 @@ export async function getBadges(address: string): Promise<Badge[]> {
   });
   writeBadgeSnapshot(address, seen);
 
-  const [firstVoucher, firstTipTo] = await Promise.all([
-    personOf(seen.firstVoucher),
-    personOf(seen.firstTipTo),
-  ]);
+  const [firstVoucher, firstTipTo] = await Promise.all([personOf(seen.firstVoucher), personOf(seen.firstTipTo)]);
 
   // Both are lower bounds on the same number — the counters miss pre-upgrade pairs, the
   // snapshot misses whatever this browser never saw — so the larger one wins.

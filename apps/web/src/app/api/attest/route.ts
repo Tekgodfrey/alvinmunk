@@ -264,10 +264,7 @@ async function verifyEvidence(
     const pr = r.body as { merged?: boolean; merged_at?: string | null } | null;
     if (pr?.merged !== true) return { ok: false, reason: 'PR not merged' };
     if (since !== null && !(Date.parse(pr.merged_at ?? '') / 1000 >= since)) {
-      return {
-        ok: false,
-        reason: 'that PR was merged before this round — this quest needs a new one',
-      };
+      return { ok: false, reason: 'that PR was merged before this round — this quest needs a new one' };
     }
     return { ok: true };
   }
@@ -278,10 +275,7 @@ async function verifyEvidence(
     try {
       score = await readU64(REP_ID, 'get_score', ev.ref);
     } catch {
-      return {
-        ok: false,
-        reason: 'couldn’t read the referred wallet’s activity right now — try again',
-      };
+      return { ok: false, reason: 'couldn’t read the referred wallet’s activity right now — try again' };
     }
     const invitedBy = await readInvitedBy(ev.ref);
     // A registry binding decides on its own; the classic marker is only read without one.
@@ -403,36 +397,6 @@ function isTimeout(e: unknown): boolean {
   return (e as { name?: unknown } | null)?.name === 'TimeoutError';
 }
 
-/**
- * A decoded `vouch/claimed` event value: (vouch_id, from, claimer).
- * Mirrors contracts/reputation/src/lib.rs claim_vouch emit at line ~293.
- */
-export interface VouchClaimedEvent {
-  vouchId: string; // stringified u64
-  from: string; // G/C address — the voucher
-  claimer: string; // G/C address — the person who claimed
-}
-
-/**
- * Decode one raw `vouch/claimed` event value (a 3-tuple ScVal) into a typed record.
- * Returns null for any event that cannot be decoded — callers skip those silently.
- * Exported so it can be unit-tested independently of the RPC layer.
- */
-export function decodeVouchClaimedEvent(
-  raw: unknown, // scValToNative output for one event's value
-): VouchClaimedEvent | null {
-  if (!Array.isArray(raw) || raw.length !== 3) return null;
-  const [id, from, claimer] = raw;
-  if (
-    (typeof id !== 'number' && typeof id !== 'bigint') ||
-    typeof from !== 'string' ||
-    typeof claimer !== 'string'
-  ) {
-    return null;
-  }
-  return { vouchId: String(id), from, claimer };
-}
-
 /** The ledger a stellar-rpc events cursor points at ("<toid>-<n>"; the ledger is the toid's top 32 bits). */
 function cursorLedger(cursor: string): number | null {
   const toid = cursor.split('-')[0];
@@ -480,11 +444,7 @@ const inRound = (at: number, since: number | null) => since === null || at >= si
 
 /** Distinct wallets that claimed a vouch minted by `from`, within the RPC's retention window
  *  (and from `since` on, when given). */
-async function countVouchesClaimedBy(
-  repId: string,
-  from: string,
-  since: number | null,
-): Promise<number> {
+async function countVouchesClaimedBy(repId: string, from: string, since: number | null): Promise<number> {
   const claimers = new Set<string>();
   await scanVouchClaimed(repId, (c) => {
     if (c.from === from && inRound(c.at, since)) claimers.add(c.claimer);

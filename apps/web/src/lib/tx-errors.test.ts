@@ -14,16 +14,11 @@ const fee = xdr.Int64.fromString('100');
 
 /** A result as RPC hands it back: XDR on the wire, parsed by the SDK. */
 function rejected(result: xdr.TransactionResultResult): xdr.TransactionResult {
-  const r = new xdr.TransactionResult({
-    feeCharged: fee,
-    result,
-    ext: new xdr.TransactionResultExt(0),
-  });
+  const r = new xdr.TransactionResult({ feeCharged: fee, result, ext: new xdr.TransactionResultExt(0) });
   return xdr.TransactionResult.fromXDR(r.toXDR('base64'), 'base64');
 }
 
-const payment = (r: xdr.PaymentResult) =>
-  xdr.OperationResult.opInner(xdr.OperationResultTr.payment(r));
+const payment = (r: xdr.PaymentResult) => xdr.OperationResult.opInner(xdr.OperationResultTr.payment(r));
 
 describe('txRejectionCode', () => {
   it.each([
@@ -55,10 +50,7 @@ describe('txRejectionCode', () => {
       result: xdr.InnerTransactionResultResult.txTooLate(),
       ext: new xdr.InnerTransactionResultExt(0),
     });
-    const pair = new xdr.InnerTransactionResultPair({
-      transactionHash: Buffer.alloc(32),
-      result: inner,
-    });
+    const pair = new xdr.InnerTransactionResultPair({ transactionHash: Buffer.alloc(32), result: inner });
     expect(txRejectionCode(rejected(xdr.TransactionResultResult.txFeeBumpInnerFailed(pair)))).toBe(
       'txTooLate',
     );

@@ -12,17 +12,8 @@ import { createRequire } from 'node:module';
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const webDir = path.join(root, 'apps', 'web');
 const require = createRequire(path.join(webDir, 'package.json'));
-const {
-  rpc,
-  Contract,
-  Address,
-  Account,
-  Keypair,
-  TransactionBuilder,
-  BASE_FEE,
-  scValToNative,
-  xdr,
-} = require('@stellar/stellar-sdk');
+const { rpc, Contract, Address, Account, Keypair, TransactionBuilder, BASE_FEE, scValToNative, xdr } =
+  require('@stellar/stellar-sdk');
 
 const env = {};
 const envPath = path.join(webDir, '.env.local');
@@ -38,9 +29,7 @@ const PASSPHRASE = pick('NEXT_PUBLIC_NETWORK_PASSPHRASE') || 'Test SDF Network ;
 const REG = pick('NEXT_PUBLIC_REGISTRY_CONTRACT_ID');
 const LIMIT = Number(process.argv[2] || 15);
 
-const roster = JSON.parse(
-  fs.readFileSync(path.join(webDir, 'src', 'data', 'onboarded-wallets.json'), 'utf8'),
-);
+const roster = JSON.parse(fs.readFileSync(path.join(webDir, 'src', 'data', 'onboarded-wallets.json'), 'utf8'));
 const addrs = roster.testnet || [];
 const server = new rpc.Server(RPC);
 const src = new Account(Keypair.random().publicKey(), '0');
@@ -75,9 +64,7 @@ async function reverseChunk(chunk) {
     } catch (e) {
       const msg = String(e?.message ?? e);
       if (!MISSING_FN.test(msg)) {
-        console.warn(
-          `reverse_many failed, skipping ${chunk.length} wallets: ${msg.split('\n')[0]}`,
-        );
+        console.warn(`reverse_many failed, skipping ${chunk.length} wallets: ${msg.split('\n')[0]}`);
         return chunk.map(() => null);
       }
       batched = false;
@@ -103,5 +90,4 @@ for (let i = 0; i < addrs.length && found.length < LIMIT; i += REVERSE_MANY_CAP)
 const out = found.slice(0, LIMIT);
 
 console.log(`\nResolved ${out.length} handles (of ${addrs.length} wallets):\n`);
-for (const { handle, addr } of out)
-  console.log(`@${handle.padEnd(16)} ${addr.slice(0, 6)}…${addr.slice(-4)}`);
+for (const { handle, addr } of out) console.log(`@${handle.padEnd(16)} ${addr.slice(0, 6)}…${addr.slice(-4)}`);

@@ -14,12 +14,11 @@ path, not a claim._
 > economic gravity, not a detection cat-and-mouse.
 
 Two-track model as economics:
-
 - **Social XP** (vouches) — clout, leaderboard, rank. **Never touches the treasury.** Free
-  to mint, infinitely abundant, zero cash liability. This is the _growth/engagement_ layer.
+  to mint, infinitely abundant, zero cash liability. This is the *growth/engagement* layer.
 - **Earned XP** (attester-verified quests only) — the **only** track that can unlock USDC,
   and even then bounded by per-reward amount + a global daily cap + (on mainnet) a
-  proof-of-funding gate. This is the _money_ layer, deliberately scarce.
+  proof-of-funding gate. This is the *money* layer, deliberately scarce.
 
 ## 2. Who pays, and for what (revenue streams)
 
@@ -29,19 +28,19 @@ Ordered by how soon they're realistic.
    pool to reward verified actions (referrals, merged PRs, event attendance, on-chain
    tasks). alvinmunk takes a **platform fee** (e.g. 5–10%) on funded pools. The sponsor gets
    sybil-resistant distribution; alvinmunk's payout is fully pre-funded → no faucet risk.
-   _This is the wedge revenue: cohort leaders/sponsors already want exactly this._
+   *This is the wedge revenue: cohort leaders/sponsors already want exactly this.*
 2. **Tipping rail fee.** USDC tips wallet→wallet (already built) can carry a thin fee or a
    "boost" upsell. Small per-unit, but it's real value movement and it's on by design.
 3. **Anchor off-ramp partnership (Black-belt).** When earned USDC is cashed out via a
    Stellar **SEP-24 anchor**, alvinmunk can earn a referral/rev-share, and the anchor gains a
-   consumer funnel that already holds USDC. Anchors also _harden_ the economy (anchor
+   consumer funnel that already holds USDC. Anchors also *harden* the economy (anchor
    deposits are the cheapest real proof-of-funding signal).
 4. **Reputation-as-a-primitive (later / Master).** The `att_set` attestation + `get_score`/
    `get_attestation` read views can be consumed by other apps (gating, allowlists, KYC
    tiering signals). Monetize via a read API / partner tier once there's a reputation graph
    worth reading. (Kept architecturally free from day one — never a second write path.)
 5. **Non-dilutive: SCF grant + InstaAward.** Reaching Master belt opens the Stellar
-   Community Fund. This funds runway while the above streams mature — it is _fuel_, not a
+   Community Fund. This funds runway while the above streams mature — it is *fuel*, not a
    business model.
 
 ## 3. What we will NOT do
@@ -49,7 +48,7 @@ Ordered by how soon they're realistic.
 - **No native token / financialized speculation.** It would invert the brand (recognition,
   not grinding) and attract exactly the airdrop-farmers we design against.
 - **No selling user data.** The graph is on-chain and public by nature; the product sells
-  _distribution and verification_, not surveillance.
+  *distribution and verification*, not surveillance.
 - **No unbacked rewards.** The treasury is demand-funded; we never promise payouts we
   haven't been funded for.
 

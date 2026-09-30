@@ -125,9 +125,7 @@ export function StatStrip({ address }: { address: string }) {
                 <div key={tile.key} className="glass rounded-2xl p-4">
                   <div className="mb-2 flex items-center gap-2">
                     <Icon className={cn('size-4', tile.tint)} />
-                    <span className="text-xs font-medium text-muted-foreground">
-                      {t(`statStrip.${tile.key}.label`)}
-                    </span>
+                    <span className="text-xs font-medium text-muted-foreground">{t(`statStrip.${tile.key}.label`)}</span>
                   </div>
                   <div className="h-9 w-16 animate-pulse rounded bg-muted/40" />
                   <div className="mt-2 h-2 w-20 animate-pulse rounded bg-muted/30" />
@@ -140,16 +138,12 @@ export function StatStrip({ address }: { address: string }) {
                 <div key={tile.key} className="glass rounded-2xl p-4">
                   <div className="mb-2 flex items-center gap-2">
                     <Icon className={cn('size-4', tile.tint)} />
-                    <span className="text-xs font-medium text-muted-foreground">
-                      {t(`statStrip.${tile.key}.label`)}
-                    </span>
+                    <span className="text-xs font-medium text-muted-foreground">{t(`statStrip.${tile.key}.label`)}</span>
                   </div>
                   <div className="font-display text-3xl font-semibold tabular-nums">
                     {numberFormat.format(value(tile.key))}
                   </div>
-                  <p className="mt-1 hidden text-[11px] text-muted-foreground sm:block">
-                    {t(`statStrip.${tile.key}.hint`)}
-                  </p>
+                  <p className="mt-1 hidden text-[11px] text-muted-foreground sm:block">{t(`statStrip.${tile.key}.hint`)}</p>
                 </div>
               );
             })}
@@ -161,7 +155,9 @@ export function StatStrip({ address }: { address: string }) {
             <StateArt kind="empty-leaderboard" size={96} className="shrink-0" />
             <div>
               <p className="font-display text-lg text-foreground">{t('statStrip.empty.title')}</p>
-              <p className="mt-1 text-sm text-muted-foreground">{t('statStrip.empty.body')}</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {t('statStrip.empty.body')}
+              </p>
             </div>
           </div>
         </div>

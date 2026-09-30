@@ -15,10 +15,7 @@ const { state } = vi.hoisted(() => ({
     config: {
       network: 'testnet',
       rpcUrl: 'https://rpc.test',
-      contracts: {} as Record<
-        'reputation' | 'registry' | 'questRegistry' | 'rewards' | 'gate',
-        string
-      >,
+      contracts: {} as Record<'reputation' | 'registry' | 'questRegistry' | 'rewards' | 'gate', string>,
     },
   },
 }));
@@ -53,10 +50,7 @@ function freshLatestLedger(ageSeconds = 0) {
   };
 }
 
-function mockServer(
-  getHealth: ReturnType<typeof vi.fn>,
-  getLatestLedger: ReturnType<typeof vi.fn>,
-) {
+function mockServer(getHealth: ReturnType<typeof vi.fn>, getLatestLedger: ReturnType<typeof vi.fn>) {
   // The route calls `new rpc.Server(...)`, and Vitest 4 constructs the implementation with `new`,
   // so it has to be a `function` (an arrow function is not constructible).
   vi.mocked(rpc.Server).mockImplementation(function () {
@@ -67,9 +61,7 @@ function mockServer(
 /** An RPC that is up, fresh and keeps a long enough history. */
 function healthyRpc() {
   mockServer(
-    vi
-      .fn()
-      .mockResolvedValue({ status: 'healthy', latestLedger: 100, ledgerRetentionWindow: 20000 }),
+    vi.fn().mockResolvedValue({ status: 'healthy', latestLedger: 100, ledgerRetentionWindow: 20000 }),
     vi.fn().mockResolvedValue(freshLatestLedger(2)),
   );
 }
@@ -142,9 +134,7 @@ describe('/api/health', () => {
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.ok).toBe(true);
-    expect(body.rpcWarning).toMatch(
-      /RPC retention window \(100\) is smaller than required \(17280\)/,
-    );
+    expect(body.rpcWarning).toMatch(/RPC retention window \(100\) is smaller than required \(17280\)/);
   });
 
   it('returns 503 when unhealthy', async () => {

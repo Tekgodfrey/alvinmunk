@@ -55,13 +55,7 @@ export type KitCategory = keyof typeof KIT_COUNTS;
  * Order = z-order (bg behind … accessory on top). Calibrated visually; do not re-tune
  * casually (it keeps every skin/eyes/hair/mouth/acc combination aligned).
  */
-export const KIT_LAYERS: {
-  cat: KitCategory;
-  field: keyof KitAvatar;
-  wRef: number;
-  topRef: number;
-  cover?: boolean;
-}[] = [
+export const KIT_LAYERS: { cat: KitCategory; field: keyof KitAvatar; wRef: number; topRef: number; cover?: boolean }[] = [
   { cat: 'bg', field: 'bg', wRef: 200, topRef: 0, cover: true },
   { cat: 'skin', field: 'skin', wRef: 158, topRef: 40 },
   { cat: 'hair', field: 'hair', wRef: 168, topRef: 20 },

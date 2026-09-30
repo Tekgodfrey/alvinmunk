@@ -41,11 +41,7 @@ self.addEventListener('install', () => {
 
 // ─── push ───────────────────────────────────────────────────────────────────
 self.addEventListener('push', (event) => {
-  let payload = {
-    title: '🌟 Your vouch was claimed',
-    body: 'Someone lit their star.',
-    vouchId: null,
-  };
+  let payload = { title: '🌟 Your vouch was claimed', body: 'Someone lit their star.', vouchId: null };
 
   if (event.data) {
     try {
@@ -60,7 +56,7 @@ self.addEventListener('push', (event) => {
     icon: '/assets/brand/alvinmunk-icon-192.png',
     badge: '/assets/brand/alvinmunk-badge-96.png',
     tag: `vouch-claimed-${payload.vouchId ?? 'unknown'}`,
-    renotify: false, // same tag → replace, not a second buzz
+    renotify: false,               // same tag → replace, not a second buzz
     data: {
       url: payload.vouchId ? `/app` : APP_ORIGIN,
       vouchId: payload.vouchId,
@@ -77,19 +73,21 @@ self.addEventListener('notificationclick', (event) => {
   const targetUrl = (event.notification.data && event.notification.data.url) || APP_ORIGIN;
 
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
-      // If there's already an open tab on the same origin, focus it.
-      for (const client of windowClients) {
-        if (client.url.startsWith(APP_ORIGIN) && 'focus' in client) {
-          client.navigate(targetUrl);
-          return client.focus();
+    clients
+      .matchAll({ type: 'window', includeUncontrolled: true })
+      .then((windowClients) => {
+        // If there's already an open tab on the same origin, focus it.
+        for (const client of windowClients) {
+          if (client.url.startsWith(APP_ORIGIN) && 'focus' in client) {
+            client.navigate(targetUrl);
+            return client.focus();
+          }
         }
-      }
-      // Otherwise open a new tab.
-      if (clients.openWindow) {
-        return clients.openWindow(targetUrl);
-      }
-    }),
+        // Otherwise open a new tab.
+        if (clients.openWindow) {
+          return clients.openWindow(targetUrl);
+        }
+      }),
   );
 });
 

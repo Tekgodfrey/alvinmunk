@@ -65,10 +65,7 @@ describe('readNetworkFor', () => {
     const net = readNetworkFor('testnet')!;
     expect(net.rpcUrl).toBe('https://testnet-rpc.example.com');
     expect(net.contracts).toEqual({ reputation: 'CPINNEDREP', registry: 'CPINNEDREG' });
-    expect(net.client.contracts).toMatchObject({
-      reputation: 'CPINNEDREP',
-      registry: 'CPINNEDREG',
-    });
+    expect(net.client.contracts).toMatchObject({ reputation: 'CPINNEDREP', registry: 'CPINNEDREG' });
   });
 });
 
@@ -94,9 +91,7 @@ describe('isReadOnlyView / withReadNetwork', () => {
 
   it('keeps the override on links and share URLs, and only then', async () => {
     const { readNetworkFor, withReadNetwork } = await load();
-    expect(withReadNetwork('/leaderboard', readNetworkFor('testnet'))).toBe(
-      '/leaderboard?network=testnet',
-    );
+    expect(withReadNetwork('/leaderboard', readNetworkFor('testnet'))).toBe('/leaderboard?network=testnet');
     expect(withReadNetwork('/leaderboard', null)).toBe('/leaderboard');
   });
 });

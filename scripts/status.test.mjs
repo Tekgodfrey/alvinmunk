@@ -441,10 +441,7 @@ test('a placeholder id is refused, not simulated against', () =>
     { NEXT_PUBLIC_REWARDS_CONTRACT_ID: 'REPLACE_WITH_REWARDS_ID' },
     ({ code, stderr }, calls) => {
       assert.equal(code, 2);
-      assert.match(
-        stderr,
-        /NEXT_PUBLIC_REWARDS_CONTRACT_ID \(from environment\) is not a contract id/,
-      );
+      assert.match(stderr, /NEXT_PUBLIC_REWARDS_CONTRACT_ID \(from environment\) is not a contract id/);
       assert.deepEqual(calls, []);
     },
   ));

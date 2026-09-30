@@ -170,75 +170,73 @@ export function IdentityBar() {
 
   return (
     <div className="mb-3">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-2">
-          {editing ? (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                void save();
-              }}
-              className="flex items-center gap-2"
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex min-w-0 items-center gap-2">
+        {editing ? (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              void save();
+            }}
+            className="flex items-center gap-2"
+          >
+            <span className="font-mono text-muted-foreground">@</span>
+            <Input
+              autoFocus
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              placeholder={profile.handle}
+              className="h-9 w-40 font-mono"
+              aria-label={t('identity.newHandle')}
+            />
+            <Button size="sm" variant="flow" type="submit" disabled={busy}>
+              {busy ? '…' : t('identity.stamp')}
+            </Button>
+            <button
+              type="button"
+              onClick={() => setEditing(false)}
+              className="text-muted-foreground hover:text-foreground"
+              aria-label={t('identity.cancel')}
             >
-              <span className="font-mono text-muted-foreground">@</span>
-              <Input
-                autoFocus
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-                placeholder={profile.handle}
-                className="h-9 w-40 font-mono"
-                aria-label={t('identity.newHandle')}
-              />
-              <Button size="sm" variant="flow" type="submit" disabled={busy}>
-                {busy ? '…' : t('identity.stamp')}
-              </Button>
-              <button
-                type="button"
-                onClick={() => setEditing(false)}
-                className="text-muted-foreground hover:text-foreground"
-                aria-label={t('identity.cancel')}
-              >
-                <X className="size-4" />
-              </button>
-            </form>
-          ) : (
-            <>
-              <button
-                onClick={() => setPicking((p) => !p)}
-                disabled={savingMeta}
-                className="rounded-full outline-none ring-offset-2 ring-offset-background transition-transform hover:scale-105 focus-visible:ring-2 focus-visible:ring-lime"
-                aria-label={t('identity.changeFace')}
-                title={t('identity.changeFace')}
-              >
-                <Avatar
-                  address={profile.address}
-                  avatar={profile.avatar}
-                  handle={profile.handle}
-                  size={40}
-                />
-              </button>
-              <p className="truncate font-display text-lg font-semibold">@{profile.handle}</p>
-              <Badge variant="onchain">{t('identity.onChain')}</Badge>
-              <button
-                onClick={() => {
-                  setValue(profile.handle);
-                  setEditing(true);
-                }}
-                className="text-muted-foreground transition-colors hover:text-primary"
-                aria-label={t('identity.editHandle')}
-              >
-                <Pencil className="size-3.5" />
-              </button>
-            </>
-          )}
-        </div>
-        <div className="flex shrink-0 items-center gap-3">
-          <Link href={`/u/${profile.handle}`} className="text-sm text-primary hover:underline">
-            {t('identity.viewProfile')}
-          </Link>
-          <ShareRow path={`/u/${profile.handle}`} text={t('identity.shareText')} />
-        </div>
+              <X className="size-4" />
+            </button>
+          </form>
+        ) : (
+          <>
+            <button
+              onClick={() => setPicking((p) => !p)}
+              disabled={savingMeta}
+              className="rounded-full outline-none ring-offset-2 ring-offset-background transition-transform hover:scale-105 focus-visible:ring-2 focus-visible:ring-lime"
+              aria-label={t('identity.changeFace')}
+              title={t('identity.changeFace')}
+            >
+              <Avatar address={profile.address} avatar={profile.avatar} handle={profile.handle} size={40} />
+            </button>
+            <p className="truncate font-display text-lg font-semibold">@{profile.handle}</p>
+            <Badge variant="onchain">{t('identity.onChain')}</Badge>
+            <button
+              onClick={() => {
+                setValue(profile.handle);
+                setEditing(true);
+              }}
+              className="text-muted-foreground transition-colors hover:text-primary"
+              aria-label={t('identity.editHandle')}
+            >
+              <Pencil className="size-3.5" />
+            </button>
+          </>
+        )}
       </div>
+      <div className="flex shrink-0 items-center gap-3">
+        <Link href={`/u/${profile.handle}`} className="text-sm text-primary hover:underline">
+          {t('identity.viewProfile')}
+        </Link>
+        <ShareRow
+          path={`/u/${profile.handle}`}
+          text={t('identity.shareText')}
+        />
+      </div>
+    </div>
 
       {/* Bio — plain text, published with the face */}
       <div className="mt-1.5 flex items-center gap-2 pl-[48px]">
@@ -314,9 +312,7 @@ export function IdentityBar() {
                 onClick={() => setTab(faceTab)}
                 className={cn(
                   'rounded-full px-3 py-1 font-mono text-[10px] uppercase tracking-wider transition-colors',
-                  tab === faceTab
-                    ? 'bg-lime text-lime-foreground'
-                    : 'text-muted-foreground hover:text-foreground',
+                  tab === faceTab ? 'bg-lime text-lime-foreground' : 'text-muted-foreground hover:text-foreground',
                 )}
               >
                 {faceTab === 'faces' ? t('identity.pickFace') : t('identity.remix')}

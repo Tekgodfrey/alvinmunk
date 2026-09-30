@@ -176,10 +176,7 @@ describe('judgeReferral', () => {
   });
 
   it('gives an empty account bound to you nothing', () => {
-    for (const bound of [
-      facts({ score: 0n, invitedBy: INVITER }),
-      facts({ score: 0n, marker: INVITER }),
-    ]) {
+    for (const bound of [facts({ score: 0n, invitedBy: INVITER }), facts({ score: 0n, marker: INVITER })]) {
       expect(judgeReferral(bound, C, INVITER)).toEqual({
         ok: false,
         reason: 'that wallet hasn’t done anything here yet — no referral credit',
@@ -314,10 +311,7 @@ const QUEST_CONTRACT = 'CAIRCEIRCEIRCEIRCEIRCEIRCEIRCEIRCEIRCEIRCEIRCEIRCEIRDB3V
 const CLASSIC = 'GARCEIRCEIRCEIRCEIRCEIRCEIRCEIRCEIRCEIRCEIRCEIRCEIRCFRVX'; // 32 × 0x22
 const PASSKEY = 'CAZTGMZTGMZTGMZTGMZTGMZTGMZTGMZTGMZTGMZTGMZTGMZTGMZTGGJH'; // 32 × 0x33
 const TESTNET = { contractId: QUEST_CONTRACT, passphrase: 'Test SDF Network ; September 2015' };
-const MAINNET = {
-  contractId: QUEST_CONTRACT,
-  passphrase: 'Public Global Stellar Network ; September 2015',
-};
+const MAINNET = { contractId: QUEST_CONTRACT, passphrase: 'Public Global Stellar Network ; September 2015' };
 const EXPIRES_AT = 1_790_813_400; // 2026-10-01 00:10:00 UTC
 
 /** Quest 3's award payload on testnet from QUEST_CONTRACT, valid through EXPIRES_AT — the
@@ -335,9 +329,7 @@ const AWARD_PAYLOAD_G =
   '0000001200000000000000002222222222222222222222222222222222222222222222222222222222222222' +
   AWARD_EXPIRES_AT;
 const AWARD_PAYLOAD_C =
-  AWARD_PAYLOAD_HEAD +
-  '00000012000000013333333333333333333333333333333333333333333333333333333333333333' +
-  AWARD_EXPIRES_AT;
+  AWARD_PAYLOAD_HEAD + '00000012000000013333333333333333333333333333333333333333333333333333333333333333' + AWARD_EXPIRES_AT;
 
 const hex = (b: Uint8Array) => Buffer.from(b).toString('hex');
 
@@ -376,13 +368,8 @@ describe('signQuestPayload', () => {
   });
 
   it('signs a grant that does not verify with a stretched expiry or for anyone else', () => {
-    const sig = Buffer.from(
-      signQuestPayload(kp.secret(), TESTNET, 3, CLASSIC, EXPIRES_AT).sig,
-      'base64',
-    );
-    expect(kp.verify(questPayload(TESTNET, 3, CLASSIC, EXPIRES_AT + QUEST_SIG_TTL_SECS), sig)).toBe(
-      false,
-    );
+    const sig = Buffer.from(signQuestPayload(kp.secret(), TESTNET, 3, CLASSIC, EXPIRES_AT).sig, 'base64');
+    expect(kp.verify(questPayload(TESTNET, 3, CLASSIC, EXPIRES_AT + QUEST_SIG_TTL_SECS), sig)).toBe(false);
     expect(kp.verify(questPayload(TESTNET, 3, PASSKEY, EXPIRES_AT), sig)).toBe(false);
     expect(kp.verify(questPayload(MAINNET, 3, CLASSIC, EXPIRES_AT), sig)).toBe(false);
   });
@@ -413,12 +400,7 @@ describe('questWindow', () => {
   });
 
   it("derives the contract's epoch and the period's first and last second", () => {
-    const week = {
-      periodSecs: WEEK_SECS,
-      epoch: 2961,
-      start: THU_2026_10_01,
-      end: THU_2026_10_01 + WEEK_SECS - 1,
-    };
+    const week = { periodSecs: WEEK_SECS, epoch: 2961, start: THU_2026_10_01, end: THU_2026_10_01 + WEEK_SECS - 1 };
     expect(questWindow(THU_2026_10_01, WEEK_SECS)).toEqual(week);
     expect(questWindow(THU_2026_10_01 + WEEK_SECS - 1, WEEK_SECS)).toEqual(week);
     expect(questWindow(THU_2026_10_01 + WEEK_SECS, WEEK_SECS)?.epoch).toBe(2962);
@@ -432,9 +414,7 @@ describe('signatureExpiry', () => {
     expect(signatureExpiry(now, null)).toBe(now + QUEST_SIG_TTL_SECS);
     expect(signatureExpiry(now, questWindow(now, WEEK_SECS))).toBe(now + QUEST_SIG_TTL_SECS);
     const late = THU_2026_10_01 + WEEK_SECS - 60;
-    expect(signatureExpiry(late, questWindow(late, WEEK_SECS))).toBe(
-      THU_2026_10_01 + WEEK_SECS - 1,
-    );
+    expect(signatureExpiry(late, questWindow(late, WEEK_SECS))).toBe(THU_2026_10_01 + WEEK_SECS - 1);
   });
 });
 
@@ -450,10 +430,7 @@ describe('questPayload for a repeatable quest', () => {
 
   it('binds the signature to its period', () => {
     const kp = Keypair.fromRawEd25519Seed(Buffer.alloc(32, 7));
-    const sig = Buffer.from(
-      signQuestPayload(kp.secret(), TESTNET, 3, CLASSIC, EXPIRES_AT, week).sig,
-      'base64',
-    );
+    const sig = Buffer.from(signQuestPayload(kp.secret(), TESTNET, 3, CLASSIC, EXPIRES_AT, week).sig, 'base64');
     expect(kp.verify(questPayload(TESTNET, 3, CLASSIC, EXPIRES_AT, week), sig)).toBe(true);
     const next = questWindow(THU_2026_10_01 + WEEK_SECS, WEEK_SECS);
     const daily = questWindow(THU_2026_10_01, 86_400);

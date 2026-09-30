@@ -16,13 +16,10 @@ describe('fetchLeaderboard', () => {
 
   it('merges live event window with snapshot, detects reciprocal rings, and ranks', async () => {
     // Setup mock localStorage snapshot
-    localStorage.setItem(
-      'alvinmunk.leaderboard.snapshot',
-      JSON.stringify([
-        { address: 'A', total: 10, ledger: 100 },
-        { address: 'B', total: 5, ledger: 100 },
-      ]),
-    );
+    localStorage.setItem('alvinmunk.leaderboard.snapshot', JSON.stringify([
+      { address: 'A', total: 10, ledger: 100 },
+      { address: 'B', total: 5, ledger: 100 },
+    ]));
 
     // Setup mock fetchReputationEvents
     vi.mocked(fetchReputationEvents).mockResolvedValue([
@@ -61,7 +58,9 @@ describe('fetchLeaderboard', () => {
 
     try {
       const result = await fetchLeaderboard();
-      expect(result).toEqual([{ address: 'A', score: 15, rank: 1, flagged: false }]);
+      expect(result).toEqual([
+        { address: 'A', score: 15, rank: 1, flagged: false },
+      ]);
     } finally {
       if (original) {
         Object.defineProperty(window, 'localStorage', original);
@@ -74,12 +73,10 @@ describe('fetchLeaderboard', () => {
   // these tests exercise fetchLeaderboard's own handling of that contract, not a mock that
   // contradicts it.
   function mockEventsRespectingThrowOnError() {
-    vi.mocked(fetchReputationEvents).mockImplementation(
-      async (options?: { throwOnError?: boolean }) => {
-        if (options?.throwOnError) throw new Error('rpc down');
-        return [];
-      },
-    );
+    vi.mocked(fetchReputationEvents).mockImplementation(async (options?: { throwOnError?: boolean }) => {
+      if (options?.throwOnError) throw new Error('rpc down');
+      return [];
+    });
   }
 
   it('resolves to [] on RPC failure for existing callers, preserving the #312 contract', async () => {
@@ -92,10 +89,9 @@ describe('fetchLeaderboard', () => {
 
   it('propagates a failure via throwOnError even when a snapshot already has data', async () => {
     // A snapshot from an earlier, successful load.
-    localStorage.setItem(
-      'alvinmunk.leaderboard.snapshot',
-      JSON.stringify([{ address: 'A', total: 10, ledger: 100 }]),
-    );
+    localStorage.setItem('alvinmunk.leaderboard.snapshot', JSON.stringify([
+      { address: 'A', total: 10, ledger: 100 },
+    ]));
     mockEventsRespectingThrowOnError();
 
     // The outage must still surface to the caller (the leaderboard page uses this to flip
@@ -118,12 +114,9 @@ describe('fetchLeaderboard', () => {
     expect(fetchReputationEvents).toHaveBeenLastCalledWith({ throwOnError: true, maxAgeMs: 0 });
   });
 
-  it("keeps an override network in its own snapshot, apart from the deployment's (#290)", async () => {
+  it('keeps an override network in its own snapshot, apart from the deployment\'s (#290)', async () => {
     const net = { network: 'testnet' } as unknown as ReadNetwork;
-    localStorage.setItem(
-      'alvinmunk.leaderboard.snapshot',
-      JSON.stringify([{ address: 'MAIN', total: 99, ledger: 1 }]),
-    );
+    localStorage.setItem('alvinmunk.leaderboard.snapshot', JSON.stringify([{ address: 'MAIN', total: 99, ledger: 1 }]));
     vi.mocked(fetchReputationEvents).mockResolvedValue([
       { topics: [EVENTS.SOCIAL, 'TEST'], data: 7, ledger: 5 },
     ]);

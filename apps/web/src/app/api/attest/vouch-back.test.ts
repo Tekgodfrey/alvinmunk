@@ -36,10 +36,10 @@ vi.mock('@stellar/stellar-sdk', async (importOriginal) => {
       // `new rpc.Server(...)`: Vitest 4 constructs the implementation, so it must be a `function`.
       Server: vi.fn().mockImplementation(function () {
         return {
-          getHealth: getHealthMock,
-          getEvents: getEventsMock,
+          getHealth:           getHealthMock,
+          getEvents:           getEventsMock,
           simulateTransaction: simulateMock,
-          getLatestLedger: vi.fn(),
+          getLatestLedger:     vi.fn(),
         };
       }),
       Api: real.rpc.Api,
@@ -56,10 +56,10 @@ import { DEFAULT_QUEST_IDS } from '@/lib/attest';
 // to real signing (`Address(recipient).toScVal()`), so it must be a checksum-valid StrKey —
 // unlike BOB/CAROL/DAVE, which only ever appear as opaque `claimer` strings inside decoded
 // events and never pass through Address().
-const ALICE = Keypair.random().publicKey();
-const BOB = 'G' + 'B'.repeat(55);
-const CAROL = 'G' + 'C'.repeat(55);
-const DAVE = 'G' + 'D'.repeat(55);
+const ALICE  = Keypair.random().publicKey();
+const BOB    = 'G' + 'B'.repeat(55);
+const CAROL  = 'G' + 'C'.repeat(55);
+const DAVE   = 'G' + 'D'.repeat(55);
 const ATTESTER_KP = Keypair.random();
 
 /** Encode a `vouch/claimed` event value as the contract emits it: (id, from, claimer). */
@@ -88,7 +88,7 @@ describe('decodeVouchClaimedEvent', () => {
   });
 
   it('returns null for a tuple with wrong length', () => {
-    expect(decodeVouchClaimedEvent([1, ALICE])).toBeNull(); // too short
+    expect(decodeVouchClaimedEvent([1, ALICE])).toBeNull();        // too short
     expect(decodeVouchClaimedEvent([1, ALICE, BOB, CAROL])).toBeNull(); // too long
   });
 
@@ -134,8 +134,8 @@ describe('vouch/claimed counting logic', () => {
   it('ignores events from other vouchers', () => {
     const events = [
       fakeEvent(1, ALICE, BOB),
-      fakeEvent(2, DAVE, BOB), // DAVE vouched, not ALICE
-      fakeEvent(3, DAVE, CAROL),
+      fakeEvent(2, DAVE,  BOB),  // DAVE vouched, not ALICE
+      fakeEvent(3, DAVE,  CAROL),
     ];
     expect(countFrom(events, ALICE)).toBe(1); // only BOB via ALICE
   });
@@ -150,7 +150,7 @@ describe('vouch/claimed counting logic', () => {
     // Page 2: ALICE -> CAROL (duplicate), ALICE -> DAVE
     const page1 = [fakeEvent(1, ALICE, BOB), fakeEvent(2, ALICE, CAROL)];
     const page2 = [fakeEvent(3, ALICE, CAROL), fakeEvent(4, ALICE, DAVE)];
-    const all = [...page1, ...page2];
+    const all   = [...page1, ...page2];
     expect(countFrom(all, ALICE)).toBe(3); // BOB + CAROL + DAVE
   });
 });
@@ -189,22 +189,20 @@ describe('POST /api/attest — vouch_back evidence (issue #165)', () => {
 
   beforeEach(() => {
     vi.resetModules();
-    process.env.ATTESTER_SECRET_KEY = ATTESTER_KP.secret();
+    process.env.ATTESTER_SECRET_KEY                     = ATTESTER_KP.secret();
     // Real, checksum-valid contract StrKeys — a fake shape like 'C' + 'Q'.repeat(55)
     // fails `new Contract(...)`/`Address(...).toScVal()` with "Invalid contract ID"
     // once a request reaches real signing, so the 200-path tests below would never
     // exercise the branch they claim to.
-    process.env.NEXT_PUBLIC_QUEST_REGISTRY_CONTRACT_ID = StrKey.encodeContract(
-      Buffer.alloc(32, 17),
-    );
-    process.env.NEXT_PUBLIC_REPUTATION_CONTRACT_ID = StrKey.encodeContract(Buffer.alloc(32, 18));
-    process.env.NEXT_PUBLIC_RPC_URL = 'https://soroban-testnet.stellar.org';
-    process.env.NEXT_PUBLIC_HORIZON_URL = 'https://horizon-testnet.stellar.org';
-    process.env.NEXT_PUBLIC_STELLAR_NETWORK = 'testnet';
+    process.env.NEXT_PUBLIC_QUEST_REGISTRY_CONTRACT_ID  = StrKey.encodeContract(Buffer.alloc(32, 17));
+    process.env.NEXT_PUBLIC_REPUTATION_CONTRACT_ID      = StrKey.encodeContract(Buffer.alloc(32, 18));
+    process.env.NEXT_PUBLIC_RPC_URL                     = 'https://soroban-testnet.stellar.org';
+    process.env.NEXT_PUBLIC_HORIZON_URL                 = 'https://horizon-testnet.stellar.org';
+    process.env.NEXT_PUBLIC_STELLAR_NETWORK             = 'testnet';
     // Quest ↔ evidence binding (lib/attest.ts buildQuestEvidenceMap, issue #359): bind
     // quest 1 (the id every test below uses) to vouch_back, and clear the other
     // binding vars so no value leaks in from a previous test.
-    process.env.NEXT_PUBLIC_VOUCHBACK_QUEST_ID = '1';
+    process.env.NEXT_PUBLIC_VOUCHBACK_QUEST_ID          = '1';
     delete process.env.NEXT_PUBLIC_DEFAULT_QUEST_ID;
     delete process.env.NEXT_PUBLIC_INVITE_QUEST_ID;
     delete process.env.QUEST_GITHUB_ID;
@@ -222,23 +220,22 @@ describe('POST /api/attest — vouch_back evidence (issue #165)', () => {
   it('422 with "0 claimed so far" when the scan finds no claimed vouches', async () => {
     setupClaimedEvents([]);
     const POST = await loadRoute();
-    const res = await POST(
-      makeRequest({ questId: 1, recipient: ALICE, evidence: { type: 'vouch_back', ref: '' } }),
-    );
+    const res = await POST(makeRequest({ questId: 1, recipient: ALICE, evidence: { type: 'vouch_back', ref: '' } }));
     expect(res.status).toBe(422);
-    const body = (await res.json()) as { error: string };
+    const body = await res.json() as { error: string };
     expect(body.error).toMatch(/0 claimed so far/);
   });
 
   it('422 reports the actual partial count in the rejection message', async () => {
     // ALICE has vouched for 2 people but needs VOUCH_BACK_MIN (3).
-    setupClaimedEvents([fakeEvent(1, ALICE, BOB), fakeEvent(2, ALICE, CAROL)]);
+    setupClaimedEvents([
+      fakeEvent(1, ALICE, BOB),
+      fakeEvent(2, ALICE, CAROL),
+    ]);
     const POST = await loadRoute();
-    const res = await POST(
-      makeRequest({ questId: 1, recipient: ALICE, evidence: { type: 'vouch_back', ref: '' } }),
-    );
+    const res = await POST(makeRequest({ questId: 1, recipient: ALICE, evidence: { type: 'vouch_back', ref: '' } }));
     expect(res.status).toBe(422);
-    const body = (await res.json()) as { error: string };
+    const body = await res.json() as { error: string };
     expect(body.error).toMatch(/2 claimed so far/);
   });
 
@@ -250,12 +247,12 @@ describe('POST /api/attest — vouch_back evidence (issue #165)', () => {
     getEventsMock.mockResolvedValue({ events: [], cursor: undefined });
 
     const POST = await loadRoute();
-    await POST(
-      makeRequest({ questId: 1, recipient: ALICE, evidence: { type: 'vouch_back', ref: '' } }),
-    );
+    await POST(makeRequest({ questId: 1, recipient: ALICE, evidence: { type: 'vouch_back', ref: '' } }));
 
     // The first getEvents call must use startLedger = oldestLedger.
-    expect(getEventsMock).toHaveBeenCalledWith(expect.objectContaining({ startLedger: OLDEST }));
+    expect(getEventsMock).toHaveBeenCalledWith(
+      expect.objectContaining({ startLedger: OLDEST }),
+    );
   });
 
   // ── scan follows cursor until exhausted ──────────────────────────────────
@@ -278,9 +275,7 @@ describe('POST /api/attest — vouch_back evidence (issue #165)', () => {
 
     setupPayloadSim();
     const POST = await loadRoute();
-    const res = await POST(
-      makeRequest({ questId: 1, recipient: ALICE, evidence: { type: 'vouch_back', ref: '' } }),
-    );
+    const res = await POST(makeRequest({ questId: 1, recipient: ALICE, evidence: { type: 'vouch_back', ref: '' } }));
 
     // 3 distinct claimers (BOB, CAROL, DAVE) >= VOUCH_BACK_MIN(3) -> 200.
     expect(res.status).toBe(200);
@@ -302,11 +297,9 @@ describe('POST /api/attest — vouch_back evidence (issue #165)', () => {
     ]);
     setupPayloadSim();
     const POST = await loadRoute();
-    const res = await POST(
-      makeRequest({ questId: 1, recipient: ALICE, evidence: { type: 'vouch_back', ref: '' } }),
-    );
+    const res = await POST(makeRequest({ questId: 1, recipient: ALICE, evidence: { type: 'vouch_back', ref: '' } }));
     expect(res.status).toBe(200);
-    const body = (await res.json()) as { ok: boolean };
+    const body = await res.json() as { ok: boolean };
     expect(body.ok).toBe(true);
   });
 
@@ -321,11 +314,9 @@ describe('POST /api/attest — vouch_back evidence (issue #165)', () => {
       fakeEvent(3, ALICE, CAROL),
     ]);
     const POST = await loadRoute();
-    const res = await POST(
-      makeRequest({ questId: 1, recipient: ALICE, evidence: { type: 'vouch_back', ref: '' } }),
-    );
+    const res = await POST(makeRequest({ questId: 1, recipient: ALICE, evidence: { type: 'vouch_back', ref: '' } }));
     expect(res.status).toBe(422);
-    const body = (await res.json()) as { error: string };
+    const body = await res.json() as { error: string };
     expect(body.error).toMatch(/2 claimed so far/);
   });
 
@@ -333,17 +324,15 @@ describe('POST /api/attest — vouch_back evidence (issue #165)', () => {
 
   it('ignores claimed events where from is a different address', async () => {
     setupClaimedEvents([
-      fakeEvent(1, DAVE, BOB), // DAVE vouched, not ALICE
-      fakeEvent(2, DAVE, CAROL),
-      fakeEvent(3, DAVE, ALICE),
-      fakeEvent(4, ALICE, BOB), // only one real claim by ALICE
+      fakeEvent(1, DAVE,  BOB),   // DAVE vouched, not ALICE
+      fakeEvent(2, DAVE,  CAROL),
+      fakeEvent(3, DAVE,  ALICE),
+      fakeEvent(4, ALICE, BOB),   // only one real claim by ALICE
     ]);
     const POST = await loadRoute();
-    const res = await POST(
-      makeRequest({ questId: 1, recipient: ALICE, evidence: { type: 'vouch_back', ref: '' } }),
-    );
+    const res = await POST(makeRequest({ questId: 1, recipient: ALICE, evidence: { type: 'vouch_back', ref: '' } }));
     expect(res.status).toBe(422);
-    const body = (await res.json()) as { error: string };
+    const body = await res.json() as { error: string };
     expect(body.error).toMatch(/1 claimed so far/);
   });
 
@@ -352,11 +341,9 @@ describe('POST /api/attest — vouch_back evidence (issue #165)', () => {
   it('422 with config error when REP_ID is missing', async () => {
     process.env.NEXT_PUBLIC_REPUTATION_CONTRACT_ID = '';
     const POST = await loadRoute();
-    const res = await POST(
-      makeRequest({ questId: 1, recipient: ALICE, evidence: { type: 'vouch_back', ref: '' } }),
-    );
+    const res = await POST(makeRequest({ questId: 1, recipient: ALICE, evidence: { type: 'vouch_back', ref: '' } }));
     expect(res.status).toBe(422);
-    const body = (await res.json()) as { error: string };
+    const body = await res.json() as { error: string };
     expect(body.error).toMatch(/not configured/);
   });
 
@@ -365,11 +352,9 @@ describe('POST /api/attest — vouch_back evidence (issue #165)', () => {
   it('422 with retry message when getHealth throws', async () => {
     getHealthMock.mockRejectedValue(new Error('rpc timeout'));
     const POST = await loadRoute();
-    const res = await POST(
-      makeRequest({ questId: 1, recipient: ALICE, evidence: { type: 'vouch_back', ref: '' } }),
-    );
+    const res = await POST(makeRequest({ questId: 1, recipient: ALICE, evidence: { type: 'vouch_back', ref: '' } }));
     expect(res.status).toBe(422);
-    const body = (await res.json()) as { error: string };
+    const body = await res.json() as { error: string };
     expect(body.error).toMatch(/try again/);
   });
 
@@ -377,11 +362,9 @@ describe('POST /api/attest — vouch_back evidence (issue #165)', () => {
     getHealthMock.mockResolvedValue({ oldestLedger: 1 });
     getEventsMock.mockRejectedValue(new Error('network error'));
     const POST = await loadRoute();
-    const res = await POST(
-      makeRequest({ questId: 1, recipient: ALICE, evidence: { type: 'vouch_back', ref: '' } }),
-    );
+    const res = await POST(makeRequest({ questId: 1, recipient: ALICE, evidence: { type: 'vouch_back', ref: '' } }));
     expect(res.status).toBe(422);
-    const body = (await res.json()) as { error: string };
+    const body = await res.json() as { error: string };
     expect(body.error).toMatch(/try again/);
   });
 
@@ -393,16 +376,14 @@ describe('POST /api/attest — vouch_back evidence (issue #165)', () => {
     setupPayloadSim();
 
     const POST = await loadRoute();
-    const res = await POST(
-      makeRequest({
-        questId: DEFAULT_QUEST_IDS.invite_converts,
-        recipient: ALICE,
-        evidence: { type: 'invite_converts', ref: BOB },
-      }),
-    );
+    const res = await POST(makeRequest({
+      questId: DEFAULT_QUEST_IDS.invite_converts,
+      recipient: ALICE,
+      evidence: { type: 'invite_converts', ref: BOB },
+    }));
 
     expect(res.status).toBe(200);
-    const body = (await res.json()) as { ok: boolean };
+    const body = await res.json() as { ok: boolean };
     expect(body.ok).toBe(true);
   });
 
@@ -414,16 +395,14 @@ describe('POST /api/attest — vouch_back evidence (issue #165)', () => {
     });
 
     const POST = await loadRoute();
-    const res = await POST(
-      makeRequest({
-        questId: DEFAULT_QUEST_IDS.invite_converts,
-        recipient: ALICE,
-        evidence: { type: 'invite_converts', ref: BOB },
-      }),
-    );
+    const res = await POST(makeRequest({
+      questId: DEFAULT_QUEST_IDS.invite_converts,
+      recipient: ALICE,
+      evidence: { type: 'invite_converts', ref: BOB },
+    }));
 
     expect(res.status).toBe(422);
-    const body = (await res.json()) as { error: string };
+    const body = await res.json() as { error: string };
     expect(body.error).toMatch(/hasn't claimed a vouch from you/);
   });
 
@@ -432,16 +411,14 @@ describe('POST /api/attest — vouch_back evidence (issue #165)', () => {
     getEventsMock.mockResolvedValue({ events: [], cursor: undefined });
 
     const POST = await loadRoute();
-    const res = await POST(
-      makeRequest({
-        questId: DEFAULT_QUEST_IDS.invite_converts,
-        recipient: ALICE,
-        evidence: { type: 'invite_converts', ref: BOB },
-      }),
-    );
+    const res = await POST(makeRequest({
+      questId: DEFAULT_QUEST_IDS.invite_converts,
+      recipient: ALICE,
+      evidence: { type: 'invite_converts', ref: BOB },
+    }));
 
     expect(res.status).toBe(422);
-    const body = (await res.json()) as { error: string };
+    const body = await res.json() as { error: string };
     expect(body.error).toMatch(/hasn't claimed a vouch from you/);
     expect(body.error).toMatch(/event window/);
   });
@@ -457,13 +434,11 @@ describe('POST /api/attest — vouch_back evidence (issue #165)', () => {
       .mockResolvedValue({ events: [], cursor: cursorAt(25_000), latestLedger: 25_000 });
 
     const POST = await loadRoute();
-    const res = await POST(
-      makeRequest({
-        questId: DEFAULT_QUEST_IDS.invite_converts,
-        recipient: ALICE,
-        evidence: { type: 'invite_converts', ref: BOB },
-      }),
-    );
+    const res = await POST(makeRequest({
+      questId: DEFAULT_QUEST_IDS.invite_converts,
+      recipient: ALICE,
+      evidence: { type: 'invite_converts', ref: BOB },
+    }));
 
     expect(res.status).toBe(422);
     expect(getEventsMock).toHaveBeenCalledTimes(3); // not the 50-page cap
@@ -473,21 +448,16 @@ describe('POST /api/attest — vouch_back evidence (issue #165)', () => {
     getHealthMock.mockResolvedValue({ oldestLedger: 1 });
     getEventsMock
       // The claim link (ALICE → CAROL) is only on page 2; page 1 has unrelated claims.
-      .mockResolvedValueOnce({
-        events: [fakeEvent(2, ALICE, DAVE), fakeEvent(3, DAVE, CAROL)],
-        cursor: 'next-page',
-      })
+      .mockResolvedValueOnce({ events: [fakeEvent(2, ALICE, DAVE), fakeEvent(3, DAVE, CAROL)], cursor: 'next-page' })
       .mockResolvedValueOnce({ events: [fakeEvent(4, ALICE, CAROL)], cursor: undefined });
     setupPayloadSim();
 
     const POST = await loadRoute();
-    const res = await POST(
-      makeRequest({
-        questId: DEFAULT_QUEST_IDS.invite_converts,
-        recipient: ALICE,
-        evidence: { type: 'invite_converts', ref: CAROL },
-      }),
-    );
+    const res = await POST(makeRequest({
+      questId: DEFAULT_QUEST_IDS.invite_converts,
+      recipient: ALICE,
+      evidence: { type: 'invite_converts', ref: CAROL },
+    }));
 
     expect(res.status).toBe(200);
     expect(getEventsMock).toHaveBeenCalledTimes(2);

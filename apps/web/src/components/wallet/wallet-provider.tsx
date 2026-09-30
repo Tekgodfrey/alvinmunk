@@ -41,9 +41,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     if (p) {
       setProfileState(p);
       void import('@/lib/stellar').then(({ getXlmBalance }) =>
-        getXlmBalance(p.address)
-          .then(setBalance)
-          .catch(() => {}),
+        getXlmBalance(p.address).then(setBalance).catch(() => {}),
       );
     }
   }, []);
@@ -57,51 +55,43 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     const addr = wallet?.address ?? profile?.address;
     if (!addr) return;
     void import('@/lib/stellar').then(({ getXlmBalance }) =>
-      getXlmBalance(addr)
-        .then(setBalance)
-        .catch(() => {}),
+      getXlmBalance(addr).then(setBalance).catch(() => {}),
     );
   }, [wallet, profile]);
 
-  const restoreProfile = useCallback(
-    async (w: Wallet): Promise<Profile | null> => {
-      // This browser already knows the address's handle: nothing to look up.
-      const local = loadProfile();
-      if (local?.address === w.address) return local;
-      // Otherwise it may still hold one (issue #278): a new device, a second browser, cleared
-      // site data. Adopt it; the published face and bio follow via IdentityBar's get_meta read.
-      const { reverseHandle } = await import('@/lib/registry');
-      const handle = await reverseHandle(w.address, { strict: true }).catch((e: unknown) => {
-        throw new Error("Couldn't look up your handle — try again in a moment.", { cause: e });
-      });
-      if (!handle) return null;
-      const p: Profile = { handle, address: w.address, createdAt: Date.now() };
-      setProfile(p);
-      return p;
-    },
-    [setProfile],
-  );
+  const restoreProfile = useCallback(async (w: Wallet): Promise<Profile | null> => {
+    // This browser already knows the address's handle: nothing to look up.
+    const local = loadProfile();
+    if (local?.address === w.address) return local;
+    // Otherwise it may still hold one (issue #278): a new device, a second browser, cleared
+    // site data. Adopt it; the published face and bio follow via IdentityBar's get_meta read.
+    const { reverseHandle } = await import('@/lib/registry');
+    const handle = await reverseHandle(w.address, { strict: true }).catch((e: unknown) => {
+      throw new Error("Couldn't look up your handle — try again in a moment.", { cause: e });
+    });
+    if (!handle) return null;
+    const p: Profile = { handle, address: w.address, createdAt: Date.now() };
+    setProfile(p);
+    return p;
+  }, [setProfile]);
 
-  const connect = useCallback(
-    async (mode: ConnectMode = 'create') => {
-      setConnecting(true);
-      try {
-        const { getWallet } = await import('@/lib/wallet');
-        const { getXlmBalance } = await import('@/lib/stellar');
-        const w = await getWallet(mode);
-        setWallet(w);
-        setBalance(await getXlmBalance(w.address).catch(() => null));
-        // Every connect adopts a handle the address already holds, so a returning user never
-        // lands on the create-handle form. Best-effort: a failed read changes nothing, and the
-        // flows that claim a handle check again (strictly) before they do.
-        await restoreProfile(w).catch(() => null);
-        return w;
-      } finally {
-        setConnecting(false);
-      }
-    },
-    [restoreProfile],
-  );
+  const connect = useCallback(async (mode: ConnectMode = 'create') => {
+    setConnecting(true);
+    try {
+      const { getWallet } = await import('@/lib/wallet');
+      const { getXlmBalance } = await import('@/lib/stellar');
+      const w = await getWallet(mode);
+      setWallet(w);
+      setBalance(await getXlmBalance(w.address).catch(() => null));
+      // Every connect adopts a handle the address already holds, so a returning user never
+      // lands on the create-handle form. Best-effort: a failed read changes nothing, and the
+      // flows that claim a handle check again (strictly) before they do.
+      await restoreProfile(w).catch(() => null);
+      return w;
+    } finally {
+      setConnecting(false);
+    }
+  }, [restoreProfile]);
 
   const disconnect = useCallback(() => {
     clearProfile();

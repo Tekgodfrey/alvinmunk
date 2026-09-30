@@ -51,58 +51,16 @@ export default function LandingPage() {
   const t = useTranslations();
 
   const STEPS = [
-    {
-      n: '01',
-      tKey: 'landing.step.01.title',
-      tagKey: 'landing.step.01.tag',
-      dKey: 'landing.step.01.desc',
-    },
-    {
-      n: '02',
-      tKey: 'landing.step.02.title',
-      tagKey: 'landing.step.02.tag',
-      dKey: 'landing.step.02.desc',
-    },
-    {
-      n: '03',
-      tKey: 'landing.step.03.title',
-      tagKey: 'landing.step.03.tag',
-      dKey: 'landing.step.03.desc',
-    },
+    { n: '01', tKey: 'landing.step.01.title', tagKey: 'landing.step.01.tag', dKey: 'landing.step.01.desc' },
+    { n: '02', tKey: 'landing.step.02.title', tagKey: 'landing.step.02.tag', dKey: 'landing.step.02.desc' },
+    { n: '03', tKey: 'landing.step.03.title', tagKey: 'landing.step.03.tag', dKey: 'landing.step.03.desc' },
   ];
 
   const FEATURES = [
-    {
-      id: 'F-01',
-      icon: Sparkles,
-      sticker: 'social-seen' as StickerName,
-      titleKey: 'landing.features.f01.title',
-      bodyKey: 'landing.features.f01.body',
-      span: 'md:col-span-2',
-      stampKey: 'landing.features.f01.stamp',
-    },
-    {
-      id: 'F-02',
-      icon: ShieldCheck,
-      sticker: 'hand-crossed' as StickerName,
-      titleKey: 'landing.features.f02.title',
-      bodyKey: 'landing.features.f02.body',
-    },
-    {
-      id: 'F-03',
-      icon: Coins,
-      sticker: 'ticker-coin' as StickerName,
-      titleKey: 'landing.features.f03.title',
-      bodyKey: 'landing.features.f03.body',
-    },
-    {
-      id: 'F-04',
-      icon: Globe,
-      sticker: 'social-eye' as StickerName,
-      titleKey: 'landing.features.f04.title',
-      bodyKey: 'landing.features.f04.body',
-      span: 'md:col-span-2',
-    },
+    { id: 'F-01', icon: Sparkles, sticker: 'social-seen' as StickerName, titleKey: 'landing.features.f01.title', bodyKey: 'landing.features.f01.body', span: 'md:col-span-2', stampKey: 'landing.features.f01.stamp' },
+    { id: 'F-02', icon: ShieldCheck, sticker: 'hand-crossed' as StickerName, titleKey: 'landing.features.f02.title', bodyKey: 'landing.features.f02.body' },
+    { id: 'F-03', icon: Coins, sticker: 'ticker-coin' as StickerName, titleKey: 'landing.features.f03.title', bodyKey: 'landing.features.f03.body' },
+    { id: 'F-04', icon: Globe, sticker: 'social-eye' as StickerName, titleKey: 'landing.features.f04.title', bodyKey: 'landing.features.f04.body', span: 'md:col-span-2' },
   ];
 
   return (
@@ -110,14 +68,8 @@ export default function LandingPage() {
       {/* ───────────── Hero ───────────── */}
       <section className="brand-cursor relative isolate overflow-hidden">
         <HeroBackdrop className="absolute inset-0 -z-10" />
-        <div
-          className="absolute inset-0 -z-10 bg-gradient-to-r from-background via-background/75 to-transparent"
-          aria-hidden
-        />
-        <div
-          className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-background to-transparent"
-          aria-hidden
-        />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-background via-background/75 to-transparent" aria-hidden />
+        <div className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-background to-transparent" aria-hidden />
 
         <div className="container py-28 md:py-40">
           <div className="max-w-2xl">
@@ -153,14 +105,12 @@ export default function LandingPage() {
             </Reveal>
             <Reveal delay={0.24}>
               <p className="mt-7 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                {t('landing.hero.pills')
-                  .split(' / ')
-                  .map((pill, i, arr) => (
-                    <span key={pill} className="contents">
-                      <span>{pill}</span>
-                      {i < arr.length - 1 && <span className="text-border">/</span>}
-                    </span>
-                  ))}
+                {t('landing.hero.pills').split(' / ').map((pill, i, arr) => (
+                  <span key={pill} className="contents">
+                    <span>{pill}</span>
+                    {i < arr.length - 1 && <span className="text-border">/</span>}
+                  </span>
+                ))}
               </p>
             </Reveal>
           </div>
@@ -170,15 +120,8 @@ export default function LandingPage() {
         <div className="border-y border-border/50 bg-card/20 py-3 backdrop-blur-sm [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
           <div className="flex w-max motion-safe:animate-marquee gap-10 pr-10">
             {[...TICKER, ...TICKER].map((tick, i) => (
-              <span
-                key={i}
-                className="flex items-center gap-2 whitespace-nowrap font-mono text-xs text-muted-foreground"
-              >
-                <Sticker
-                  name={TICKER_ICONS[i % TICKER_ICONS.length]}
-                  size={20}
-                  className="h-4 w-auto"
-                />
+              <span key={i} className="flex items-center gap-2 whitespace-nowrap font-mono text-xs text-muted-foreground">
+                <Sticker name={TICKER_ICONS[i % TICKER_ICONS.length]} size={20} className="h-4 w-auto" />
                 {tick}
               </span>
             ))}
@@ -193,9 +136,7 @@ export default function LandingPage() {
             <div className="grid grid-cols-1 divide-y divide-border/60 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
               {STATS_META.map((s) => (
                 <div key={s.code} className="p-6">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-                    {s.code}
-                  </p>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{s.code}</p>
                   <p className="mt-2 font-display text-4xl font-semibold">
                     <NumberTicker value={s.v} suffix={s.suffix} />
                   </p>
@@ -211,21 +152,15 @@ export default function LandingPage() {
       <section className="container py-20">
         <Reveal>
           <div className="flex items-end justify-between border-b border-border/60 pb-4">
-            <h2 className="font-display text-4xl font-semibold tracking-tight">
-              {t('landing.howItWorks.title')}
-            </h2>
-            <span className="font-mono text-xs text-muted-foreground">
-              {t('landing.howItWorks.range')}
-            </span>
+            <h2 className="font-display text-4xl font-semibold tracking-tight">{t('landing.howItWorks.title')}</h2>
+            <span className="font-mono text-xs text-muted-foreground">{t('landing.howItWorks.range')}</span>
           </div>
         </Reveal>
         <div className="divide-y divide-border/50">
           {STEPS.map((s, i) => (
             <Reveal key={s.n} delay={i * 0.06}>
               <div className="group grid grid-cols-[3rem_1fr] items-baseline gap-x-6 py-8 transition-colors hover:bg-surface/30 md:grid-cols-[6rem_1fr_14rem]">
-                <span className="font-mono text-lg text-primary/60 transition-colors group-hover:text-primary">
-                  {s.n}
-                </span>
+                <span className="font-mono text-lg text-primary/60 transition-colors group-hover:text-primary">{s.n}</span>
                 <div>
                   <h3 className="flex items-center gap-2.5 text-2xl font-semibold">
                     {t(s.tKey)}
@@ -265,14 +200,8 @@ export default function LandingPage() {
                     )}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-primary/60">
-                        {f.id}
-                      </span>
-                      <Sticker
-                        name={f.sticker}
-                        size={40}
-                        className="h-8 w-auto transition-transform group-hover:-rotate-6 group-hover:scale-110"
-                      />
+                      <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-primary/60">{f.id}</span>
+                      <Sticker name={f.sticker} size={40} className="h-8 w-auto transition-transform group-hover:-rotate-6 group-hover:scale-110" />
                     </div>
                     <h3 className="mt-5 flex items-center gap-2 text-xl font-semibold">
                       <Icon className="size-4 text-muted-foreground" />
@@ -298,12 +227,7 @@ export default function LandingPage() {
           <div className="mb-10 flex items-end justify-between border-b border-border/60 pb-4">
             <h2 className="flex items-center gap-3 font-display text-3xl font-semibold tracking-tight">
               {t('landing.leaderboard.title')}
-              <Sticker
-                name="burst-new"
-                size={52}
-                rotate={-8}
-                className="hidden h-9 w-auto sm:block"
-              />
+              <Sticker name="burst-new" size={52} rotate={-8} className="hidden h-9 w-auto sm:block" />
             </h2>
             <Link href="/leaderboard" className="font-mono text-xs text-primary hover:underline">
               {t('landing.leaderboard.link')}
@@ -317,9 +241,7 @@ export default function LandingPage() {
                 <div className="transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-105">
                   <Crest address={addr} size={72} points={i + 4} />
                 </div>
-                <span className="font-mono text-[10px] text-muted-foreground">
-                  ★ {(SAMPLE.length - i) * 4}
-                </span>
+                <span className="font-mono text-[10px] text-muted-foreground">★ {(SAMPLE.length - i) * 4}</span>
               </div>
             ))}
           </div>
@@ -334,14 +256,12 @@ export default function LandingPage() {
               <div>
                 <Stamp accent="tertiary">{t('landing.dev.stamp')}</Stamp>
                 <h2 className="mt-4 text-3xl font-semibold tracking-tight">
-                  {t('landing.dev.title')}{' '}
-                  <AuroraText>{t('landing.dev.titleHighlight')}</AuroraText>
+                  {t('landing.dev.title')} <AuroraText>{t('landing.dev.titleHighlight')}</AuroraText>
                 </h2>
-                <p className="mt-3 text-muted-foreground">{t('landing.dev.body')}</p>
-                <Link
-                  href="/how-it-works#devs"
-                  className="mt-5 inline-flex font-mono text-sm text-tertiary hover:underline"
-                >
+                <p className="mt-3 text-muted-foreground">
+                  {t('landing.dev.body')}
+                </p>
+                <Link href="/how-it-works#devs" className="mt-5 inline-flex font-mono text-sm text-tertiary hover:underline">
                   {t('landing.dev.link')}
                 </Link>
               </div>
@@ -356,33 +276,15 @@ export default function LandingPage() {
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 opacity-[0.05] [mask-image:radial-gradient(circle_at_center,black,transparent_70%)]"
-          style={{
-            backgroundImage: `url(${asset('backgrounds/landing-hero.png')})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
+          style={{ backgroundImage: `url(${asset('backgrounds/landing-hero.png')})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
         />
         <Meteors number={18} />
-        <Sticker
-          name="burst-wow"
-          size={92}
-          rotate={-12}
-          className="pointer-events-none absolute left-[12%] top-16 hidden motion-safe:animate-float md:block"
-        />
-        <Sticker
-          name="star-pop"
-          size={70}
-          className="pointer-events-none absolute right-[14%] bottom-20 hidden motion-safe:animate-float md:block"
-        />
-        <div
-          className="absolute left-1/2 top-1/2 size-[30rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-3xl motion-safe:animate-glow-pulse"
-          aria-hidden
-        />
+        <Sticker name="burst-wow" size={92} rotate={-12} className="pointer-events-none absolute left-[12%] top-16 hidden motion-safe:animate-float md:block" />
+        <Sticker name="star-pop" size={70} className="pointer-events-none absolute right-[14%] bottom-20 hidden motion-safe:animate-float md:block" />
+        <div className="absolute left-1/2 top-1/2 size-[30rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-3xl motion-safe:animate-glow-pulse" aria-hidden />
         <div className="container relative">
           <Reveal>
-            <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.28em] text-primary/70">
-              {t('landing.cta.eyebrow')}
-            </p>
+            <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.28em] text-primary/70">{t('landing.cta.eyebrow')}</p>
             <h2 className="mx-auto max-w-2xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
               {t('landing.cta.title')} <AuroraText>{t('landing.cta.titleHighlight')}</AuroraText>
             </h2>

@@ -26,12 +26,7 @@ import { Unlockables } from './Unlockables';
 
 const ME = 'GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF';
 
-const row = (
-  id: number,
-  passes: boolean,
-  unlocked: boolean,
-  extra: Partial<GateStatus['gate']> = {},
-) => ({
+const row = (id: number, passes: boolean, unlocked: boolean, extra: Partial<GateStatus['gate']> = {}) => ({
   gate: { id, track: 1, min: 30, label: `Gate ${id}`, active: true, ...extra },
   passes,
   unlocked,
@@ -63,11 +58,7 @@ describe('Unlockables', () => {
   const items = () => [...container.querySelectorAll('li')];
 
   it('renders every row from one get_status read', async () => {
-    getGateStatusMock.mockResolvedValue([
-      row(1, true, true),
-      row(2, true, false),
-      row(3, false, false),
-    ]);
+    getGateStatusMock.mockResolvedValue([row(1, true, true), row(2, true, false), row(3, false, false)]);
     await render();
     expect(getGateStatusMock).toHaveBeenCalledTimes(1);
     expect(getGateStatusMock).toHaveBeenCalledWith(ME);

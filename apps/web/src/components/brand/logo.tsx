@@ -12,11 +12,7 @@ export function Logo({
   className?: string;
 }) {
   return (
-    <Link
-      href={href}
-      className={cn('group inline-flex items-center gap-2', className)}
-      aria-label="alvinmunk home"
-    >
+    <Link href={href} className={cn('group inline-flex items-center gap-2', className)} aria-label="alvinmunk home">
       <svg viewBox="0 0 24 24" className="size-7 shrink-0" role="img" aria-hidden>
         <polyline
           points="5,8 12,5 18,11 9,18"

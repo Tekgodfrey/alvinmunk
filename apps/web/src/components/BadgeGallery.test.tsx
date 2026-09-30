@@ -33,13 +33,7 @@ vi.mock('@/lib/focus', () => ({
 import { BadgeGallery } from './BadgeGallery';
 import { computeBadges, type BadgeInput } from '@/lib/badges';
 
-const EMPTY: BadgeInput = {
-  vouchedBy: 0,
-  vouchedFor: 0,
-  verified: false,
-  streakBest: 0,
-  tipped: false,
-};
+const EMPTY: BadgeInput = { vouchedBy: 0, vouchedFor: 0, verified: false, streakBest: 0, tipped: false };
 const ALICE = 'GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF';
 
 describe('BadgeGallery', () => {
@@ -71,12 +65,7 @@ describe('BadgeGallery', () => {
 
   it('reads badges for the address it is given and shows earned vs locked with the next step', async () => {
     getBadgesMock.mockResolvedValue(
-      computeBadges({
-        ...EMPTY,
-        vouchedBy: 1,
-        vouchedFor: 3,
-        firstVoucher: { address: ALICE, handle: 'alice' },
-      }),
+      computeBadges({ ...EMPTY, vouchedBy: 1, vouchedFor: 3, firstVoucher: { address: ALICE, handle: 'alice' } }),
     );
     await render(<BadgeGallery address="GOWNER" />);
 
@@ -144,9 +133,7 @@ describe('BadgeGallery', () => {
   it('shows an error with a retry instead of fake zeros when the read fails', async () => {
     getBadgesMock.mockRejectedValueOnce(new Error('rpc down'));
     await render(<BadgeGallery address="GOWNER" />);
-    expect(container.querySelector('[role="alert"]')?.textContent).toContain(
-      "Couldn't read badges",
-    );
+    expect(container.querySelector('[role="alert"]')?.textContent).toContain("Couldn't read badges");
     expect(container.querySelector('[data-badge]')).toBeNull();
 
     getBadgesMock.mockResolvedValueOnce(computeBadges(EMPTY));
@@ -160,9 +147,7 @@ describe('BadgeGallery', () => {
 
   it('has every badge string in both locales', () => {
     const ids = computeBadges(EMPTY).map((b) => b.id);
-    const keys = ['frame', 'heading', 'loading', 'earned', 'locked', 'error', 'retry'].map(
-      (k) => `badges.${k}`,
-    );
+    const keys = ['frame', 'heading', 'loading', 'earned', 'locked', 'error', 'retry'].map((k) => `badges.${k}`);
     for (const id of ids) keys.push(`badges.${id}.name`, `badges.${id}.desc`);
     for (const b of computeBadges(EMPTY)) {
       if (b.remaining === undefined) keys.push(`badges.${b.id}.next`);
@@ -175,14 +160,8 @@ describe('BadgeGallery', () => {
       expect(enKeys[k], `en ${k}`).toBeTruthy();
       expect(trKeys[k], `tr ${k}`).toBeTruthy();
     }
-    expect(
-      Object.keys(enKeys)
-        .filter((k) => k.startsWith('badges.'))
-        .sort(),
-    ).toEqual(
-      Object.keys(trKeys)
-        .filter((k) => k.startsWith('badges.'))
-        .sort(),
+    expect(Object.keys(enKeys).filter((k) => k.startsWith('badges.')).sort()).toEqual(
+      Object.keys(trKeys).filter((k) => k.startsWith('badges.')).sort(),
     );
   });
 });

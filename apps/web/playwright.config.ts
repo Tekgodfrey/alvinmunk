@@ -5,8 +5,7 @@ import { fileURLToPath } from 'node:url';
 const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? 'http://127.0.0.1:3000';
 const readinessURL = new URL('/api/ready', baseURL).toString();
 const rootDir = dirname(fileURLToPath(import.meta.url));
-const webServerCommand =
-  'node ./node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --port 3000';
+const webServerCommand = 'node ./node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --port 3000';
 
 export default defineConfig({
   testDir: './e2e',

@@ -187,9 +187,7 @@ export async function removeSubscription(endpoint: string): Promise<void> {
 }
 
 /** Read one subscription record by endpoint (used by the PATCH ownership check). */
-export async function getSubscriptionByEndpoint(
-  endpoint: string,
-): Promise<StoredSubscription | null> {
+export async function getSubscriptionByEndpoint(endpoint: string): Promise<StoredSubscription | null> {
   const key = `sub:${endpoint.slice(0, MAX_ENDPOINT)}`;
   const kv = getKv();
   return kv ? kv.get(key) : memGet(key);
@@ -251,9 +249,7 @@ export async function moveSubscription(
 }
 
 /** Retrieve all subscriptions for a wallet address (used by /api/push/notify). */
-export async function getSubscriptionsForWallet(
-  walletAddress: string,
-): Promise<StoredSubscription[]> {
+export async function getSubscriptionsForWallet(walletAddress: string): Promise<StoredSubscription[]> {
   const kv = getKv();
   const wallet = walletAddress.toLowerCase();
 

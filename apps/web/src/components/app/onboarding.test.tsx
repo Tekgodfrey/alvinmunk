@@ -30,11 +30,7 @@ const {
 }));
 
 vi.mock('@/components/wallet/wallet-provider', () => ({
-  useWallet: () => ({
-    connect: connectMock,
-    setProfile: setProfileMock,
-    restoreProfile: restoreProfileMock,
-  }),
+  useWallet: () => ({ connect: connectMock, setProfile: setProfileMock, restoreProfile: restoreProfileMock }),
 }));
 vi.mock('@/lib/wallet', () => ({
   AccountNotFoundError: class AccountNotFoundError extends Error {},
@@ -61,15 +57,7 @@ describe('Onboarding — returning users (#278)', () => {
   let root: Root;
 
   beforeEach(() => {
-    for (const m of [
-      connectMock,
-      setProfileMock,
-      restoreProfileMock,
-      trackErrorMock,
-      toastMock,
-      toastMock.success,
-      toastMock.error,
-    ]) {
+    for (const m of [connectMock, setProfileMock, restoreProfileMock, trackErrorMock, toastMock, toastMock.success, toastMock.error]) {
       m.mockReset();
     }
     connectMock.mockResolvedValue(WALLET);
@@ -120,9 +108,7 @@ describe('Onboarding — returning users (#278)', () => {
 
   async function submit() {
     const form = container.querySelector('[aria-label="Handle"]')!.closest('form')!;
-    await act(async () =>
-      form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })),
-    );
+    await act(async () => form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })));
     await flush();
   }
 
@@ -159,17 +145,13 @@ describe('Onboarding — returning users (#278)', () => {
 
       await restore();
 
-      expect(toastMock).toHaveBeenCalledWith(
-        'Found your account — it has no handle yet. Pick one above to finish.',
-      );
+      expect(toastMock).toHaveBeenCalledWith('Found your account — it has no handle yet. Pick one above to finish.');
       expect(toastMock.error).not.toHaveBeenCalled();
       expect(claimHandleMock).not.toHaveBeenCalled();
     });
 
     it('reports a network failure as one, not as "no account"', async () => {
-      connectMock.mockRejectedValue(
-        new Error("Couldn't reach the network to check your wallet — try again in a moment."),
-      );
+      connectMock.mockRejectedValue(new Error("Couldn't reach the network to check your wallet — try again in a moment."));
       await mount();
 
       await restore();
@@ -177,10 +159,7 @@ describe('Onboarding — returning users (#278)', () => {
       expect(toastMock.error).toHaveBeenCalledWith(
         "Couldn't reach the network to check your wallet — try again in a moment.",
       );
-      expect(trackErrorMock).toHaveBeenCalledWith(expect.any(Error), {
-        flow: 'restore_account',
-        from: 'app',
-      });
+      expect(trackErrorMock).toHaveBeenCalledWith(expect.any(Error), { flow: 'restore_account', from: 'app' });
     });
   });
 
@@ -200,18 +179,14 @@ describe('Onboarding — returning users (#278)', () => {
     });
 
     it('does not claim when it cannot tell whether the address holds a handle', async () => {
-      restoreProfileMock.mockRejectedValue(
-        new Error("Couldn't look up your handle — try again in a moment."),
-      );
+      restoreProfileMock.mockRejectedValue(new Error("Couldn't look up your handle — try again in a moment."));
       await mount();
 
       await typeHandle('bob');
       await submit();
 
       expect(claimHandleMock).not.toHaveBeenCalled();
-      expect(toastMock.error).toHaveBeenCalledWith(
-        "Couldn't look up your handle — try again in a moment.",
-      );
+      expect(toastMock.error).toHaveBeenCalledWith("Couldn't look up your handle — try again in a moment.");
     });
 
     it('claims a fresh handle when the address holds none', async () => {
@@ -221,12 +196,8 @@ describe('Onboarding — returning users (#278)', () => {
       await submit();
 
       expect(claimHandleMock).toHaveBeenCalledWith(WALLET, 'bob');
-      expect(setProfileMock).toHaveBeenCalledWith(
-        expect.objectContaining({ handle: 'bob', address: 'CACCOUNT' }),
-      );
-      expect(toastMock.success).toHaveBeenCalledWith(
-        'Your profile is live — @bob stamped on-chain.',
-      );
+      expect(setProfileMock).toHaveBeenCalledWith(expect.objectContaining({ handle: 'bob', address: 'CACCOUNT' }));
+      expect(toastMock.success).toHaveBeenCalledWith('Your profile is live — @bob stamped on-chain.');
     });
 
     it('labels the submit button while the profile is being created', async () => {

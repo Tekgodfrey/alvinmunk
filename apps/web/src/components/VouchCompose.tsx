@@ -74,13 +74,7 @@ export function VouchCompose() {
       const wallet = await getWallet();
       const noteText = note.trim() || t('vouch.compose.defaultNote');
       const { id, seed } = await mintVouch(wallet, noteText);
-      addMyVouch({
-        id,
-        seed,
-        note: noteText,
-        created: Math.floor(Date.now() / 1000),
-        walletAddress: wallet.address,
-      });
+      addMyVouch({ id, seed, note: noteText, created: Math.floor(Date.now() / 1000), walletAddress: wallet.address });
       // Fire-and-forget push subscription — silently ignored if VAPID not configured or
       // permission denied. User will be prompted by VouchClaimedNotice banner otherwise.
       subscribeToVouchPush(wallet.address, id).catch(() => {});
@@ -156,10 +150,7 @@ export function VouchCompose() {
 
   function copyAll() {
     const text = cards
-      .map(
-        (c, i) =>
-          `${t('vouch.compose.batch.cardLabel', { n: String(i + 1) })} — ${c.note}\n${c.link}`,
-      )
+      .map((c, i) => `${t('vouch.compose.batch.cardLabel', { n: String(i + 1) })} — ${c.note}\n${c.link}`)
       .join('\n\n');
     void copyText(text, 'all');
   }
@@ -187,7 +178,9 @@ export function VouchCompose() {
     <Frame label={t('vouch.compose.frame')} index="01" tape="tl">
       <div className="p-5">
         <h2 className="text-base font-semibold">{t('vouch.compose.title')}</h2>
-        <p className="mb-3 mt-1 text-sm text-muted-foreground">{t('vouch.compose.subtitle')}</p>
+        <p className="mb-3 mt-1 text-sm text-muted-foreground">
+          {t('vouch.compose.subtitle')}
+        </p>
         <div role="group" aria-label={t('vouch.compose.mode')} className="mb-3 flex gap-2">
           {(['one', 'many'] as const).map((m) => (
             <Button
@@ -236,14 +229,8 @@ export function VouchCompose() {
             {link && (
               <div className="mt-3 rounded-xl border border-secondary/30 bg-secondary/10 p-3">
                 <div className="mb-2 flex items-center gap-3">
-                  <StateArt
-                    kind="vouch-sent"
-                    size={92}
-                    className="shrink-0 motion-safe:animate-ignite"
-                  />
-                  <p className="text-sm font-medium text-foreground">
-                    {t('vouch.compose.sent.msg')}
-                  </p>
+                  <StateArt kind="vouch-sent" size={92} className="shrink-0 motion-safe:animate-ignite" />
+                  <p className="text-sm font-medium text-foreground">{t('vouch.compose.sent.msg')}</p>
                 </div>
                 <p className="mb-2 flex items-center gap-1.5 text-xs text-muted-foreground">
                   <Sticker name="doodle-arrow" size={22} className="h-4 w-auto" />
@@ -251,25 +238,11 @@ export function VouchCompose() {
                 </p>
                 <div className="flex items-center gap-2">
                   <code className="flex-1 truncate font-mono text-xs text-secondary">{link}</code>
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    onClick={copy}
-                    aria-label={t('vouch.compose.copy')}
-                  >
-                    {copied === 'single' ? (
-                      <Check className="size-4" />
-                    ) : (
-                      <Copy className="size-4" />
-                    )}
+                  <Button variant="secondary" size="icon" onClick={copy} aria-label={t('vouch.compose.copy')}>
+                    {copied === 'single' ? <Check className="size-4" /> : <Copy className="size-4" />}
                   </Button>
                   {canNativeShare && (
-                    <Button
-                      variant="flow"
-                      size="icon"
-                      onClick={share}
-                      aria-label={t('vouch.compose.share')}
-                    >
+                    <Button variant="flow" size="icon" onClick={share} aria-label={t('vouch.compose.share')}>
                       <Share2 className="size-4" />
                     </Button>
                   )}
@@ -429,11 +402,7 @@ function BatchForm({
                     onClick={() => onCopy(c)}
                     aria-label={t('vouch.compose.batch.copyOne', { n: String(i + 1) })}
                   >
-                    {copied === `card-${c.id}` ? (
-                      <Check className="size-4" />
-                    ) : (
-                      <Copy className="size-4" />
-                    )}
+                    {copied === `card-${c.id}` ? <Check className="size-4" /> : <Copy className="size-4" />}
                   </Button>
                 </div>
               </li>
