@@ -50,16 +50,10 @@ inv () { stellar contract invoke --id "$1" --source "$ADMIN" --network "$NETWORK
 echo "==> Wiring rewards to the quest registry (streak-gated rewards read get_streak)"
 inv "$REWARDS_ID" set_quest_registry --quest_registry "$QUEST_ID"
 
-echo "==> Wiring attesters (QuestRegistry contract mints Earned via cross-call; off-chain attester ed25519 pubkey)"
+echo "==> Wiring attesters (QuestRegistry contract + off-chain attester key are both attesters of Reputation)"
 inv "$REP_ID" add_attester --attester "$QUEST_ID"
-ATTESTER_HEX=$(cd "$(dirname "$0")/../apps/web" && node -e "console.log(require('@stellar/stellar-sdk').StrKey.decodeEd25519PublicKey('$ATTESTER_ADDR').toString('hex'))")
-inv "$QUEST_ID" add_attester_key --key "$ATTESTER_HEX"
-
-echo "==> Seeding quests"
-inv "$QUEST_ID" create_quest --id 1 --schema_id 2 --xp 50
-inv "$QUEST_ID" create_quest --id 2 --schema_id 2 --xp 30
-inv "$QUEST_ID" create_quest --id 3 --schema_id 2 --xp 50
-inv "$QUEST_ID" create_quest --id 4 --schema_id 2 --xp 25
+inv "$REP_ID" add_attester --attester "$ATTESTER_ADDR"
+inv "$QUEST_ID" add_attester --attester "$ATTESTER_ADDR"
 
 cat <<EOF
 
