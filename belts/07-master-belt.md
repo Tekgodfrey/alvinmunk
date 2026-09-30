@@ -7,6 +7,7 @@
 **Scope guard — DON'T:** Pivot the core loop to chase investors; over-build speculative features for a partner without signed intent. Trade proven retention for vanity growth-hacks. Resist scope creep from every partner request.
 
 **Success metrics:**
+
 - A sustained WAU growth trend (multi-season retention curve up-and-to-the-right).
 - ≥1 signed partnership/integration.
 - Investor pipeline (≥3 qualified conversations or an SCF/grant application in flight).
@@ -16,6 +17,7 @@
 ## 🔧 Technical tasks
 
 ### Smart contract / on-chain (Tyler)
+
 - **Upgradeability governance:** if the contracts are upgradeable, move the admin to proper timelock'd on-chain governance/multisig and publish an upgrade policy. If immutable, design a migration contract + state-export path (v2).
 - **Partnership/integration surface:** clean cross-contract integration ABI + SDK; let other Stellar dApps read reputation (`get_profile`) and award XP under an allowlist — **reputation-as-a-primitive** (ecosystem expansion).
 - **Long-term storage/TTL economics:** model archival cost at scale, automate the TTL keeper as funded infra, state-rent/archival-restore UX (old profiles auto-restore on access).
@@ -24,6 +26,7 @@
 - **Decentralization path (optional, honest trade-off):** allowlisted attester → staked/permissionless attestation (m-of-n threshold + staking/slashing) — only if adoption justifies the complexity. The boring allowlist is sufficient for longer than you think.
 
 ### Engineering / full-stack (Elliot)
+
 - Scale infra: horizontal indexer (sharded), read replica, badge art CDN, multi-region API. **AC:** stable p95 under 10x load.
 - Contract upgrade/governance: timelock'd upgrade, parameter governance, state migration tooling. **AC:** dry-run state migration succeeds on a fork without value-loss.
 - **Partnership SDK/API:** public attester onboarding (3rd-party quest provider) + documented quest-attestation spec + SDK package. **AC:** an external partner registers a quest and issues a verifiable claim.
@@ -35,6 +38,7 @@
 ---
 
 ## 🎨 UX / Frontend (Kaan)
+
 - **Screens:** partner/branded passport surfaces (co-branded stamps for event/community), creator dashboard/analytics, investor-facing public metrics page.
 - **Delight mechanic:** **PARTNER-STAMP DROPS** — communities mint co-branded shared stamps at IRL events (TAP-TO-MINT booths); scarcity/edition-numbered art → collectible + FOMO-shareable.
 - **Share surface:** edition-numbered event stamp cards ("#42 of 500, minted at [event]") + a seasonal "passport wrapped" recap (year-end brag artifact).
@@ -45,6 +49,7 @@
 ---
 
 ## 📣 Product / GTM (Nicole)
+
 - **Package the data story:** retention curves, viral coefficient, mainnet USDC volume, cohort LTV proxy.
 - **Apply to the SCF / relevant grant round** (InstaAward ≤$15k, SCF ≤$150k candidate); warm investor list + intro conversations.
 - Convert the strongest Black partner signal into a signed integration/co-marketing.
@@ -54,14 +59,17 @@
 ---
 
 ## ✅ Definition of Done
+
 Multi-season up-trend retention; ≥1 signed partner integration via the reputation-as-a-primitive SDK; SCF/grant application in flight; board-ready metric dashboard; governance/multisig + bug bounty live.
 
 ## ⛓️ Dependencies
+
 Black (mainnet + audit + ecosystem signal). This is the finale of the program — ecosystem funding (InstaAward/SCF) and the gateway to startup growth.
 
 ---
 
 ### 🔗 Cross-cutting flags (across all belts)
+
 - **Auth:** `require_auth` + deny-by-default — every belt, every fn.
 - **Storage TTL/archival:** bump on every write from Yellow onward; instance archival = brick risk.
 - **Upgradeability:** decide in Orange, enforce in Black.

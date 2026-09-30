@@ -70,11 +70,25 @@ describe('PATCH /api/push/subscribe (subscription move, #169)', () => {
     ['missing oldEndpoint', {}],
     ['missing walletAddress', { oldEndpoint: 'https://p.com/old', subscription: NEW_SUB }],
     ['missing subscription', { oldEndpoint: 'https://p.com/old', walletAddress: 'GABC' }],
-    ['oldEndpoint not https', { oldEndpoint: 'http://p.com/old', subscription: NEW_SUB, walletAddress: 'GABC' }],
-    ['new endpoint not https', { oldEndpoint: 'https://p.com/old', subscription: { endpoint: 'http://p.com/new' }, walletAddress: 'GABC' }],
+    [
+      'oldEndpoint not https',
+      { oldEndpoint: 'http://p.com/old', subscription: NEW_SUB, walletAddress: 'GABC' },
+    ],
+    [
+      'new endpoint not https',
+      {
+        oldEndpoint: 'https://p.com/old',
+        subscription: { endpoint: 'http://p.com/new' },
+        walletAddress: 'GABC',
+      },
+    ],
     [
       'endpoints identical',
-      { oldEndpoint: 'https://p.com/same', subscription: { endpoint: 'https://p.com/same' }, walletAddress: 'GABC' },
+      {
+        oldEndpoint: 'https://p.com/same',
+        subscription: { endpoint: 'https://p.com/same' },
+        walletAddress: 'GABC',
+      },
     ],
   ])('validates fields → 422 (%s)', async (_label, body) => {
     const res = await PATCH(makeReq(body));
@@ -84,19 +98,29 @@ describe('PATCH /api/push/subscribe (subscription move, #169)', () => {
 
   it('maps not_found → 404 so clients can fall back to a fresh POST', async () => {
     moveMock.mockResolvedValueOnce('not_found');
-    const res = await PATCH(makeReq({ oldEndpoint: 'https://p.com/gone', subscription: NEW_SUB, walletAddress: 'GABC' }));
+    const res = await PATCH(
+      makeReq({ oldEndpoint: 'https://p.com/gone', subscription: NEW_SUB, walletAddress: 'GABC' }),
+    );
     expect(res.status).toBe(404);
   });
 
   it('maps forbidden → 403 when the wallet does not own the record', async () => {
     moveMock.mockResolvedValueOnce('forbidden');
-    const res = await PATCH(makeReq({ oldEndpoint: 'https://p.com/old', subscription: NEW_SUB, walletAddress: 'GNOTMINE' }));
+    const res = await PATCH(
+      makeReq({
+        oldEndpoint: 'https://p.com/old',
+        subscription: NEW_SUB,
+        walletAddress: 'GNOTMINE',
+      }),
+    );
     expect(res.status).toBe(403);
   });
 
   it('maps conflict → 409 when the new endpoint is already registered', async () => {
     moveMock.mockResolvedValueOnce('conflict');
-    const res = await PATCH(makeReq({ oldEndpoint: 'https://p.com/old', subscription: NEW_SUB, walletAddress: 'GABC' }));
+    const res = await PATCH(
+      makeReq({ oldEndpoint: 'https://p.com/old', subscription: NEW_SUB, walletAddress: 'GABC' }),
+    );
     expect(res.status).toBe(409);
   });
 });
@@ -117,9 +141,7 @@ describe('POST /api/push/subscribe (vouchIds re-register, #169)', () => {
   });
 
   it('routes the legacy single vouchId to saveSubscription', async () => {
-    const res = await POST(
-      makeReq({ subscription: NEW_SUB, walletAddress: 'GABC', vouchId: 7 }),
-    );
+    const res = await POST(makeReq({ subscription: NEW_SUB, walletAddress: 'GABC', vouchId: 7 }));
     expect(res.status).toBe(200);
     expect(saveMock).toHaveBeenCalledWith(NEW_SUB, 'GABC', 7);
     expect(saveIdsMock).not.toHaveBeenCalled();

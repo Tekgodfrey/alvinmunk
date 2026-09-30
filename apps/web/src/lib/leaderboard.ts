@@ -22,7 +22,8 @@ import type { ReadNetwork } from './read-network';
 const SNAPSHOT_KEY = 'alvinmunk.leaderboard.snapshot';
 
 /** One snapshot per network: an override view must never merge into the deployment's. */
-const snapshotKey = (net?: ReadNetwork | null) => (net ? `${SNAPSHOT_KEY}.${net.network}` : SNAPSHOT_KEY);
+const snapshotKey = (net?: ReadNetwork | null) =>
+  net ? `${SNAPSHOT_KEY}.${net.network}` : SNAPSHOT_KEY;
 
 function loadSnapshot(net?: ReadNetwork | null): SocialRecord[] {
   return readJSON<SocialRecord[]>(snapshotKey(net), []);
@@ -39,7 +40,9 @@ type FetchOptions = {
 
 /** Pull recent reputation events → social records + claimed vouch pairs. Always a fresh
  *  scan (`maxAgeMs: 0`): the board polls every 5s, faster than the shared window's TTL. */
-export async function fetchWindow(options?: FetchOptions): Promise<{ records: SocialRecord[]; pairs: VouchPair[] }> {
+export async function fetchWindow(
+  options?: FetchOptions,
+): Promise<{ records: SocialRecord[]; pairs: VouchPair[] }> {
   const records: SocialRecord[] = [];
   const pairs: VouchPair[] = [];
 

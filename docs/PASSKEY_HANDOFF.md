@@ -44,22 +44,23 @@ the user explicitly asked for it.
   `relayerApiKey` = free, get from `…/testnet/gen`. (passkey-kit 0.12 `PasskeyServer` uses
   `@openzeppelin/relayer-plugin-channels`.)
 - **Mercury** (indexer, only for `connectWallet` returning-user lookup): `mercuryUrl =
-  https://api.mercurydata.app`, plus a project name + JWT/key. **DEFER THIS** — store the
+https://api.mercurydata.app`, plus a project name + JWT/key. **DEFER THIS** — store the
   `contractId` + `keyId` in `localStorage` and pass `getContractId` yourself; you don't need
   Mercury for create-then-use.
 
 ### passkey-kit API (from `node_modules/.pnpm/passkey-kit@0.12.0/.../src/kit.ts`)
+
 ```ts
 const account = new PasskeyKit({ rpcUrl, networkPassphrase, walletWasmHash });
 // first run (FaceID enroll + build deploy tx):
 const { keyId, keyIdBase64, contractId, signedTx } = await account.createWallet('alvinmunk', user);
 // returning user:
-await account.connectWallet({ keyId, getContractId });   // getContractId: (keyId)=>Promise<string|undefined>
+await account.connectWallet({ keyId, getContractId }); // getContractId: (keyId)=>Promise<string|undefined>
 // sign a contract call's auth entries with the passkey:
 await account.sign(assembledTx, { keyId });
 // submit (server-side, holds the relayer key):
 const server = new PasskeyServer({ rpcUrl, relayerUrl, relayerApiKey });
-await server.send(signedTxOrAssembledTxOrXdr);            // → { hash, ... } via OZ Channels
+await server.send(signedTxOrAssembledTxOrXdr); // → { hash, ... } via OZ Channels
 ```
 
 ## 4. The implementation plan (do this)
@@ -71,7 +72,7 @@ await server.send(signedTxOrAssembledTxOrXdr);            // → { hash, ... } v
    - `NEXT_PUBLIC_PASSKEY_WALLET_WASM_HASH=ecd990f0…`
    - server secrets: `PASSKEY_RELAYER_URL=https://channels.openzeppelin.com/testnet`,
      `PASSKEY_RELAYER_API_KEY=<from /gen>`
-   Update `isPasskeyConfigured()` to check the wallet wasm hash (+ relayer for mainnet).
+     Update `isPasskeyConfigured()` to check the wallet wasm hash (+ relayer for mainnet).
 3. **`apps/web/src/lib/wallet.ts` `connectPasskey()`**: rewrite with `PasskeyKit`. First run →
    `createKey` (the FaceID enroll), persist `{keyId, publicKey}` + a `pendingDeploy` marker, then
    build the same deploy `createWallet` would (`PasskeyClient.deploy`) and submit it via the API
@@ -82,10 +83,10 @@ await server.send(signedTxOrAssembledTxOrXdr);            // → { hash, ... } v
    any discoverable (synced) passkey of the site — derives its contract id the way the deploy
    does (no Mercury needed), checks the contract exists on-chain, and only then records
    `{keyId, contractId}`; it never enrolls or deploys. Return a `Wallet` whose `invoke(contractId, method,
-   args)` builds an `AssembledTransaction` for the call, `account.sign(at, {keyId})`, then POSTs
+args)` builds an `AssembledTransaction` for the call, `account.sign(at, {keyId})`, then POSTs
    the signed tx to `/api/passkey-send` and decodes the result.
 4. **New `apps/web/src/app/api/passkey-send/route.ts`**: `PasskeyServer({rpcUrl, relayerUrl,
-   relayerApiKey}).send(xdr)` → returns the tx hash. Keeps the relayer key server-side.
+relayerApiKey}).send(xdr)` → returns the tx hash. Keeps the relayer key server-side.
 5. **`apps/web/src/app/app/page.tsx` `createPassport()`**: for `kind==='passkey'` skip
    `recordGenesis` (already done — classic manageData can't be authored by a C… account); the
    registry `claim` (via `invoke`) is the on-chain identity.
@@ -93,6 +94,7 @@ await server.send(signedTxOrAssembledTxOrXdr);            // → { hash, ... } v
    deployed (account `8c45dfe3`, verifier `CAW2EUW2`) become dead — fine, ignore them.
 
 ### The `Wallet` seam (already in place — reuse it)
+
 `apps/web/src/lib/wallet.ts` `interface Wallet` has an optional
 `invoke?(contractId, method, args)`. `contracts.ts › invokeAndWait` branches: if `wallet.invoke`
 exists, it routes the contract call through it (passkey path); otherwise the classic
@@ -101,6 +103,7 @@ build→sign→send (dev/freighter). **No feature file (registry/reputation/rewa
 ## 5. The smart-account-kit cascade we already solved (context / do NOT redo)
 
 In order, each error was one real layer (all on the smart-account-kit path, now abandoned):
+
 1. `get_context_rules` missing on the contract → we added it.
 2. context-rule ids are **0-based** (`NextId` starts at 0) — our loop was 1-based.
 3. `ContextRule` had **8 fields** (v0.7.x added `policy_ids`/`signer_ids`); bindings expect **6**.
@@ -134,6 +137,7 @@ unstable SDK. passkey-kit avoids all of this (canonical wallet ships with the SD
 ## 7. Key on-chain values (testnet) + CLI identities
 
 App contracts (see `apps/web/.env.local`):
+
 - `NEXT_PUBLIC_REGISTRY_CONTRACT_ID = CBHLDLAJF4VY7DMVS344YJW7HY4KSTLMDQ2RVFE6KEVMQGGGJC3PBSDP`
 - `NEXT_PUBLIC_REPUTATION_CONTRACT_ID = CBYMOFQLORYZSLV23LIJPI726M4XVZBIKLYA5NTSSYPETEIIWAXWDU3R`
 - `NEXT_PUBLIC_QUEST_REGISTRY_CONTRACT_ID = CAZXMV6WO6MUMP7ZJ5PDKPXUYTNG5BQTVSBS2IKT2R7CZR6HLLJUBG2R` (new sig-verify)
@@ -141,6 +145,7 @@ App contracts (see `apps/web/.env.local`):
 - `NEXT_PUBLIC_REWARDS_CONTRACT_ID`, `NEXT_PUBLIC_USDC_SAC_ID` — in `.env.local`.
 
 `stellar keys` identities (already funded on testnet):
+
 - `passport-admin` = `GDIS5BDXSI2DDJNTKRZPI6MNB5XCLMN4Z6PPRPM4RQLZ3PSQ2YTERLFA` (admin of the app contracts)
 - `passport-attester` = `GBC2FI2YWJPUU7TGEU7ATSP7PIZC64ZPX2F672OLIHHL7AEH7LUDITHJ` (= `ATTESTER_SECRET_KEY`)
 - `passport-deployer` = `GB7V36IH4CG2AUIUNB7AC3TMWFLTRXRSTS2KDRKBKJ7HQR4V74UAHCKO`

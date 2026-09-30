@@ -18,8 +18,22 @@ const funnel = (over: Partial<VouchFunnel> = {}): VouchFunnel => ({
   repeatPairShare: 0.2,
   unread: 0,
   weeklyCohorts: [
-    { week: '2026-01-05', minted: 6, claimed: 3, completionRate: 0.5, open: 0, expiredUnclaimed: 3 },
-    { week: '2026-01-12', minted: 4, claimed: 1, completionRate: 0.25, open: 2, expiredUnclaimed: 0 },
+    {
+      week: '2026-01-05',
+      minted: 6,
+      claimed: 3,
+      completionRate: 0.5,
+      open: 0,
+      expiredUnclaimed: 3,
+    },
+    {
+      week: '2026-01-12',
+      minted: 4,
+      claimed: 1,
+      completionRate: 0.25,
+      open: 2,
+      expiredUnclaimed: 0,
+    },
   ],
   ...over,
 });
@@ -41,8 +55,9 @@ describe('LoopHealth', () => {
 
   const render = (el: React.ReactElement) => act(() => root.render(el));
   const tile = (label: string) =>
-    Array.from(container.querySelectorAll('div.glass')).find((d) => d.firstElementChild?.textContent === label)
-      ?.textContent ?? '';
+    Array.from(container.querySelectorAll('div.glass')).find(
+      (d) => d.firstElementChild?.textContent === label,
+    )?.textContent ?? '';
 
   it('shows a loading state before the first response', () => {
     render(<LoopHealth funnel={undefined} loading />);
@@ -51,7 +66,13 @@ describe('LoopHealth', () => {
   });
 
   it('shows the read error instead of empty numbers', () => {
-    render(<LoopHealth funnel={null} loading={false} error="Vouch state could not be read from RPC right now." />);
+    render(
+      <LoopHealth
+        funnel={null}
+        loading={false}
+        error="Vouch state could not be read from RPC right now."
+      />,
+    );
     expect(container.querySelector('[role="alert"]')?.textContent).toContain('could not be read');
     expect(container.querySelector('table')).toBeNull();
   });
@@ -80,7 +101,14 @@ describe('LoopHealth', () => {
   it('shows an empty state and no gate verdict before the first vouch', () => {
     render(
       <LoopHealth
-        funnel={funnel({ minted: 0, claimed: 0, completionRate: 0, open: 0, expiredUnclaimed: 0, weeklyCohorts: [] })}
+        funnel={funnel({
+          minted: 0,
+          claimed: 0,
+          completionRate: 0,
+          open: 0,
+          expiredUnclaimed: 0,
+          weeklyCohorts: [],
+        })}
         loading={false}
       />,
     );

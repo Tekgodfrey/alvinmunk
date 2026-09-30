@@ -39,7 +39,13 @@ import {
   type BadgeInput,
 } from './badges';
 
-const EMPTY: BadgeInput = { vouchedBy: 0, vouchedFor: 0, verified: false, streakBest: 0, tipped: false };
+const EMPTY: BadgeInput = {
+  vouchedBy: 0,
+  vouchedFor: 0,
+  verified: false,
+  streakBest: 0,
+  tipped: false,
+};
 const find = (badges: Badge[], id: BadgeId) => badges.find((b) => b.id === id)!;
 const alice = { address: 'GALICE', handle: 'alice' };
 
@@ -61,7 +67,9 @@ describe('computeBadges', () => {
   });
 
   it('is deterministic (pure): same input, same output', () => {
-    expect(computeBadges({ ...EMPTY, vouchedBy: 3 })).toEqual(computeBadges({ ...EMPTY, vouchedBy: 3 }));
+    expect(computeBadges({ ...EMPTY, vouchedBy: 3 })).toEqual(
+      computeBadges({ ...EMPTY, vouchedBy: 3 }),
+    );
   });
 
   it('awards First Star on the first vouch received and names who lit it', () => {
@@ -69,7 +77,9 @@ describe('computeBadges', () => {
       earned: false,
       person: undefined, // nobody is named on a locked badge
     });
-    expect(find(computeBadges({ ...EMPTY, vouchedBy: 1, firstVoucher: alice }), 'firstStar')).toMatchObject({
+    expect(
+      find(computeBadges({ ...EMPTY, vouchedBy: 1, firstVoucher: alice }), 'firstStar'),
+    ).toMatchObject({
       earned: true,
       person: alice,
     });
@@ -93,7 +103,9 @@ describe('computeBadges', () => {
   });
 
   it('awards Verified only from the verified (Earned) flag — Social activity never earns it', () => {
-    expect(find(computeBadges({ ...EMPTY, vouchedBy: 20, vouchedFor: 20 }), 'verified').earned).toBe(false);
+    expect(
+      find(computeBadges({ ...EMPTY, vouchedBy: 20, vouchedFor: 20 }), 'verified').earned,
+    ).toBe(false);
     expect(find(computeBadges({ ...EMPTY, verified: true }), 'verified').earned).toBe(true);
   });
 
@@ -106,7 +118,9 @@ describe('computeBadges', () => {
   it('awards Generous on the first tip SENT and names the recipient', () => {
     const bob = { address: 'GBOB', handle: null };
     expect(find(computeBadges(EMPTY), 'generous').earned).toBe(false);
-    expect(find(computeBadges({ ...EMPTY, tipped: true, firstTipTo: bob }), 'generous')).toMatchObject({
+    expect(
+      find(computeBadges({ ...EMPTY, tipped: true, firstTipTo: bob }), 'generous'),
+    ).toMatchObject({
       earned: true,
       person: bob,
     });
@@ -165,7 +179,11 @@ describe('foldVouchEdges', () => {
       { topics: [EVENTS.VOUCH, 'claimed'], data: [3n, 'A'] },
       claimed('B', 'ME'),
     ];
-    expect(foldVouchEdges(events, 'ME')).toEqual({ vouchedBy: ['B'], vouchedFor: [], firstVoucher: 'B' });
+    expect(foldVouchEdges(events, 'ME')).toEqual({
+      vouchedBy: ['B'],
+      vouchedFor: [],
+      firstVoucher: 'B',
+    });
   });
 
   it('ignores self-vouch edges defensively', () => {
@@ -183,10 +201,16 @@ describe('foldVouchEdges', () => {
 
 describe('foldTips', () => {
   // Canonical shape: topics ('tipped', from, to) · data amount.
-  const tipped = (from: string, to: string) => ({ topics: [EVENTS.TIPPED, from, to], data: 1_000_000n });
+  const tipped = (from: string, to: string) => ({
+    topics: [EVENTS.TIPPED, from, to],
+    data: 1_000_000n,
+  });
 
   it('detects a tip sent and keeps the first recipient', () => {
-    expect(foldTips([tipped('ME', 'B'), tipped('ME', 'C')], 'ME')).toEqual({ tipped: true, firstTipTo: 'B' });
+    expect(foldTips([tipped('ME', 'B'), tipped('ME', 'C')], 'ME')).toEqual({
+      tipped: true,
+      firstTipTo: 'B',
+    });
   });
 
   it('reports no tip when the address only RECEIVED tips', () => {
@@ -194,7 +218,9 @@ describe('foldTips', () => {
   });
 
   it('ignores non-tip and short-topic events', () => {
-    expect(foldTips([{ topics: [EVENTS.REWARD, 'ME'], data: [1, 2n, 1] }], 'ME').tipped).toBe(false);
+    expect(foldTips([{ topics: [EVENTS.REWARD, 'ME'], data: [1, 2n, 1] }], 'ME').tipped).toBe(
+      false,
+    );
     expect(foldTips([{ topics: [EVENTS.TIPPED, 'ME'], data: 1n }], 'ME').tipped).toBe(false);
   });
 });
@@ -210,7 +236,10 @@ describe('mergeBadgeSnapshot', () => {
   });
 
   it('UNIONS people across windows (a max of counts would undercount)', () => {
-    const merged = mergeBadgeSnapshot(snap({ vouchedBy: ['A', 'B', 'C'] }), snap({ vouchedBy: ['C', 'D', 'E'] }));
+    const merged = mergeBadgeSnapshot(
+      snap({ vouchedBy: ['A', 'B', 'C'] }),
+      snap({ vouchedBy: ['C', 'D', 'E'] }),
+    );
     expect(merged.vouchedBy).toEqual(['A', 'B', 'C', 'D', 'E']);
   });
 
@@ -282,7 +311,10 @@ describe('getBadges', () => {
     const badges = await getBadges('ME');
 
     expect(find(badges, 'firstStar')).toMatchObject({ earned: true, person: alice });
-    expect(find(badges, 'generous')).toMatchObject({ earned: true, person: { address: 'GBOB', handle: null } });
+    expect(find(badges, 'generous')).toMatchObject({
+      earned: true,
+      person: { address: 'GBOB', handle: null },
+    });
     expect(find(badges, 'verified').earned).toBe(true);
     expect(find(badges, 'fourWeeks').earned).toBe(true);
     // Every read is for the profile owner; streak is the wallet-free read (no source).
@@ -303,7 +335,9 @@ describe('getBadges', () => {
 
   it("never mixes one address's history into another's (viewer vs profile owner)", async () => {
     // The viewer's own dashboard persisted five backed people and a tip.
-    fetchReputationEventsMock.mockResolvedValue(['P1', 'P2', 'P3', 'P4', 'P5'].map((p) => claimed('VIEWER', p)));
+    fetchReputationEventsMock.mockResolvedValue(
+      ['P1', 'P2', 'P3', 'P4', 'P5'].map((p) => claimed('VIEWER', p)),
+    );
     fetchTipsSentMock.mockResolvedValue([{ topics: [EVENTS.TIPPED, 'VIEWER', 'P1'], data: 1n }]);
     expect(find(await getBadges('VIEWER'), 'connector').earned).toBe(true);
 

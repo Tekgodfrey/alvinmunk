@@ -61,7 +61,9 @@ describe('LeaderboardPage', () => {
   });
 
   it('ranks the override network read-only, and shares the override link (#290)', async () => {
-    fetchLeaderboardMock.mockResolvedValue([{ address: 'GTEST', score: 5, rank: 1, flagged: false }]);
+    fetchLeaderboardMock.mockResolvedValue([
+      { address: 'GTEST', score: 5, rank: 1, flagged: false },
+    ]);
     await act(async () => {
       root.render(<LeaderboardPage searchParams={{ network: 'testnet' }} />);
       await Promise.resolve();
@@ -243,8 +245,7 @@ describe('LeaderboardPage — poll / handle-lookup interaction (issue #208)', ()
       (addrs: string[]) =>
         new Promise((resolve) =>
           setTimeout(
-            () =>
-              resolve(Object.fromEntries(addrs.map((a) => [a, a === ADDR_A ? 'alice' : null]))),
+            () => resolve(Object.fromEntries(addrs.map((a) => [a, a === ADDR_A ? 'alice' : null]))),
             8_000,
           ),
         ),
@@ -283,10 +284,7 @@ describe('LeaderboardPage — poll / handle-lookup interaction (issue #208)', ()
     reverseHandlesMock.mockImplementation(
       (addrs: string[]) =>
         new Promise((resolve) =>
-          setTimeout(
-            () => resolve(Object.fromEntries(addrs.map((a) => [a, null]))),
-            12_000,
-          ),
+          setTimeout(() => resolve(Object.fromEntries(addrs.map((a) => [a, null]))), 12_000),
         ),
     );
 

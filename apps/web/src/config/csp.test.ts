@@ -50,11 +50,23 @@ describe('contentSecurityPolicy', () => {
   // resolves, the policy must allow — env overrides, blanks, defaults and odd casing alike.
   it.each<[string, Env]>([
     ['no env', {}],
-    ['testnet overrides', { NEXT_PUBLIC_RPC_URL: 'https://rpc.test:8443/x', NEXT_PUBLIC_HORIZON_URL: 'https://horizon.test' }],
+    [
+      'testnet overrides',
+      {
+        NEXT_PUBLIC_RPC_URL: 'https://rpc.test:8443/x',
+        NEXT_PUBLIC_HORIZON_URL: 'https://horizon.test',
+      },
+    ],
     ['blank overrides', { NEXT_PUBLIC_RPC_URL: '  ', NEXT_PUBLIC_HORIZON_URL: '' }],
     ['mainnet', MAINNET],
     ['mainnet, padded and capitalised', { ...MAINNET, NEXT_PUBLIC_STELLAR_NETWORK: ' Mainnet ' }],
-    ['a local quickstart over http', { NEXT_PUBLIC_RPC_URL: 'http://localhost:8000/soroban/rpc', NEXT_PUBLIC_HORIZON_URL: 'http://localhost:8000' }],
+    [
+      'a local quickstart over http',
+      {
+        NEXT_PUBLIC_RPC_URL: 'http://localhost:8000/soroban/rpc',
+        NEXT_PUBLIC_HORIZON_URL: 'http://localhost:8000',
+      },
+    ],
   ])('allows the RPC and Horizon the client resolves (%s)', (_, env) => {
     const { rpcUrl, horizonUrl } = readNetworkConfig(env);
     const connect = csp(env)['connect-src'];
@@ -69,9 +81,9 @@ describe('contentSecurityPolicy', () => {
     })['connect-src'];
     expect(connect).toContain('https://testanchor.stellar.org');
     expect(connect).toContain('https://transfer.example.com');
-    expect(csp({ NEXT_PUBLIC_ANCHOR_HOME_DOMAIN: 'http://localhost:4000' })['connect-src']).toContain(
-      'http://localhost:4000',
-    );
+    expect(
+      csp({ NEXT_PUBLIC_ANCHOR_HOME_DOMAIN: 'http://localhost:4000' })['connect-src'],
+    ).toContain('http://localhost:4000');
   });
 
   it('never lets an env value add a source or a directive of its own', () => {
@@ -83,7 +95,11 @@ describe('contentSecurityPolicy', () => {
       NEXT_PUBLIC_ANCHOR_TRANSFER_SERVER: 'javascript:alert(1)',
     });
     const d = parse(policy);
-    expect(d['connect-src']).toEqual(["'self'", 'https://rpc.example.com', 'https://friendbot.stellar.org']);
+    expect(d['connect-src']).toEqual([
+      "'self'",
+      'https://rpc.example.com',
+      'https://friendbot.stellar.org',
+    ]);
     expect(d['script-src']).toEqual(["'self'", "'unsafe-inline'"]);
     expect(d['frame-src']).toEqual(["'none'"]);
     expect(policy).not.toMatch(/\*|javascript:|evil|unsafe-eval/);
@@ -113,11 +129,20 @@ describe('contentSecurityPolicy', () => {
 
   it('opens up for the Vercel toolbar on preview deployments only', () => {
     const preview = csp({ VERCEL_ENV: 'preview' });
-    for (const directive of ['script-src', 'style-src', 'img-src', 'font-src', 'connect-src', 'frame-src']) {
+    for (const directive of [
+      'script-src',
+      'style-src',
+      'img-src',
+      'font-src',
+      'connect-src',
+      'frame-src',
+    ]) {
       expect(preview[directive]).toContain('https://vercel.live');
     }
     expect(preview['frame-src']).not.toContain("'none'");
-    expect(contentSecurityPolicy({ NODE_ENV: 'production', VERCEL_ENV: 'production' })).not.toContain('vercel.live');
+    expect(
+      contentSecurityPolicy({ NODE_ENV: 'production', VERCEL_ENV: 'production' }),
+    ).not.toContain('vercel.live');
   });
 
   it('locks down frames, plugins, <base>, forms and the service worker, and reports to the endpoint', () => {
@@ -159,9 +184,9 @@ describe('contentSecurityPolicy', () => {
     });
 
     it('adds nothing on a testnet deployment, where there is no override', () => {
-      expect(csp({ NEXT_PUBLIC_TESTNET_RPC_URL: 'https://testnet-rpc.example.com' })['connect-src']).not.toContain(
-        'https://testnet-rpc.example.com',
-      );
+      expect(
+        csp({ NEXT_PUBLIC_TESTNET_RPC_URL: 'https://testnet-rpc.example.com' })['connect-src'],
+      ).not.toContain('https://testnet-rpc.example.com');
     });
 
     it('takes only a plain origin from the pin', () => {
@@ -170,7 +195,11 @@ describe('contentSecurityPolicy', () => {
         NODE_ENV: 'production',
         NEXT_PUBLIC_TESTNET_RPC_URL: "https://evil.com;script-src'unsafe-eval'",
       });
-      expect(parse(policy)['connect-src']).toEqual(["'self'", 'https://rpc.mainnet.example.com', 'https://horizon.stellar.org']);
+      expect(parse(policy)['connect-src']).toEqual([
+        "'self'",
+        'https://rpc.mainnet.example.com',
+        'https://horizon.stellar.org',
+      ]);
       expect(policy).not.toMatch(/evil|unsafe-eval/);
     });
   });

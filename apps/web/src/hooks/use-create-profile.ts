@@ -64,7 +64,11 @@ export interface UseCreateProfileResult {
  * server-rendered marketing page, and a static import here would pull stellar-sdk into
  * that bundle (see the NOTE in `landing-onboard.tsx`).
  */
-export function useCreateProfile({ from, face, onCreated }: UseCreateProfileOptions): UseCreateProfileResult {
+export function useCreateProfile({
+  from,
+  face,
+  onCreated,
+}: UseCreateProfileOptions): UseCreateProfileResult {
   const t = useTranslations();
   const { locale } = useLocale();
   const { wallet, connect, setProfile, restoreProfile } = useWallet();
@@ -179,7 +183,20 @@ export function useCreateProfile({ from, face, onCreated }: UseCreateProfileOpti
     } finally {
       setCreating(false);
     }
-  }, [normalizedHandle, wallet, connect, setProfile, restoreProfile, welcomeBack, face, from, onCreated, t, day, messageKey]);
+  }, [
+    normalizedHandle,
+    wallet,
+    connect,
+    setProfile,
+    restoreProfile,
+    welcomeBack,
+    face,
+    from,
+    onCreated,
+    t,
+    day,
+    messageKey,
+  ]);
 
   const restoreAccount = useCallback(async () => {
     setRestoring(true);

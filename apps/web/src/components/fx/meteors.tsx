@@ -22,7 +22,10 @@ export function Meteors({ number = 16, className }: { number?: number; className
   }, [number]);
 
   return (
-    <div className={cn('pointer-events-none absolute inset-0 overflow-hidden', className)} aria-hidden>
+    <div
+      className={cn('pointer-events-none absolute inset-0 overflow-hidden', className)}
+      aria-hidden
+    >
       {items.map((m, i) => (
         <span
           key={i}

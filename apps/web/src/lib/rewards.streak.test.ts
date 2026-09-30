@@ -23,7 +23,12 @@ describe('streak-gated rewards client', () => {
   it('reads get_reward_min_streak for the reward id', async () => {
     readContractMock.mockResolvedValueOnce(4);
     await expect(getRewardMinStreak(1, 'GSOURCE')).resolves.toBe(4);
-    expect(readContractMock).toHaveBeenCalledWith('CREWARDS', 'get_reward_min_streak', [{ __u32: 1 }], 'GSOURCE');
+    expect(readContractMock).toHaveBeenCalledWith(
+      'CREWARDS',
+      'get_reward_min_streak',
+      [{ __u32: 1 }],
+      'GSOURCE',
+    );
   });
 
   it('treats a missing result as 0 (no streak required)', async () => {

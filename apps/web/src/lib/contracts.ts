@@ -67,7 +67,13 @@ export async function readPublic<T>(
   net?: ReadNetwork | null,
 ): Promise<T> {
   requireDeployed(contractId, method);
-  return simulateRead<T>(net?.server ?? server, net?.networkPassphrase ?? networkPassphrase, contractId, method, callArgs);
+  return simulateRead<T>(
+    net?.server ?? server,
+    net?.networkPassphrase ?? networkPassphrase,
+    contractId,
+    method,
+    callArgs,
+  );
 }
 
 /** A confirmed state-changing call: its transaction hash and decoded return value. */
@@ -128,7 +134,8 @@ async function cosignAuth(tx: Transaction, cosigner: Wallet): Promise<Transactio
   const op = tx.operations[0] as Operation.InvokeHostFunction;
   const auth = op.auth ?? [];
   const mine = auth.map((entry) => awaitsSignatureFrom(entry, cosigner.address));
-  if (!mine.includes(true)) throw new Error(`Nothing in this call for ${cosigner.address} to sign.`);
+  if (!mine.includes(true))
+    throw new Error(`Nothing in this call for ${cosigner.address} to sign.`);
   const { sequence } = await server.getLatestLedger();
   const signed = await Promise.all(
     auth.map((entry, i) => (mine[i] ? sign(entry, sequence + COSIGN_VALID_LEDGERS) : entry)),

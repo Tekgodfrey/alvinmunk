@@ -83,7 +83,10 @@ export function AppTabs() {
               <Icon className={cn('size-4', active ? 'text-primary' : '')} />
               {t(tab.key)}
               {dot && (
-                <span data-testid="inbox-dot" className="absolute right-2 top-2 size-2 rounded-full bg-primary">
+                <span
+                  data-testid="inbox-dot"
+                  className="absolute right-2 top-2 size-2 rounded-full bg-primary"
+                >
                   <span className="sr-only">{t('appTabs.inboxUnread')}</span>
                 </span>
               )}

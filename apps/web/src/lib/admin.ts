@@ -216,7 +216,11 @@ export interface QuestDraft {
 }
 
 /** `create_quest` input: u32 id and schema id, and an XP award of at least 1. */
-export function validateQuest(input: { id: string; schemaId: string; xp: string }): Checked<QuestDraft> {
+export function validateQuest(input: {
+  id: string;
+  schemaId: string;
+  xp: string;
+}): Checked<QuestDraft> {
   const id = parseU32(input.id, 'Quest ID');
   if (!id.ok) return id;
   const schemaId = parseU32(input.schemaId, 'Schema ID');

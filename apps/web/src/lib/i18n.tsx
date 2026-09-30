@@ -93,16 +93,9 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     setItem(STORAGE_KEY, l);
   }, []);
 
-  const t = useCallback<TFn>(
-    (key, vars) => getTranslations(locale)(key, vars),
-    [locale],
-  );
+  const t = useCallback<TFn>((key, vars) => getTranslations(locale)(key, vars), [locale]);
 
-  return (
-    <I18nContext.Provider value={{ locale, setLocale, t }}>
-      {children}
-    </I18nContext.Provider>
-  );
+  return <I18nContext.Provider value={{ locale, setLocale, t }}>{children}</I18nContext.Provider>;
 }
 
 // ─── consumer hook ────────────────────────────────────────────────────────────

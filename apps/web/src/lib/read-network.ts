@@ -39,8 +39,10 @@ export function testnetNetwork(): ReadNetwork {
   // Literal member expressions: Next inlines only those into the client bundle.
   const rpcUrl = envValue(process.env.NEXT_PUBLIC_TESTNET_RPC_URL) ?? d.rpcUrl;
   const contracts = {
-    reputation: envValue(process.env.NEXT_PUBLIC_TESTNET_REPUTATION_CONTRACT_ID) ?? d.contracts.reputation,
-    registry: envValue(process.env.NEXT_PUBLIC_TESTNET_REGISTRY_CONTRACT_ID) ?? d.contracts.registry,
+    reputation:
+      envValue(process.env.NEXT_PUBLIC_TESTNET_REPUTATION_CONTRACT_ID) ?? d.contracts.reputation,
+    registry:
+      envValue(process.env.NEXT_PUBLIC_TESTNET_REGISTRY_CONTRACT_ID) ?? d.contracts.registry,
   };
   const server = new rpc.Server(rpcUrl, { allowHttp: rpcUrl.startsWith('http://') });
   testnet = {
@@ -49,7 +51,13 @@ export function testnetNetwork(): ReadNetwork {
     rpcUrl,
     contracts,
     server,
-    client: createClient({ network: 'testnet', rpcUrl, networkPassphrase: d.passphrase, contracts, server }),
+    client: createClient({
+      network: 'testnet',
+      rpcUrl,
+      networkPassphrase: d.passphrase,
+      contracts,
+      server,
+    }),
   };
   return testnet;
 }

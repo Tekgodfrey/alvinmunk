@@ -71,9 +71,12 @@ function mockAuthServer(challenge: string) {
   const fetchMock = vi.fn(async (_url: string, init?: RequestInit) =>
     init?.method === 'POST'
       ? new Response(JSON.stringify({ token: 'jwt-123' }), { status: 200 })
-      : new Response(JSON.stringify({ transaction: challenge, network_passphrase: networkPassphrase }), {
-          status: 200,
-        }),
+      : new Response(
+          JSON.stringify({ transaction: challenge, network_passphrase: networkPassphrase }),
+          {
+            status: 200,
+          },
+        ),
   );
   vi.stubGlobal('fetch', fetchMock);
   return fetchMock;
@@ -97,7 +100,10 @@ describe('SEP-10 authenticate', () => {
     await expect(authenticate(wallet, toml, DOMAIN)).resolves.toBe('jwt-123');
     expect(sign).toHaveBeenCalledTimes(1);
     const posted = JSON.parse(String(fetchMock.mock.calls[1][1]?.body)) as { transaction: string };
-    const signedTx = TransactionBuilder.fromXDR(posted.transaction, networkPassphrase) as Transaction;
+    const signedTx = TransactionBuilder.fromXDR(
+      posted.transaction,
+      networkPassphrase,
+    ) as Transaction;
     expect(signedTx.signatures).toHaveLength(2); // server + client
   });
 
@@ -108,7 +114,11 @@ describe('SEP-10 authenticate', () => {
       networkPassphrase,
     })
       .addOperation(
-        Operation.payment({ destination: serverKp.publicKey(), asset: Asset.native(), amount: '1000' }),
+        Operation.payment({
+          destination: serverKp.publicKey(),
+          asset: Asset.native(),
+          amount: '1000',
+        }),
       )
       .setTimeout(300)
       .build();
@@ -139,7 +149,14 @@ describe('SEP-10 authenticate', () => {
 
   it('refuses a challenge issued for a different account', async () => {
     const other = Keypair.random();
-    const challenge = WebAuth.buildChallengeTx(serverKp, other.publicKey(), DOMAIN, 300, networkPassphrase, DOMAIN);
+    const challenge = WebAuth.buildChallengeTx(
+      serverKp,
+      other.publicKey(),
+      DOMAIN,
+      300,
+      networkPassphrase,
+      DOMAIN,
+    );
     mockAuthServer(challenge);
     const { wallet, sign } = fakeWallet();
 
@@ -150,7 +167,11 @@ describe('SEP-10 authenticate', () => {
   it('rejects passkey wallets before contacting the anchor', async () => {
     const fetchMock = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
-    const wallet = { kind: 'passkey', address: `C${'A'.repeat(55)}`, sign: vi.fn() } as unknown as Wallet;
+    const wallet = {
+      kind: 'passkey',
+      address: `C${'A'.repeat(55)}`,
+      sign: vi.fn(),
+    } as unknown as Wallet;
     await expect(authenticate(wallet, toml, DOMAIN)).rejects.toThrow(/classic wallet/);
     expect(fetchMock).not.toHaveBeenCalled();
   });
@@ -233,9 +254,9 @@ describe('buildWithdrawalPayment', () => {
   });
 
   it('carries the anchor memo in the format it asked for', () => {
-    expect(build({ ...base, withdrawMemo: 'hello', withdrawMemoType: 'text' }).memo.value?.toString()).toBe(
-      'hello',
-    );
+    expect(
+      build({ ...base, withdrawMemo: 'hello', withdrawMemoType: 'text' }).memo.value?.toString(),
+    ).toBe('hello');
     expect(build({ ...base, withdrawMemo: '42', withdrawMemoType: 'id' }).memo.value).toBe('42');
     const hash = btoa(String.fromCharCode(...Array.from({ length: 32 }, (_, i) => i)));
     const memo = build({ ...base, withdrawMemo: hash, withdrawMemoType: 'hash' }).memo;
@@ -265,9 +286,12 @@ describe('sendWithdrawalPayment', () => {
   it('never polls a payment Core kept answering TRY_AGAIN_LATER to', async () => {
     vi.useFakeTimers();
     vi.spyOn(server, 'getAccount').mockResolvedValue(new Account(clientKp.publicKey(), '1'));
-    const send = vi
-      .spyOn(server, 'sendTransaction')
-      .mockResolvedValue({ status: 'TRY_AGAIN_LATER', hash: 'P1', latestLedger: 1, latestLedgerCloseTime: 0 });
+    const send = vi.spyOn(server, 'sendTransaction').mockResolvedValue({
+      status: 'TRY_AGAIN_LATER',
+      hash: 'P1',
+      latestLedger: 1,
+      latestLedgerCloseTime: 0,
+    });
     const poll = vi.spyOn(server, 'getTransaction');
 
     const p = sendWithdrawalPayment(fakeWallet().wallet, w, issuer);

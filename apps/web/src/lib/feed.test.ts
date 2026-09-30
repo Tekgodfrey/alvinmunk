@@ -27,7 +27,10 @@ describe('fetchActivity', () => {
 
   it('merges vouches and tips by ledger, newest first', async () => {
     repEvents.mockResolvedValue([claimed(10, 'A', 'B'), claimed(30, 'C', 'D')]);
-    tipEvents.mockResolvedValue([tipped(20, 'B', 'C', 5_000_000n), tipped(40, 'D', 'A', 1_000_000n)]);
+    tipEvents.mockResolvedValue([
+      tipped(20, 'B', 'C', 5_000_000n),
+      tipped(40, 'D', 'A', 1_000_000n),
+    ]);
 
     expect(await fetchActivity()).toEqual([
       { kind: 'tip', from: 'D', to: 'A', ledger: 40, amount: 1_000_000n },
@@ -49,6 +52,8 @@ describe('fetchActivity', () => {
     repEvents.mockResolvedValue([{ topics: ['vouch', 'minted'], data: [1, 'A', 'B'], ledger: 5 }]);
     tipEvents.mockResolvedValue([tipped(6, 'A', 'B', 'not-an-amount'), tipped(7, 'A', 'B', 3)]);
 
-    expect(await fetchActivity()).toEqual([{ kind: 'tip', from: 'A', to: 'B', ledger: 7, amount: 3n }]);
+    expect(await fetchActivity()).toEqual([
+      { kind: 'tip', from: 'A', to: 'B', ledger: 7, amount: 3n },
+    ]);
   });
 });

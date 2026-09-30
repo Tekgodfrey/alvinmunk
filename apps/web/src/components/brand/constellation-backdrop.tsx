@@ -39,10 +39,7 @@ function Scene({ reduced }: { reduced: boolean }) {
   }, []);
 
   const positions = useMemo(() => fibonacciSphere(12, 3.2), []);
-  const colors = useMemo(
-    () => HUES.map((h) => new THREE.Color().setHSL(h / 360, 0.7, 0.66)),
-    [],
-  );
+  const colors = useMemo(() => HUES.map((h) => new THREE.Color().setHSL(h / 360, 0.7, 0.66)), []);
   const centerColor = useMemo(() => new THREE.Color().setHSL(24 / 360, 1, 0.66), []);
 
   useFrame((_, d) => {
@@ -74,46 +71,78 @@ function Scene({ reduced }: { reduced: boolean }) {
   return (
     <>
       <group ref={skyTilt}>
-        <Stars radius={75} depth={55} count={3000} factor={4.2} saturation={0} fade speed={reduced ? 0 : 0.5} />
+        <Stars
+          radius={75}
+          depth={55}
+          count={3000}
+          factor={4.2}
+          saturation={0}
+          fade
+          speed={reduced ? 0 : 0.5}
+        />
       </group>
       <group ref={shift}>
-      <group ref={tilt}>
-        <OrbitRing radius={1.7} rotation={[1.2, 0.3, 0]} speed={0.42} color="#9945FF" glow={glow} reduced={reduced} />
-        <OrbitRing radius={2.5} rotation={[0.5, 1.1, 0.4]} speed={-0.3} color="#14F195" glow={glow} reduced={reduced} />
-        <OrbitRing radius={3.1} rotation={[1.7, 0.8, 0.9]} speed={0.18} color="#00D1FF" glow={glow} reduced={reduced} />
-        <group ref={spin}>
-          {positions.map((p, i) => (
-            <Line
-              key={`l-${i}`}
-              points={[[0, 0, 0], [p.x, p.y, p.z]]}
-              color="#a9b6e0"
-              lineWidth={0.6}
-              transparent
-              opacity={0.16}
-            />
-          ))}
-          <Star
+        <group ref={tilt}>
+          <OrbitRing
+            radius={1.7}
+            rotation={[1.2, 0.3, 0]}
+            speed={0.42}
+            color="#9945FF"
             glow={glow}
-            color={centerColor}
-            coreSize={0.3}
-            glowScale={3}
-            opacity={0.9}
             reduced={reduced}
           />
-          {positions.map((p, i) => (
-            <group key={i} position={p}>
-              <Star
-                glow={glow}
-                color={colors[i % colors.length]}
-                coreSize={0.1}
-                glowScale={0.74}
-                opacity={0.85}
-                reduced={reduced}
+          <OrbitRing
+            radius={2.5}
+            rotation={[0.5, 1.1, 0.4]}
+            speed={-0.3}
+            color="#14F195"
+            glow={glow}
+            reduced={reduced}
+          />
+          <OrbitRing
+            radius={3.1}
+            rotation={[1.7, 0.8, 0.9]}
+            speed={0.18}
+            color="#00D1FF"
+            glow={glow}
+            reduced={reduced}
+          />
+          <group ref={spin}>
+            {positions.map((p, i) => (
+              <Line
+                key={`l-${i}`}
+                points={[
+                  [0, 0, 0],
+                  [p.x, p.y, p.z],
+                ]}
+                color="#a9b6e0"
+                lineWidth={0.6}
+                transparent
+                opacity={0.16}
               />
-            </group>
-          ))}
+            ))}
+            <Star
+              glow={glow}
+              color={centerColor}
+              coreSize={0.3}
+              glowScale={3}
+              opacity={0.9}
+              reduced={reduced}
+            />
+            {positions.map((p, i) => (
+              <group key={i} position={p}>
+                <Star
+                  glow={glow}
+                  color={colors[i % colors.length]}
+                  coreSize={0.1}
+                  glowScale={0.74}
+                  opacity={0.85}
+                  reduced={reduced}
+                />
+              </group>
+            ))}
+          </group>
         </group>
-      </group>
       </group>
     </>
   );

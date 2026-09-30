@@ -8,6 +8,7 @@
 **Scope guard — DO NOT:** NO retention loop (recurring quest/stake) or spend market. No weekly cadence, no "rank buys something". A single-session shareable flow. No early scaling/infra.
 
 **Success metrics:**
+
 - E2E test suite green.
 - 10 external testers (NOT the program cohort) complete the share flow.
 - Share link → new-visitor conversion observed at least once.
@@ -17,6 +18,7 @@
 ## 🔧 Technical tasks
 
 ### Smart contract / on-chain (Tyler)
+
 - **`QuestRegistry` contract:** `create_quest`, `award_quest` (allowlist-gated + replay guard), `add_attester`/`remove_attester`, `verify_sig`. The attester allowlist in instance storage; quest config in persistent storage.
 - **Replay guard:** `Map<(QuestId, Address), bool>` claimed-set (persistent), atomic check-and-set in `award_quest`. Unit tests proving double-claim reverts.
 - **Signed-claim oracle:** `verify_sig` validates the ed25519 attester signature over `(quest_id, recipient, nonce)` with `env.crypto().ed25519_verify`. Nonce in the replay set → reuse is blocked.
@@ -26,6 +28,7 @@
 - ⚠️ **Flag the upgradeability decision HERE:** add a `require_auth`-gated `upgrade(new_wasm_hash)` (`env.deployer().update_current_contract_wasm`) to all contracts **OR** commit to immutability. Decide now; retrofitting on mainnet is painful.
 
 ### Engineering / full-stack (Elliot)
+
 - **`Rewards` contract:** reputation → USDC micro-bounty payout (SAC/USDC), tipping `tip(from,to,amount)`. **AC:** claim transfers USDC SAC, double-claim rejected.
 - Cross-contract wiring: `Rewards` → `Reputation.score`, `QuestRegistry` eligibility gate; interfaces in the shared crate. **AC:** integration test covers all 3 contracts end-to-end.
 - **Attester service (real):** Express/Fastify, allowlisted keypair, auto-verify quest = merged GitHub PR (API) + referral-wallet-real-tx check, returns a signed claim. **AC:** merged PR → a valid sig redeemable on-chain.
@@ -38,6 +41,7 @@
 ---
 
 ## 🎨 UX / Frontend (Kaan)
+
 - **Screens:** the full mini-dApp loop — profile/passport (stamp grid), stamp detail, vouch/co-sign action sheet, error/failed-tx recovery.
 - **Delight mechanic:** **VOUCH** — co-sign another person; it mints a small collectible naming them ("Kaan vouched for Alvin"). Every micro-action is its own card = "reputation about someone else goes viral".
 - **Share surface:** Vouch Card (two handles + relationship line + generative motif) + a pre-filled share caption + a deep link back to the mint.
@@ -49,6 +53,7 @@
 ---
 
 ## 📣 Product / GTM (Nicole)
+
 - Recruit a 10-person **external alpha pod** (NOT the program cohort) from the warmed-up communities; run a moderated walkthrough.
 - Instrument the share funnel: mint → share → click → install → activate; capture drop-off.
 - Referral/share copy + an OG-image badge that renders a person's name/handle (viral hook).
@@ -58,7 +63,9 @@
 ---
 
 ## ✅ Definition of Done
+
 3 contracts on testnet, cross-contract working; the attester service verifies a merged PR; the indexer feeds the leaderboard; full test suite + fuzz green; 10 external testers completed the share flow. **Idea Submission dossier ready.**
 
 ## ⛓️ Dependencies
+
 Yellow (Reputation + event schema). The upgradeability decision is made here, enforced in Black.

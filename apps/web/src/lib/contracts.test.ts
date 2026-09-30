@@ -225,7 +225,10 @@ describe('invokeCosigned', () => {
     expect(mine.credentials().address().signatureExpirationLedger()).toBe(1_120);
     expect(signed(other)).toBe(false); // someone else's to sign
     // the submitter signs the re-simulated call, co-signature included
-    const submitted = TransactionBuilder.fromXDR(sign.mock.calls[0][0], Networks.TESTNET) as Transaction;
+    const submitted = TransactionBuilder.fromXDR(
+      sign.mock.calls[0][0],
+      Networks.TESTNET,
+    ) as Transaction;
     expect(signed(authOf(submitted)[1])).toBe(true);
   });
 
@@ -237,12 +240,17 @@ describe('invokeCosigned', () => {
       sign: vi.fn(),
       invoke,
     };
-    await expect(invokeCosigned(CONTRACT, 'transfer_handle', [], submitter, cosigner())).resolves.toEqual(
-      { hash: 'pk-hash', value: undefined },
-    );
-    const cosign = (invoke.mock.calls[0] as unknown[])[3] as (tx: Transaction) => Promise<Transaction>;
+    await expect(
+      invokeCosigned(CONTRACT, 'transfer_handle', [], submitter, cosigner()),
+    ).resolves.toEqual({ hash: 'pk-hash', value: undefined });
+    const cosign = (invoke.mock.calls[0] as unknown[])[3] as (
+      tx: Transaction,
+    ) => Promise<Transaction>;
     const prepared = withAuth(
-      new TransactionBuilder(new Account(SOURCE, '1'), { fee: '100', networkPassphrase: Networks.TESTNET })
+      new TransactionBuilder(new Account(SOURCE, '1'), {
+        fee: '100',
+        networkPassphrase: Networks.TESTNET,
+      })
         .addOperation(new Contract(CONTRACT).call('transfer_handle'))
         .setTimeout(30)
         .build(),
@@ -311,7 +319,9 @@ describe('direct ledger reads', () => {
     });
     const values = await readLedgerData(CONTRACT, [q1, q2, q3]);
     expect(values.map((v) => (v ? scValToNative(v) : null))).toEqual([10, null, 30]);
-    const asked = server.getLedgerEntries.mock.calls[0].map((k: xdr.LedgerKey) => k.toXDR('base64'));
+    const asked = server.getLedgerEntries.mock.calls[0].map((k: xdr.LedgerKey) =>
+      k.toXDR('base64'),
+    );
     expect(asked).toEqual([q1, q2, q3].map((k) => ledgerKey(k).toXDR('base64')));
   });
 

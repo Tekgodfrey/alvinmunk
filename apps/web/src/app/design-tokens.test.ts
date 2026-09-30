@@ -37,7 +37,10 @@ describe('design tokens', () => {
   });
 
   it('every Tailwind colour reads the token of its own name', () => {
-    const colors = tailwindConfig.theme?.extend?.colors as Record<string, string | Record<string, string>>;
+    const colors = tailwindConfig.theme?.extend?.colors as Record<
+      string,
+      string | Record<string, string>
+    >;
     for (const [name, value] of Object.entries(colors)) {
       const shades = typeof value === 'string' ? { DEFAULT: value } : value;
       for (const [shade, css] of Object.entries(shades)) {
@@ -65,7 +68,9 @@ describe('design tokens', () => {
     ).toContain('var(--onchain)');
 
     const badge = String(Badge({ variant: 'onchain' }).props.className).split(' ');
-    expect(badge).toEqual(expect.arrayContaining(['border-onchain/30', 'bg-onchain/10', 'text-onchain']));
+    expect(badge).toEqual(
+      expect.arrayContaining(['border-onchain/30', 'bg-onchain/10', 'text-onchain']),
+    );
     const button = buttonVariants({ variant: 'onchain' }).split(' ');
     expect(button).toEqual(expect.arrayContaining(['bg-onchain', 'shadow-glow-onchain']));
     for (const cls of [...badge, ...button]) expect(cls).not.toMatch(/secondary/);

@@ -232,13 +232,16 @@ export function readNetworkConfig(env: Record<string, string | undefined>): Netw
   const rawNetwork = env.NEXT_PUBLIC_STELLAR_NETWORK;
   // Only an absent variable means testnet; an empty or unknown value stays as typed so the
   // validator names it.
-  const network = (rawNetwork === undefined ? 'testnet' : rawNetwork.trim().toLowerCase()) as StellarNetwork;
+  const network = (
+    rawNetwork === undefined ? 'testnet' : rawNetwork.trim().toLowerCase()
+  ) as StellarNetwork;
   const known = network === 'testnet' || network === 'mainnet';
   const defaults = known ? DEFAULT_URLS[network] : DEFAULT_URLS.testnet;
   return {
     network,
     rpcUrl: envValue(env.NEXT_PUBLIC_RPC_URL) ?? defaults.rpcUrl,
-    networkPassphrase: envValue(env.NEXT_PUBLIC_NETWORK_PASSPHRASE) ?? (known ? PASSPHRASE[network] : ''),
+    networkPassphrase:
+      envValue(env.NEXT_PUBLIC_NETWORK_PASSPHRASE) ?? (known ? PASSPHRASE[network] : ''),
     horizonUrl: envValue(env.NEXT_PUBLIC_HORIZON_URL) ?? defaults.horizonUrl,
     contracts: {
       reputation: env.NEXT_PUBLIC_REPUTATION_CONTRACT_ID ?? '',
@@ -312,7 +315,8 @@ export function validateNetworkConfig(cfg: NetworkConfig): string[] {
 
   if (network === 'mainnet') {
     for (const [key, envKey] of Object.entries(CONTRACT_ENV) as [keyof ContractIds, string][]) {
-      if (!cfg.contracts[key]) errors.push(`${envKey} is not set — every contract id is required on mainnet`);
+      if (!cfg.contracts[key])
+        errors.push(`${envKey} is not set — every contract id is required on mainnet`);
     }
   }
 

@@ -1,5 +1,11 @@
 import { describe, it, expect, vi } from 'vitest';
-import { humanizeError, withTimeout, contractErrorCode, shareInFlight, concurrencyLimit } from './utils';
+import {
+  humanizeError,
+  withTimeout,
+  contractErrorCode,
+  shareInFlight,
+  concurrencyLimit,
+} from './utils';
 
 describe('contractErrorCode', () => {
   it('extracts a Soroban contract error code', () => {
@@ -10,7 +16,9 @@ describe('contractErrorCode', () => {
 
 describe('humanizeError', () => {
   it('prefers a mapped message when the code is known', () => {
-    expect(humanizeError(new Error('Error(Contract, #4)'), { 4: 'Already gone.' })).toBe('Already gone.');
+    expect(humanizeError(new Error('Error(Contract, #4)'), { 4: 'Already gone.' })).toBe(
+      'Already gone.',
+    );
   });
 
   it('always gives a next step for an unknown code (never a dead end)', () => {
@@ -135,7 +143,9 @@ describe('withTimeout', () => {
   });
 
   it('propagates the original rejection before the timeout fires', async () => {
-    await expect(withTimeout(Promise.reject(new Error('upstream')), 1000)).rejects.toThrow('upstream');
+    await expect(withTimeout(Promise.reject(new Error('upstream')), 1000)).rejects.toThrow(
+      'upstream',
+    );
   });
 });
 
@@ -160,7 +170,9 @@ describe('shareInFlight', () => {
 
   it('drops a settled read so the next call is fresh — even after a rejection', async () => {
     const pending = new Map<string, Promise<number>>();
-    await expect(shareInFlight(pending, 'k', async () => Promise.reject(new Error('rpc')))).rejects.toThrow('rpc');
+    await expect(
+      shareInFlight(pending, 'k', async () => Promise.reject(new Error('rpc'))),
+    ).rejects.toThrow('rpc');
     expect(pending.size).toBe(0);
     await expect(shareInFlight(pending, 'k', async () => 2)).resolves.toBe(2);
     expect(pending.size).toBe(0);

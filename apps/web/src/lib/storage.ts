@@ -22,11 +22,7 @@ function getStorage(): Storage | null {
  * Read and parse JSON from localStorage, returning `fallback` if storage is inaccessible,
  * the key is absent, JSON parsing fails, or optional `validate` returns false.
  */
-export function readJSON<T>(
-  key: string,
-  fallback: T,
-  validate?: (val: unknown) => val is T,
-): T {
+export function readJSON<T>(key: string, fallback: T, validate?: (val: unknown) => val is T): T {
   try {
     const storage = getStorage();
     if (!storage) return fallback;

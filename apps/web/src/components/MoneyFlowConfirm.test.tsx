@@ -15,7 +15,10 @@ const m = vi.hoisted(() => ({
 // The deployment's network is the only switch: mainnet confirms, testnet doesn't.
 vi.mock('@/lib/stellar', async (importOriginal) => {
   const orig = await importOriginal<typeof import('@/lib/stellar')>();
-  return { ...orig, config: Object.defineProperty({ ...orig.config }, 'network', { get: () => m.network }) };
+  return {
+    ...orig,
+    config: Object.defineProperty({ ...orig.config }, 'network', { get: () => m.network }),
+  };
 });
 vi.mock('@/lib/wallet', () => ({ getWallet: m.getWallet }));
 vi.mock('@/lib/registry', () => ({ resolveHandle: m.resolveHandle }));
@@ -30,7 +33,9 @@ vi.mock('@/lib/rewards', async (importOriginal) => ({
   requestTestUsdc: vi.fn(),
 }));
 vi.mock('@/lib/reputation', () => ({ getEarnedScore: vi.fn().mockResolvedValue(50) }));
-vi.mock('@/lib/quests', () => ({ getStreak: vi.fn().mockResolvedValue({ weeks: 2, best: 3, lastWeek: 100 }) }));
+vi.mock('@/lib/quests', () => ({
+  getStreak: vi.fn().mockResolvedValue({ weeks: 2, best: 3, lastWeek: 100 }),
+}));
 vi.mock('@/lib/anchor', () => ({ getAnchorConfig: () => null }));
 vi.mock('@/components/ui/toaster', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 vi.mock('@/components/fx/number-ticker', () => ({
@@ -78,7 +83,8 @@ describe('mainnet tips (#291)', () => {
     Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!.call(el, value);
     el.dispatchEvent(new Event('input', { bubbles: true }));
   };
-  const input = (label: string) => container.querySelector<HTMLInputElement>(`input[aria-label="${label}"]`)!;
+  const input = (label: string) =>
+    container.querySelector<HTMLInputElement>(`input[aria-label="${label}"]`)!;
 
   async function fill(to: string, amount: string) {
     await act(async () => root.render(<Tip address={ME} />));
@@ -91,7 +97,9 @@ describe('mainnet tips (#291)', () => {
     await fill(OTHER, '2.5');
     await send();
     expect(dialog()).not.toBeNull();
-    expect(container.querySelector('[data-testid="money-confirm-address"]')?.textContent).toBe(OTHER);
+    expect(container.querySelector('[data-testid="money-confirm-address"]')?.textContent).toBe(
+      OTHER,
+    );
     expect(dialog()!.textContent).toContain('2.5 USDC');
     expect(dialog()!.textContent).toContain("can't be reversed");
     expect(m.getWallet).not.toHaveBeenCalled();
@@ -105,7 +113,9 @@ describe('mainnet tips (#291)', () => {
     await send();
     expect(m.resolveHandle).toHaveBeenCalledWith('beko');
     expect(dialog()!.textContent).toContain('@beko');
-    expect(container.querySelector('[data-testid="money-confirm-address"]')?.textContent).toBe(OTHER);
+    expect(container.querySelector('[data-testid="money-confirm-address"]')?.textContent).toBe(
+      OTHER,
+    );
   });
 
   it('needs the checkbox for the first tip on the device, then waits out the undo window before the wallet', async () => {
@@ -126,7 +136,11 @@ describe('mainnet tips (#291)', () => {
     await act(async () => vi.advanceTimersByTime(100));
     vi.useRealTimers();
     await act(async () => new Promise((r) => setTimeout(r, 0)));
-    expect(m.tip).toHaveBeenCalledWith(expect.objectContaining({ address: ME }), OTHER, 25_000_000n);
+    expect(m.tip).toHaveBeenCalledWith(
+      expect.objectContaining({ address: ME }),
+      OTHER,
+      25_000_000n,
+    );
     expect(dialog()).toBeNull();
     expect(localStorage.getItem('alvinmunk.mainnet.tipped')).toBe('1');
   });
@@ -180,15 +194,29 @@ describe('mainnet tips (#291)', () => {
     await fill(OTHER, '2.5');
     await send();
     expect(dialog()).toBeNull();
-    expect(m.tip).toHaveBeenCalledWith(expect.objectContaining({ address: ME }), OTHER, 25_000_000n);
+    expect(m.tip).toHaveBeenCalledWith(
+      expect.objectContaining({ address: ME }),
+      OTHER,
+      25_000_000n,
+    );
   });
 });
 
 describe('mainnet reward claims (#291)', () => {
-  const entry = { id: 3, threshold: 30n, amount: 5_000_000n, active: true, max_claims: 0, claims: 0 };
+  const entry = {
+    id: 3,
+    threshold: 30n,
+    amount: 5_000_000n,
+    active: true,
+    max_claims: 0,
+    claims: 0,
+  };
 
   async function mount() {
-    m.getRewardsFor.mockResolvedValue({ rows: [{ entry, claimed: false, eligible: true, reason: 0 }], remainingToday: null });
+    m.getRewardsFor.mockResolvedValue({
+      rows: [{ entry, claimed: false, eligible: true, reason: 0 }],
+      remainingToday: null,
+    });
     await act(async () => root.render(<Rewards address={ME} />));
   }
   const claim = () => click(buttonIn(container, /^Claim$/));

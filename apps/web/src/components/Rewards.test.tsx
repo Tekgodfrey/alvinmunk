@@ -4,12 +4,14 @@ import { createRoot, type Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { RewardEntry, RewardStatus } from '@/lib/rewards';
 
-const { getEarnedScoreMock, getRewardsForMock, getStreakMock, claimRewardMock } = vi.hoisted(() => ({
-  getEarnedScoreMock: vi.fn(),
-  getRewardsForMock: vi.fn(),
-  getStreakMock: vi.fn(),
-  claimRewardMock: vi.fn(),
-}));
+const { getEarnedScoreMock, getRewardsForMock, getStreakMock, claimRewardMock } = vi.hoisted(
+  () => ({
+    getEarnedScoreMock: vi.fn(),
+    getRewardsForMock: vi.fn(),
+    getStreakMock: vi.fn(),
+    claimRewardMock: vi.fn(),
+  }),
+);
 
 vi.mock('@/lib/reputation', () => ({ getEarnedScore: getEarnedScoreMock }));
 vi.mock('@/lib/quests', () => ({ getStreak: getStreakMock }));

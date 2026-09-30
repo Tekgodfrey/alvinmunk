@@ -181,7 +181,7 @@ describe('getOwedBonuses', () => {
 });
 
 describe('getPendingVouches', () => {
-  it("re-shares each open card with its own claim code, in the fragment only", async () => {
+  it('re-shares each open card with its own claim code, in the fragment only', async () => {
     const now = Math.floor(Date.now() / 1000);
     const open = (id: number): VouchView => ({
       id,
@@ -199,6 +199,9 @@ describe('getPendingVouches', () => {
     vouches.set(2, open(2));
 
     const urls = (await getPendingVouches('https://alvinmunk.app')).map((v) => v.claimUrl).sort();
-    expect(urls).toEqual(['https://alvinmunk.app/claim/1#k=aa', 'https://alvinmunk.app/claim/2#s=bb']);
+    expect(urls).toEqual([
+      'https://alvinmunk.app/claim/1#k=aa',
+      'https://alvinmunk.app/claim/2#s=bb',
+    ]);
   });
 });

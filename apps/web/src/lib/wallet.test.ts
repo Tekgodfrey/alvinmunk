@@ -28,4 +28,3 @@ describe('isPasskeyConfigured', () => {
     expect(isPasskeyConfigured()).toBe(true);
   });
 });
-

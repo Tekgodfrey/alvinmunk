@@ -263,7 +263,10 @@ async function verifyEvidence(
     const pr = r.body as { merged?: boolean; merged_at?: string | null } | null;
     if (pr?.merged !== true) return { ok: false, reason: 'PR not merged' };
     if (since !== null && !(Date.parse(pr.merged_at ?? '') / 1000 >= since)) {
-      return { ok: false, reason: 'that PR was merged before this round — this quest needs a new one' };
+      return {
+        ok: false,
+        reason: 'that PR was merged before this round — this quest needs a new one',
+      };
     }
     return { ok: true };
   }
@@ -274,7 +277,10 @@ async function verifyEvidence(
     try {
       score = await readU64(REP_ID, 'get_score', ev.ref);
     } catch {
-      return { ok: false, reason: 'couldn’t read the referred wallet’s activity right now — try again' };
+      return {
+        ok: false,
+        reason: 'couldn’t read the referred wallet’s activity right now — try again',
+      };
     }
     const invitedBy = await readInvitedBy(ev.ref);
     // A registry binding decides on its own; the classic marker is only read without one.
@@ -402,7 +408,7 @@ function isTimeout(e: unknown): boolean {
  */
 export interface VouchClaimedEvent {
   vouchId: string; // stringified u64
-  from: string;    // G/C address — the voucher
+  from: string; // G/C address — the voucher
   claimer: string; // G/C address — the person who claimed
 }
 
@@ -473,7 +479,11 @@ const inRound = (at: number, since: number | null) => since === null || at >= si
 
 /** Distinct wallets that claimed a vouch minted by `from`, within the RPC's retention window
  *  (and from `since` on, when given). */
-async function countVouchesClaimedBy(repId: string, from: string, since: number | null): Promise<number> {
+async function countVouchesClaimedBy(
+  repId: string,
+  from: string,
+  since: number | null,
+): Promise<number> {
   const claimers = new Set<string>();
   await scanVouchClaimed(repId, (c) => {
     if (c.from === from && inRound(c.at, since)) claimers.add(c.claimer);

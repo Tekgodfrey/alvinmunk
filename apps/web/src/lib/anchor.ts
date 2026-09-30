@@ -9,7 +9,15 @@
  * signal for the payout gate (belts/08) — the cheapest real uniqueness signal short of
  * heavy KYC. So anchors both receive our users and harden alvinmunk's treasury.
  */
-import { Asset, Memo, Operation, StellarToml, TransactionBuilder, WebAuth, type Account } from '@stellar/stellar-sdk';
+import {
+  Asset,
+  Memo,
+  Operation,
+  StellarToml,
+  TransactionBuilder,
+  WebAuth,
+  type Account,
+} from '@stellar/stellar-sdk';
 import { networkPassphrase, server } from './stellar';
 import { submitSigned } from './submit';
 import type { Wallet } from './wallet';
@@ -68,7 +76,15 @@ export interface Withdrawal {
 }
 
 /** SEP-24 statuses after which the anchor will not change the transaction again. */
-const TERMINAL = new Set(['completed', 'refunded', 'expired', 'error', 'no_market', 'too_small', 'too_large']);
+const TERMINAL = new Set([
+  'completed',
+  'refunded',
+  'expired',
+  'error',
+  'no_market',
+  'too_small',
+  'too_large',
+]);
 export const isTerminalStatus = (status: string): boolean => TERMINAL.has(status);
 
 /** The home domain without a scheme or trailing slash, as SEP-1/SEP-10 expect it. */
@@ -121,12 +137,16 @@ export async function authenticate(
   homeDomain: string,
 ): Promise<string> {
   if (wallet.address.startsWith('C')) {
-    throw new Error('Cash-out needs a classic wallet signature; passkey wallets are not supported yet.');
+    throw new Error(
+      'Cash-out needs a classic wallet signature; passkey wallets are not supported yet.',
+    );
   }
   const domain = bareDomain(homeDomain);
   const url = `${toml.webAuthEndpoint}?account=${encodeURIComponent(wallet.address)}&home_domain=${encodeURIComponent(domain)}`;
   const challengeRes = await fetch(url, { signal: AbortSignal.timeout(10_000) });
-  const challenge = await readJson<{ transaction?: string; network_passphrase?: string }>(challengeRes);
+  const challenge = await readJson<{ transaction?: string; network_passphrase?: string }>(
+    challengeRes,
+  );
   if (!challengeRes.ok || !challenge.transaction) {
     throw new Error(challenge.error ?? `Anchor authentication failed (${challengeRes.status}).`);
   }
@@ -192,7 +212,9 @@ export async function startWithdrawal(wallet: Wallet, amount: string): Promise<W
   });
   const data = await readJson<{ id?: string; url?: string; message?: string }>(res);
   if (!res.ok || !data.id) {
-    throw new Error(data.error ?? data.message ?? `Withdrawal could not be started (${res.status}).`);
+    throw new Error(
+      data.error ?? data.message ?? `Withdrawal could not be started (${res.status}).`,
+    );
   }
   // SEP-24: a freshly created interactive transaction is `incomplete` until the user
   // finishes the anchor's hosted flow.
@@ -205,10 +227,13 @@ export async function getWithdrawalStatus(
   token: string,
   transferServer: string,
 ): Promise<Withdrawal> {
-  const res = await fetch(`${endpoint(transferServer, '/transaction')}?id=${encodeURIComponent(id)}`, {
-    headers: { Authorization: `Bearer ${token}` },
-    signal: AbortSignal.timeout(10_000),
-  });
+  const res = await fetch(
+    `${endpoint(transferServer, '/transaction')}?id=${encodeURIComponent(id)}`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: AbortSignal.timeout(10_000),
+    },
+  );
   const data = await readJson<{
     transaction?: {
       id?: string;
@@ -246,7 +271,9 @@ function withdrawalMemo(w: Withdrawal): Memo {
       // SEP-24 sends hash memos base64-encoded; Memo.hash takes hex. (No Buffer: this runs
       // in the browser.)
       return Memo.hash(
-        Array.from(atob(w.withdrawMemo), (c) => c.charCodeAt(0).toString(16).padStart(2, '0')).join(''),
+        Array.from(atob(w.withdrawMemo), (c) => c.charCodeAt(0).toString(16).padStart(2, '0')).join(
+          '',
+        ),
       );
     default:
       return Memo.text(w.withdrawMemo);

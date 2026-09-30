@@ -1,7 +1,7 @@
 ---
 name: Bug Report
 about: Report a bug to help improve alvinmunk
-title: "[Bug] "
+title: '[Bug] '
 labels: bug
 ---
 
@@ -33,4 +33,3 @@ labels: bug
 ## Screenshots / Logs
 
 <!-- If applicable -->
-

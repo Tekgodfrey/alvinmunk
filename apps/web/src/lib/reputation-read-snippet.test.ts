@@ -14,7 +14,11 @@ const { Address, Networks, nativeToScVal, rpc, scValToNative } = sdk;
 
 const CONTRACT = 'CDRYXUS55TKGYEM3YUB3YTJWQKSWWQABK6YPQK7SLEPVALWYK4IR7WCL';
 const WALLET = 'GC7K66B2IL3KWQC25EVY3BQI3SVCRWIJLWZ3R5LBBWAL2ZXW4CELFFGU';
-const testnet = { network: 'testnet', rpcUrl: 'https://soroban-testnet.stellar.org', contracts: { reputation: CONTRACT } } as const;
+const testnet = {
+  network: 'testnet',
+  rpcUrl: 'https://soroban-testnet.stellar.org',
+  contracts: { reputation: CONTRACT },
+} as const;
 
 const read = (rel: string) => readFileSync(new URL(rel, import.meta.url), 'utf8');
 const reputationSource = read('../../../../contracts/reputation/src/lib.rs');
@@ -35,9 +39,13 @@ interface Call {
 async function runSnippet(code: string, values: Record<string, number>) {
   const imp = /^import \{([^}]+)\} from '@stellar\/stellar-sdk';\n/.exec(code);
   if (!imp) throw new Error('the snippet must open with its @stellar/stellar-sdk import');
-  const names = imp[1].split(',').map((n) => n.trim()).filter(Boolean);
+  const names = imp[1]
+    .split(',')
+    .map((n) => n.trim())
+    .filter(Boolean);
   const missing = names.filter((n) => !(n in sdk));
-  if (missing.length) throw new Error(`not exported by @stellar/stellar-sdk: ${missing.join(', ')}`);
+  if (missing.length)
+    throw new Error(`not exported by @stellar/stellar-sdk: ${missing.join(', ')}`);
 
   const calls: Call[] = [];
   vi.spyOn(rpc.Server.prototype, 'simulateTransaction').mockImplementation(async function (
@@ -78,8 +86,16 @@ afterEach(() => vi.restoreAllMocks());
 
 describe('reputationReadSnippet', () => {
   it('runs as written: reads get_score and get_earned for the address from the configured contract', async () => {
-    const { calls, log } = await runSnippet(reputationReadSnippet(WALLET, testnet), { get_score: 15, get_earned: 3 });
-    const expected = { url: 'https://soroban-testnet.stellar.org/', passphrase: Networks.TESTNET, contract: CONTRACT, args: [WALLET] };
+    const { calls, log } = await runSnippet(reputationReadSnippet(WALLET, testnet), {
+      get_score: 15,
+      get_earned: 3,
+    });
+    const expected = {
+      url: 'https://soroban-testnet.stellar.org/',
+      passphrase: Networks.TESTNET,
+      contract: CONTRACT,
+      args: [WALLET],
+    };
     expect(calls).toEqual([
       { ...expected, method: 'get_score' },
       { ...expected, method: 'get_earned' },
@@ -88,10 +104,14 @@ describe('reputationReadSnippet', () => {
   });
 
   it('only calls views the reputation contract defines as fn(env, addr: Address) -> u64', () => {
-    const called = [...reputationReadSnippet(WALLET, testnet).matchAll(/read\('(\w+)'\)/g)].map((m) => m[1]);
+    const called = [...reputationReadSnippet(WALLET, testnet).matchAll(/read\('(\w+)'\)/g)].map(
+      (m) => m[1],
+    );
     expect(called).toEqual([...REPUTATION_READ_VIEWS]);
     for (const view of REPUTATION_READ_VIEWS) {
-      expect(reputationSource).toMatch(new RegExp(`pub fn ${view}\\(env: Env, addr: Address\\) -> u64 \\{`));
+      expect(reputationSource).toMatch(
+        new RegExp(`pub fn ${view}\\(env: Env, addr: Address\\) -> u64 \\{`),
+      );
     }
   });
 
@@ -103,7 +123,11 @@ describe('reputationReadSnippet', () => {
   });
 
   it('follows the configured network', async () => {
-    const mainnet = { network: 'mainnet', rpcUrl: 'https://mainnet.sorobanrpc.com', contracts: { reputation: CONTRACT } } as const;
+    const mainnet = {
+      network: 'mainnet',
+      rpcUrl: 'https://mainnet.sorobanrpc.com',
+      contracts: { reputation: CONTRACT },
+    } as const;
     const { calls } = await runSnippet(reputationReadSnippet(WALLET, mainnet), {});
     expect(calls.map((c) => [c.url, c.passphrase])).toEqual([
       ['https://mainnet.sorobanrpc.com/', Networks.PUBLIC],
@@ -118,11 +142,17 @@ describe('reputationReadSnippet', () => {
 
   it('defaults to a valid account address', () => {
     expect(sdk.StrKey.isValidEd25519PublicKey(SAMPLE_ADDRESS)).toBe(true);
-    expect(reputationReadSnippet(undefined, testnet)).toContain(`const address = '${SAMPLE_ADDRESS}';`);
+    expect(reputationReadSnippet(undefined, testnet)).toContain(
+      `const address = '${SAMPLE_ADDRESS}';`,
+    );
   });
 
   it('is the only developer snippet: the landing, how-it-works and score pages all render it', () => {
-    for (const page of ['../app/page.tsx', '../app/how-it-works/page.tsx', '../app/score/[address]/page.tsx']) {
+    for (const page of [
+      '../app/page.tsx',
+      '../app/how-it-works/page.tsx',
+      '../app/score/[address]/page.tsx',
+    ]) {
       const src = read(page);
       expect(src, page).toContain('<ReputationSnippet');
       expect(src, page).not.toContain('<pre');

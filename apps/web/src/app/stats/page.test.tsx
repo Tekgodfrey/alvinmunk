@@ -178,7 +178,16 @@ describe('StatsPage — background tabs (issue #210)', () => {
   let root: Root;
   let container: HTMLDivElement;
 
-  const ok = { ok: true, json: async () => ({ network: 'testnet', configured: true, users: 3, target: 50, addresses: [] }) };
+  const ok = {
+    ok: true,
+    json: async () => ({
+      network: 'testnet',
+      configured: true,
+      users: 3,
+      target: 50,
+      addresses: [],
+    }),
+  };
 
   const setHidden = (hidden: boolean) => {
     Object.defineProperty(document, 'hidden', { configurable: true, get: () => hidden });

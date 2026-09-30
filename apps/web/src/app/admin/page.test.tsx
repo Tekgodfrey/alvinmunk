@@ -62,7 +62,14 @@ describe('/admin', () => {
 
   beforeEach(() => {
     m.admins = { rewards: ADMIN, gates: ADMIN, quests: ADMIN };
-    for (const f of [m.connect, m.getAllRewards, m.getDailyCap, m.addReward, m.setRewardActive, m.readGates]) {
+    for (const f of [
+      m.connect,
+      m.getAllRewards,
+      m.getDailyCap,
+      m.addReward,
+      m.setRewardActive,
+      m.readGates,
+    ]) {
       f.mockReset();
     }
     m.getAllRewards.mockResolvedValue([REWARD]);
@@ -170,7 +177,9 @@ describe('/admin', () => {
   it('cancel discards the write without signing', async () => {
     await connectAs(ADMIN);
     await click('Disable');
-    expect(container.textContent).toContain('Reward 1 (0.5 USDC at ≥ 30 Earned XP) will be disabled');
+    expect(container.textContent).toContain(
+      'Reward 1 (0.5 USDC at ≥ 30 Earned XP) will be disabled',
+    );
     await click('Cancel');
     expect(container.textContent).not.toContain('will be disabled');
     expect(m.setRewardActive).not.toHaveBeenCalled();

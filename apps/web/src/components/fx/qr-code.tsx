@@ -58,10 +58,7 @@ export function QrCode({
       role="img"
       aria-label={label}
       style={{ width: size, height: size }}
-      className={cn(
-        'inline-flex items-center justify-center rounded-xl bg-white p-2',
-        className,
-      )}
+      className={cn('inline-flex items-center justify-center rounded-xl bg-white p-2', className)}
     >
       {svg ? (
         <span

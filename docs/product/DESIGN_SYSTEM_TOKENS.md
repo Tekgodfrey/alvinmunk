@@ -14,7 +14,7 @@ light theme (`:root.light`) redefines every token (see §8)._
   color-scheme: dark;
 
   /* Near-black violet base — "living cosmos" */
-  --background: 264 52% 4.5%;        /* #0B0512 */
+  --background: 264 52% 4.5%; /* #0B0512 */
   --foreground: 250 28% 96%;
 
   --card: 266 38% 8%;
@@ -44,16 +44,16 @@ light theme (`:root.light`) redefines every token (see §8)._
 
   --border: 265 26% 16%;
   --input: 265 26% 16%;
-  --ring: 265 100% 66%;              /* focus ring = primary */
+  --ring: 265 100% 66%; /* focus ring = primary */
 
   /* Brand-specific (not in stock shadcn) */
   --starlight: 250 100% 97%;
-  --onchain: 265 100% 66%;           /* alias of primary — violet, on-chain moments only */
+  --onchain: 265 100% 66%; /* alias of primary — violet, on-chain moments only */
   --radius: 0.875rem;
 
   /* Signature flow + depth surfaces */
-  --tertiary: 193 100% 52%;          /* cyan — social / connection */
-  --flow-violet: 265 100% 66%;       /* violet stop of .flow (light: 68%, for its dark label) */
+  --tertiary: 193 100% 52%; /* cyan — social / connection */
+  --flow-violet: 265 100% 66%; /* violet stop of .flow (light: 68%, for its dark label) */
   --surface: 266 34% 9%;
   --surface-2: 266 30% 12%;
   --hairline: 260 60% 100%;
@@ -141,22 +141,22 @@ the dark label (4.73:1); the light theme's 60% violet keeps white (5.30:1). `flo
 ## 2. Typography scale
 
 ```css
---font-display: "Bricolage Grotesque", system-ui, sans-serif;
---font-sans: "Inter", system-ui, sans-serif;
---font-mono: "JetBrains Mono", monospace;
+--font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+--font-sans: 'Inter', system-ui, sans-serif;
+--font-mono: 'JetBrains Mono', monospace;
 ```
 
-| Token | size / line-height | use |
-|-------|--------------------|-----|
-| `display-2xl` | 3.75rem / 1.05, display, -0.02em | hero headline |
-| `display-xl` | 2.75rem / 1.1, display | section heroes |
-| `h1` | 2rem / 1.15, display | page titles |
-| `h2` | 1.5rem / 1.2 | card group titles |
-| `h3` | 1.125rem / 1.3, semibold | card titles |
-| `body` | 1rem / 1.6, sans | default |
-| `small` | 0.875rem / 1.5 | secondary |
-| `caption` | 0.75rem / 1.4, muted | meta, timestamps |
-| `mono` | 0.875rem / 1.5, mono | addresses, hashes |
+| Token         | size / line-height               | use               |
+| ------------- | -------------------------------- | ----------------- |
+| `display-2xl` | 3.75rem / 1.05, display, -0.02em | hero headline     |
+| `display-xl`  | 2.75rem / 1.1, display           | section heroes    |
+| `h1`          | 2rem / 1.15, display             | page titles       |
+| `h2`          | 1.5rem / 1.2                     | card group titles |
+| `h3`          | 1.125rem / 1.3, semibold         | card titles       |
+| `body`        | 1rem / 1.6, sans                 | default           |
+| `small`       | 0.875rem / 1.5                   | secondary         |
+| `caption`     | 0.75rem / 1.4, muted             | meta, timestamps  |
+| `mono`        | 0.875rem / 1.5, mono             | addresses, hashes |
 
 Load with `next/font` (variable, `display: "swap"`, subset latin). Headings get
 `font-feature-settings` defaults; mono for any `G…`/hash with middle-truncation.
@@ -178,9 +178,11 @@ Tailwind `boxShadow` (`apps/web/tailwind.config.ts`); the glows read the colour 
 they follow the theme:
 
 ```css
-shadow-card:         0 1px 0 0 hsl(0 0% 100% / 0.04) inset, 0 8px 30px -12px hsl(230 60% 2% / 0.8);
-shadow-glow-primary: 0 0 24px -4px hsl(var(--primary) / 0.45);  /* CTA / ignite moment */
-shadow-glow-onchain: 0 0 24px -4px hsl(var(--onchain) / 0.40);  /* on-chain = same violet */
+shadow-card:
+  0 1px 0 0 hsl(0 0% 100% / 0.04) inset,
+  0 8px 30px -12px hsl(230 60% 2% / 0.8);
+shadow-glow-primary: 0 0 24px -4px hsl(var(--primary) / 0.45); /* CTA / ignite moment */
+shadow-glow-onchain: 0 0 24px -4px hsl(var(--onchain) / 0.4); /* on-chain = same violet */
 ```
 
 `.starfield` utility: fixed, pointer-events-none, low-opacity radial-gradient dots +
@@ -191,9 +193,9 @@ optional `<Stars/>` canvas layer (parallax on scroll, off under reduced-motion).
 ```css
 --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 --dur-fast: 140ms;
---dur: 220ms;       /* default UI */
---dur-slow: 420ms;  /* card merge / reveal */
---breathe: 5200ms;  /* crest pulse loop */
+--dur: 220ms; /* default UI */
+--dur-slow: 420ms; /* card merge / reveal */
+--breathe: 5200ms; /* crest pulse loop */
 ```
 
 These are design values, not CSS variables in `globals.css`: the shipped curves and durations

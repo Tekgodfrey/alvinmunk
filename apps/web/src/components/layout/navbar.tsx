@@ -60,7 +60,9 @@ export function Navbar() {
     <header
       className={cn(
         'sticky top-0 z-40 backdrop-blur-xl transition-colors duration-300',
-        scrolled ? 'border-b border-border/70 bg-background/80' : 'border-b border-transparent bg-background/30',
+        scrolled
+          ? 'border-b border-border/70 bg-background/80'
+          : 'border-b border-transparent bg-background/30',
       )}
     >
       <nav className="container flex h-16 items-center justify-between gap-4">

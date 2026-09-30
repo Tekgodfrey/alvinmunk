@@ -222,7 +222,9 @@ describe('getVouch', () => {
   };
 
   it("reads an override network's card with its own client, memoized apart from the deployment's (#438)", async () => {
-    const netClient = { getVouch: vi.fn().mockResolvedValue({ ...card, note: 'on testnet', claimed: true }) };
+    const netClient = {
+      getVouch: vi.fn().mockResolvedValue({ ...card, note: 'on testnet', claimed: true }),
+    };
     const net = { network: 'testnet', client: netClient } as unknown as ReadNetwork;
     sdkMock.getVouch.mockResolvedValue({ ...card, claimed: true });
     await expect(getVouch(7, net)).resolves.toMatchObject({ note: 'on testnet' });
@@ -368,7 +370,12 @@ describe('on a ?network= override (#290)', () => {
   it("reads the people counters and the quest attestation from the override's contract", async () => {
     readPublicMock.mockResolvedValueOnce([4, 2]);
     expect(await getCounts('GSAME', net)).toEqual({ vouchedBy: 4, backed: 2 });
-    expect(readPublicMock).toHaveBeenLastCalledWith('CTESTREP', 'get_counts', [{ __addr: 'GSAME' }], net);
+    expect(readPublicMock).toHaveBeenLastCalledWith(
+      'CTESTREP',
+      'get_counts',
+      [{ __addr: 'GSAME' }],
+      net,
+    );
     readPublicMock.mockResolvedValueOnce(null);
     await getQuestAttestation('GSAME', net);
     expect(readPublicMock).toHaveBeenLastCalledWith(
@@ -442,9 +449,11 @@ const CLAIM_MESSAGE_HEAD = [
   '000000050000000000000007', // u64 vouch id
 ].join('');
 const CLAIM_MESSAGE_G =
-  CLAIM_MESSAGE_HEAD + '0000001200000000000000002222222222222222222222222222222222222222222222222222222222222222';
+  CLAIM_MESSAGE_HEAD +
+  '0000001200000000000000002222222222222222222222222222222222222222222222222222222222222222';
 const CLAIM_MESSAGE_C =
-  CLAIM_MESSAGE_HEAD + '00000012000000013333333333333333333333333333333333333333333333333333333333333333';
+  CLAIM_MESSAGE_HEAD +
+  '00000012000000013333333333333333333333333333333333333333333333333333333333333333';
 
 // RFC 8032 §7.1, test 1: an ed25519 seed and its public key.
 const RFC_SEED = '9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60';
@@ -525,7 +534,9 @@ describe('vouch mint and claim', () => {
   it('refuses an empty or oversized batch before asking the wallet to sign', async () => {
     expect(VOUCH_BATCH_MAX).toBe(10);
     await expect(mintVouches(wallet, [])).rejects.toThrow('1 to 10');
-    await expect(mintVouches(wallet, Array(VOUCH_BATCH_MAX + 1).fill('gm'))).rejects.toThrow('not 11');
+    await expect(mintVouches(wallet, Array(VOUCH_BATCH_MAX + 1).fill('gm'))).rejects.toThrow(
+      'not 11',
+    );
     expect(invokeMock).not.toHaveBeenCalled();
   });
 
@@ -545,7 +556,9 @@ describe('vouch mint and claim', () => {
     expect(callArgs.slice(0, 2)).toEqual([{ __addr: CLASSIC }, { __u64: 7 }]);
     const sig = (callArgs[2] as { __bytes: Uint8Array }).__bytes;
     expect(sig).toHaveLength(64);
-    expect(verifies(fromHex(RFC_PUBLIC), claimMessage(TESTNET, REP_ID, 7, CLASSIC), sig)).toBe(true);
+    expect(verifies(fromHex(RFC_PUBLIC), claimMessage(TESTNET, REP_ID, 7, CLASSIC), sig)).toBe(
+      true,
+    );
     expect(toHex(sig)).not.toContain(RFC_SEED);
   });
 
@@ -573,7 +586,9 @@ describe('claim links', () => {
   });
 
   it('keeps reading older links: #s= and the original ?s= query', () => {
-    expect(claimLink('https://a.b', 2, { kind: 'secret', code: seed })).toBe(`https://a.b/claim/2#s=${seed}`);
+    expect(claimLink('https://a.b', 2, { kind: 'secret', code: seed })).toBe(
+      `https://a.b/claim/2#s=${seed}`,
+    );
     expect(parseClaimCode(`#s=${seed}`, '')).toEqual({ kind: 'secret', code: seed });
     expect(parseClaimCode('', `?s=${seed}`)).toEqual({ kind: 'secret', code: seed });
     expect(parseClaimCode('', '')).toBeNull();
@@ -593,9 +608,19 @@ describe('getQuestAttestation', () => {
   const ADDR = 'GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H';
 
   it('reads the quest-schema attestation from the reputation contract', async () => {
-    readPublicMock.mockResolvedValueOnce({ issuer: 'GATT', value: 25n, timestamp: 1_760_000_000n, revoked: false });
+    readPublicMock.mockResolvedValueOnce({
+      issuer: 'GATT',
+      value: 25n,
+      timestamp: 1_760_000_000n,
+      revoked: false,
+    });
     const a = await getQuestAttestation(ADDR);
-    expect(readPublicMock).toHaveBeenCalledWith(REP_ID, 'get_attestation', [{ __addr: ADDR }, { __u32: 2 }], undefined);
+    expect(readPublicMock).toHaveBeenCalledWith(
+      REP_ID,
+      'get_attestation',
+      [{ __addr: ADDR }, { __u32: 2 }],
+      undefined,
+    );
     expect(a).toEqual({ issuer: 'GATT', value: 25n, timestamp: 1_760_000_000, revoked: false });
   });
 

@@ -95,7 +95,12 @@ describe('storedDevWallet', () => {
     expect(wallet?.address).toBe(kp.publicKey());
 
     const signed = await wallet!.signAuthEntry!(unsignedEntry(kp.publicKey()), 1_120);
-    const expected = await authorizeEntry(unsignedEntry(kp.publicKey()), kp, 1_120, Networks.TESTNET);
+    const expected = await authorizeEntry(
+      unsignedEntry(kp.publicKey()),
+      kp,
+      1_120,
+      Networks.TESTNET,
+    );
     expect(signed.toXDR('base64')).toBe(expected.toXDR('base64'));
     expect(signed.credentials().address().signatureExpirationLedger()).toBe(1_120);
   });

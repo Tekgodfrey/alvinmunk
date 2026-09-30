@@ -30,7 +30,10 @@ vi.mock('@/lib/focus', () => ({
 
 vi.mock('@/components/wallet/wallet-provider', () => ({ useWallet: () => wallet }));
 // What is unread is lib/inbox's call (tested there); the tab only shows it.
-vi.mock('@/lib/inbox', () => ({ INBOX_READ_EVENT: 'alvinmunk:inbox-read', loadInbox: loadInboxMock }));
+vi.mock('@/lib/inbox', () => ({
+  INBOX_READ_EVENT: 'alvinmunk:inbox-read',
+  loadInbox: loadInboxMock,
+}));
 
 import { AppTabs } from './app-tabs';
 
@@ -92,7 +95,9 @@ describe('AppTabs', () => {
       await currentAt('/app');
       expect(loadInboxMock).toHaveBeenCalledWith('GME');
       expect(dot()).not.toBeNull();
-      expect(container.querySelector('a[href="/app/inbox"]')?.textContent).toContain('New items in your inbox');
+      expect(container.querySelector('a[href="/app/inbox"]')?.textContent).toContain(
+        'New items in your inbox',
+      );
 
       await act(async () => window.dispatchEvent(new Event('alvinmunk:inbox-read')));
       expect(dot()).toBeNull();

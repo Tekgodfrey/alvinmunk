@@ -49,7 +49,10 @@ function Leaderboard({ net }: { net: ReadNetwork | null }) {
 
   // Depend on a stable string key (sorted addresses) rather than the array
   // reference so a poll that returns identical data doesn't restart lookups.
-  const addressKey = rows.map((r) => r.address).sort().join('\n');
+  const addressKey = rows
+    .map((r) => r.address)
+    .sort()
+    .join('\n');
 
   useEffect(() => {
     // Only enqueue addresses we haven't started looking up yet.
@@ -73,7 +76,9 @@ function Leaderboard({ net }: { net: ReadNetwork | null }) {
     // over, which is correct. What must never happen is a batch still in flight being
     // silently discarded by the *next poll tick* re-running this effect — that's the
     // #208 bug, and addressKey (below) is what stops that.
-    return () => { alive = false; };
+    return () => {
+      alive = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addressKey]); // stable key: only re-runs when the actual set of addresses changes
 
@@ -100,13 +105,21 @@ function Leaderboard({ net }: { net: ReadNetwork | null }) {
   return (
     <div className="container max-w-2xl py-14">
       {net && <ReadOnlyBanner network={net.network} />}
-      <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-primary/80">{t('leaderboard.eyebrow')}</p>
+      <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-primary/80">
+        {t('leaderboard.eyebrow')}
+      </p>
       <div className="mt-4 flex items-end justify-between border-b border-border/60 pb-3">
-        <h1 className="font-display text-4xl font-semibold tracking-tight">{t('leaderboard.title')}</h1>
+        <h1 className="font-display text-4xl font-semibold tracking-tight">
+          {t('leaderboard.title')}
+        </h1>
         <span
           className={cn(
             'inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.15em]',
-            stale && rows.length > 0 ? 'text-amber-400/90' : (stale ? 'text-destructive/80' : 'text-secondary/80'),
+            stale && rows.length > 0
+              ? 'text-amber-400/90'
+              : stale
+                ? 'text-destructive/80'
+                : 'text-secondary/80',
           )}
           title={stale ? t('leaderboard.syncTitle.stale') : t('leaderboard.syncTitle.live')}
         >
@@ -118,17 +131,23 @@ function Leaderboard({ net }: { net: ReadNetwork | null }) {
               )}
             />
           )}
-          {stale && rows.length === 0 ? t('leaderboard.syncFailed') : (stale ? t('leaderboard.syncDelayed') : t('leaderboard.live'))}
+          {stale && rows.length === 0
+            ? t('leaderboard.syncFailed')
+            : stale
+              ? t('leaderboard.syncDelayed')
+              : t('leaderboard.live')}
         </span>
       </div>
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-        <p className="font-mono text-xs text-muted-foreground">
-          {t('leaderboard.meta')}
-        </p>
+        <p className="font-mono text-xs text-muted-foreground">{t('leaderboard.meta')}</p>
         <ShareRow path={withReadNetwork('/leaderboard', net)} text={t('leaderboard.share')} />
       </div>
 
-      <Frame label={t('leaderboard.frame')} index={`${rows.length || '—'} entries`} className="mt-6">
+      <Frame
+        label={t('leaderboard.frame')}
+        index={`${rows.length || '—'} entries`}
+        className="mt-6"
+      >
         {loading ? (
           <div className="flex flex-col gap-px">
             {[0, 1, 2, 3, 4].map((i) => (
@@ -140,14 +159,19 @@ function Leaderboard({ net }: { net: ReadNetwork | null }) {
             <div className="flex flex-col items-center gap-4 p-10 text-center">
               <div className="space-y-1">
                 <p className="font-mono text-sm text-foreground">{t('leaderboard.syncFailed')}</p>
-                <p className="font-mono text-xs text-muted-foreground">{t('leaderboard.syncFailedBody')}</p>
+                <p className="font-mono text-xs text-muted-foreground">
+                  {t('leaderboard.syncFailedBody')}
+                </p>
               </div>
               <button
                 onClick={() => {
                   setLoading(true);
                   setStale(false);
                   fetchLeaderboard({ throwOnError: true, net })
-                    .then(r => { setRows(r); setStale(false); })
+                    .then((r) => {
+                      setRows(r);
+                      setStale(false);
+                    })
                     .catch(() => setStale(true))
                     .finally(() => setLoading(false));
                 }}
@@ -159,9 +183,7 @@ function Leaderboard({ net }: { net: ReadNetwork | null }) {
           ) : (
             <div className="flex flex-col items-center gap-4 p-10 text-center">
               <StateArt kind="empty-leaderboard" size={300} className="motion-safe:animate-float" />
-              <p className="font-mono text-sm text-muted-foreground">
-                {t('leaderboard.empty')}
-              </p>
+              <p className="font-mono text-sm text-muted-foreground">{t('leaderboard.empty')}</p>
             </div>
           )
         ) : (
@@ -199,7 +221,12 @@ function Leaderboard({ net }: { net: ReadNetwork | null }) {
                     <span className="relative w-8 shrink-0 font-mono text-sm text-muted-foreground">
                       #{String(e.rank).padStart(2, '0')}
                       {e.rank === 1 && (
-                        <Sticker name="burst-hot" size={34} rotate={-12} className="absolute -left-1 -top-5 h-7 w-auto" />
+                        <Sticker
+                          name="burst-hot"
+                          size={34}
+                          rotate={-12}
+                          className="absolute -left-1 -top-5 h-7 w-auto"
+                        />
                       )}
                     </span>
                     <Crest address={e.address} size={42} points={Math.min(9, 4 + (e.rank % 5))} />
@@ -221,7 +248,9 @@ function Leaderboard({ net }: { net: ReadNetwork | null }) {
                         )}
                       </div>
                     </div>
-                    <span className="font-display text-lg font-semibold text-primary">★ {e.score}</span>
+                    <span className="font-display text-lg font-semibold text-primary">
+                      ★ {e.score}
+                    </span>
                   </Link>
                 </li>
               );

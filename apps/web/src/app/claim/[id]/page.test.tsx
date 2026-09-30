@@ -25,7 +25,14 @@ vi.mock('@/components/wallet/wallet-provider', () => ({
   useWallet: () => ({ connect: vi.fn(), profile: null }),
 }));
 vi.mock('@/hooks/use-create-profile', () => ({
-  useCreateProfile: () => ({ handle: '', setHandle: vi.fn(), normalizedHandle: '', avail: 'idle', creating: false, create: vi.fn() }),
+  useCreateProfile: () => ({
+    handle: '',
+    setHandle: vi.fn(),
+    normalizedHandle: '',
+    avail: 'idle',
+    creating: false,
+    create: vi.fn(),
+  }),
 }));
 vi.mock('@/lib/reputation', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/reputation')>()),
@@ -74,7 +81,9 @@ describe('/claim/[id] — who vouched (#218)', () => {
   }
 
   const claimButton = () =>
-    [...container.querySelectorAll('button')].find((b) => b.textContent?.includes('Claim your star'));
+    [...container.querySelectorAll('button')].find((b) =>
+      b.textContent?.includes('Claim your star'),
+    );
 
   it('names the voucher by @handle and face, with a link to their profile', async () => {
     reverseHandleMock.mockResolvedValue('ayse');

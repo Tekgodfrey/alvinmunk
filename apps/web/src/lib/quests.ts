@@ -87,7 +87,11 @@ export async function createQuest(
 
 /** Make quest `id` repeatable once per `periodSecs` (`WEEK_SECS` = weekly), or one-shot
  *  again with `0`. The contract refuses a period above 0 but under a day. */
-export async function setQuestPeriod(wallet: Wallet, id: number, periodSecs: number): Promise<string> {
+export async function setQuestPeriod(
+  wallet: Wallet,
+  id: number,
+  periodSecs: number,
+): Promise<string> {
   return invokeAndWaitHash(
     questRegistryId(),
     'set_quest_period',
@@ -168,7 +172,9 @@ export async function getQuestPeriods(
       ? await readContract<unknown>(questRegistryId(), 'get_quest_periods', call, source)
       : await readPublic<unknown>(questRegistryId(), 'get_quest_periods', call);
     if (!Array.isArray(v) || v.length !== questIds.length) return null;
-    const periods = v.map((p) => (typeof p === 'bigint' || typeof p === 'number' ? Number(p) : NaN));
+    const periods = v.map((p) =>
+      typeof p === 'bigint' || typeof p === 'number' ? Number(p) : NaN,
+    );
     if (!periods.every((p) => Number.isSafeInteger(p) && p >= 0)) return null;
     return new Map(questIds.map((id, i) => [id, periods[i]]));
   } catch {

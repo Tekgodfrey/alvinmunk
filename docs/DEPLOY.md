@@ -10,11 +10,11 @@ For mainnet cutover, see [`DEPLOY_MAINNET.md`](./DEPLOY_MAINNET.md).
 
 ## Prerequisites
 
-| Tool | Why |
-| --- | --- |
-| **Node ≥ 20** + **pnpm 9** | Web app (`corepack enable && corepack prepare pnpm@9 --activate`) |
-| **Rust via rustup** + `wasm32v1-none` | Soroban contract builds (repo pins the channel in `contracts/rust-toolchain.toml`) |
-| **Stellar CLI** (`stellar`) | Keygen, deploy, invoke — `brew install stellar-cli` or `cargo install --locked stellar-cli` |
+| Tool                                  | Why                                                                                         |
+| ------------------------------------- | ------------------------------------------------------------------------------------------- |
+| **Node ≥ 20** + **pnpm 9**            | Web app (`corepack enable && corepack prepare pnpm@9 --activate`)                           |
+| **Rust via rustup** + `wasm32v1-none` | Soroban contract builds (repo pins the channel in `contracts/rust-toolchain.toml`)          |
+| **Stellar CLI** (`stellar`)           | Keygen, deploy, invoke — `brew install stellar-cli` or `cargo install --locked stellar-cli` |
 
 ```bash
 # Rust: use rustup (not a bare Homebrew rustc). From the repo root:
@@ -128,11 +128,11 @@ NEXT_PUBLIC_HORIZON_URL=https://horizon-testnet.stellar.org
 
 These are **server-only**. Leave them unset for a minimal read/write demo; set them when you want the matching feature.
 
-| Env var | How to get it | If unset |
-| --- | --- | --- |
-| `ATTESTER_SECRET_KEY` | `stellar keys secret attester` (pubkey allowlisted in step 3) | `/api/attest` returns 500. Users cannot complete attester-verified quests / earn **Earned XP**. Social vouch mint/claim still works. |
-| `QUEST_GITHUB_ID` | The quest id `/api/attest` may sign for `github_pr` evidence (a merged PR). Must differ from the referral / invite / vouch-back quest ids | `/api/attest` rejects GitHub PR evidence with 422. The other quests are unaffected. |
-| `USDC_ISSUER_SECRET_KEY` | Secret of the classic-asset **issuer** behind your testnet USDC SAC (TESTNET ONLY — never on mainnet) | `/api/faucet` returns 500. Users cannot mint test USDC from the in-app faucet. Tips/claims still work if wallets already hold USDC. |
+| Env var                                                                                    | How to get it                                                                                                                               | If unset                                                                                                                                                                                                                                         |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ATTESTER_SECRET_KEY`                                                                      | `stellar keys secret attester` (pubkey allowlisted in step 3)                                                                               | `/api/attest` returns 500. Users cannot complete attester-verified quests / earn **Earned XP**. Social vouch mint/claim still works.                                                                                                             |
+| `QUEST_GITHUB_ID`                                                                          | The quest id `/api/attest` may sign for `github_pr` evidence (a merged PR). Must differ from the referral / invite / vouch-back quest ids   | `/api/attest` rejects GitHub PR evidence with 422. The other quests are unaffected.                                                                                                                                                              |
+| `USDC_ISSUER_SECRET_KEY`                                                                   | Secret of the classic-asset **issuer** behind your testnet USDC SAC (TESTNET ONLY — never on mainnet)                                       | `/api/faucet` returns 500. Users cannot mint test USDC from the in-app faucet. Tips/claims still work if wallets already hold USDC.                                                                                                              |
 | `NEXT_PUBLIC_PASSKEY_WALLET_WASM_HASH` + `PASSKEY_RELAYER_URL` + `PASSKEY_RELAYER_API_KEY` | WASM hash from [`docs/PASSKEY_HANDOFF.md`](./PASSKEY_HANDOFF.md); free relayer key via `curl https://channels.openzeppelin.com/testnet/gen` | App falls back to the **dev wallet** (ephemeral Friendbot-funded `G…` keypair). Onboarding, vouch, tip still work on testnet. Passkey / Face ID onboarding and fee-sponsored `/api/passkey-send` do not. Dev wallet is hard-disabled on mainnet. |
 
 Minimal “it runs” config = network vars + the three contract ids + USDC SAC. Everything else is progressive enhancement.
@@ -184,14 +184,14 @@ A missing or malformed id stops the script with exit code 2 and names the variab
 
 ## Troubleshooting
 
-| Symptom | Likely cause |
-| --- | --- |
-| `deploy-testnet.sh` fails on build | Missing Rust/`stellar` CLI, or wrong Wasm target — CLI 25+ writes to `contracts/target/wasm32v1-none/release/` |
-| A deploy or `add_attester` fails | Admin not funded, or identity name mismatch (`ADMIN=` / `ATTESTER=` must match `stellar keys` names) |
-| Health returns 503 | RPC unreachable or stalled (`rpc`), an inconsistent network config (`configErrors`), or a variable named in `missing` is unset |
-| Quest verify 500 | Missing `ATTESTER_SECRET_KEY`, or secret is not the allowlisted attester |
-| Faucet 500 | Missing `USDC_ISSUER_SECRET_KEY` or wrong SAC id |
-| Passkey onboarding errors | WASM hash set but relayer URL/key missing — either set both, or unset the WASM hash to use the dev wallet |
+| Symptom                            | Likely cause                                                                                                                   |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `deploy-testnet.sh` fails on build | Missing Rust/`stellar` CLI, or wrong Wasm target — CLI 25+ writes to `contracts/target/wasm32v1-none/release/`                 |
+| A deploy or `add_attester` fails   | Admin not funded, or identity name mismatch (`ADMIN=` / `ATTESTER=` must match `stellar keys` names)                           |
+| Health returns 503                 | RPC unreachable or stalled (`rpc`), an inconsistent network config (`configErrors`), or a variable named in `missing` is unset |
+| Quest verify 500                   | Missing `ATTESTER_SECRET_KEY`, or secret is not the allowlisted attester                                                       |
+| Faucet 500                         | Missing `USDC_ISSUER_SECRET_KEY` or wrong SAC id                                                                               |
+| Passkey onboarding errors          | WASM hash set but relayer URL/key missing — either set both, or unset the WASM hash to use the dev wallet                      |
 
 ---
 

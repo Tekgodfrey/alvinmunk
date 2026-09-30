@@ -1,7 +1,7 @@
 ---
 name: Feature Request
 about: Suggest an idea for alvinmunk
-title: "[Feature] "
+title: '[Feature] '
 labels: enhancement
 ---
 
@@ -24,4 +24,3 @@ labels: enhancement
 ## Additional Context
 
 <!-- Anything else -->
-

@@ -40,7 +40,10 @@ export function Footer() {
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-[0.04] [mask-image:linear-gradient(to_bottom,transparent,black)]"
-        style={{ backgroundImage: `url(${asset('backgrounds/tile-256.png')})`, backgroundSize: '180px' }}
+        style={{
+          backgroundImage: `url(${asset('backgrounds/tile-256.png')})`,
+          backgroundSize: '180px',
+        }}
       />
 
       <div className="container grid gap-10 py-14 md:grid-cols-[1.6fr_1fr_1fr_1fr]">

@@ -49,7 +49,9 @@ function makeWallet(): Wallet {
 
 describe('sendXlm status mapping', () => {
   beforeEach(() => {
-    getAccountMock.mockReset().mockResolvedValue({ accountId: () => 'GALICE', sequenceNumber: () => '1' });
+    getAccountMock
+      .mockReset()
+      .mockResolvedValue({ accountId: () => 'GALICE', sequenceNumber: () => '1' });
     sendTransactionMock.mockReset();
     getTransactionMock.mockReset();
     vi.useFakeTimers();
@@ -65,7 +67,11 @@ describe('sendXlm status mapping', () => {
       .mockResolvedValueOnce({ status: 'NOT_FOUND' })
       .mockResolvedValueOnce({ status: 'SUCCESS' });
 
-    const promise = sendXlm(makeWallet(), 'GB72PZXNOU6DJ2BXZDITS24A5JCN3CEUNTKIX5ESZDXAY2R5HO7YZ3H3', '10');
+    const promise = sendXlm(
+      makeWallet(),
+      'GB72PZXNOU6DJ2BXZDITS24A5JCN3CEUNTKIX5ESZDXAY2R5HO7YZ3H3',
+      '10',
+    );
     await vi.runAllTimersAsync();
     await expect(promise).resolves.toEqual({ hash: 'HASH1', status: 'SUCCESS' });
   });
@@ -74,7 +80,11 @@ describe('sendXlm status mapping', () => {
     sendTransactionMock.mockResolvedValue({ status: 'PENDING', hash: 'HASH2' });
     getTransactionMock.mockResolvedValueOnce({ status: 'FAILED' });
 
-    const promise = sendXlm(makeWallet(), 'GB72PZXNOU6DJ2BXZDITS24A5JCN3CEUNTKIX5ESZDXAY2R5HO7YZ3H3', '10');
+    const promise = sendXlm(
+      makeWallet(),
+      'GB72PZXNOU6DJ2BXZDITS24A5JCN3CEUNTKIX5ESZDXAY2R5HO7YZ3H3',
+      '10',
+    );
     await vi.runAllTimersAsync();
     await expect(promise).resolves.toEqual({ hash: 'HASH2', status: 'FAILED' });
   });
@@ -109,7 +119,11 @@ describe('sendXlm status mapping', () => {
       .mockResolvedValueOnce({ status: 'PENDING', hash: 'HASH4' });
     getTransactionMock.mockResolvedValueOnce({ status: 'SUCCESS' });
 
-    const promise = sendXlm(makeWallet(), 'GB72PZXNOU6DJ2BXZDITS24A5JCN3CEUNTKIX5ESZDXAY2R5HO7YZ3H3', '10');
+    const promise = sendXlm(
+      makeWallet(),
+      'GB72PZXNOU6DJ2BXZDITS24A5JCN3CEUNTKIX5ESZDXAY2R5HO7YZ3H3',
+      '10',
+    );
     await vi.runAllTimersAsync();
     await expect(promise).resolves.toEqual({ hash: 'HASH4', status: 'SUCCESS' });
     expect(sendTransactionMock).toHaveBeenCalledTimes(2);
@@ -119,7 +133,11 @@ describe('sendXlm status mapping', () => {
   it('gives up with a clear retryable error when TRY_AGAIN_LATER persists, and never polls', async () => {
     sendTransactionMock.mockResolvedValue({ status: 'TRY_AGAIN_LATER', hash: 'HASH5' });
 
-    const promise = sendXlm(makeWallet(), 'GB72PZXNOU6DJ2BXZDITS24A5JCN3CEUNTKIX5ESZDXAY2R5HO7YZ3H3', '10');
+    const promise = sendXlm(
+      makeWallet(),
+      'GB72PZXNOU6DJ2BXZDITS24A5JCN3CEUNTKIX5ESZDXAY2R5HO7YZ3H3',
+      '10',
+    );
     const assertion = expect(promise).rejects.toThrow(/network is busy.*try again/);
     await vi.runAllTimersAsync();
     await assertion;
@@ -130,7 +148,11 @@ describe('sendXlm status mapping', () => {
     sendTransactionMock.mockResolvedValue({ status: 'PENDING', hash: 'HASH3' });
     getTransactionMock.mockResolvedValue({ status: 'NOT_FOUND' });
 
-    const promise = sendXlm(makeWallet(), 'GB72PZXNOU6DJ2BXZDITS24A5JCN3CEUNTKIX5ESZDXAY2R5HO7YZ3H3', '10');
+    const promise = sendXlm(
+      makeWallet(),
+      'GB72PZXNOU6DJ2BXZDITS24A5JCN3CEUNTKIX5ESZDXAY2R5HO7YZ3H3',
+      '10',
+    );
     await vi.runAllTimersAsync();
     await expect(promise).resolves.toEqual({ hash: 'HASH3', status: 'PENDING' });
     expect(getTransactionMock).toHaveBeenCalledTimes(15);
@@ -142,7 +164,11 @@ describe('sendXlm status mapping', () => {
       .mockRejectedValueOnce(new Error('RPC 429'))
       .mockResolvedValueOnce({ status: 'SUCCESS' });
 
-    const promise = sendXlm(makeWallet(), 'GB72PZXNOU6DJ2BXZDITS24A5JCN3CEUNTKIX5ESZDXAY2R5HO7YZ3H3', '10');
+    const promise = sendXlm(
+      makeWallet(),
+      'GB72PZXNOU6DJ2BXZDITS24A5JCN3CEUNTKIX5ESZDXAY2R5HO7YZ3H3',
+      '10',
+    );
     await vi.runAllTimersAsync();
     await expect(promise).resolves.toEqual({ hash: 'HASH6', status: 'SUCCESS' });
     expect(getTransactionMock).toHaveBeenCalledTimes(2);

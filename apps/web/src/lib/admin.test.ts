@@ -216,7 +216,10 @@ describe('write consequences', () => {
     expect(rewardConsequence(draft)).toBe(
       'Reward 3 will pay 2 USDC to any wallet with ≥ 100 Earned XP.',
     );
-    const replaced = rewardConsequence(draft, reward({ amount: USDC, threshold: 50n, active: false }));
+    const replaced = rewardConsequence(
+      draft,
+      reward({ amount: USDC, threshold: 50n, active: false }),
+    );
     expect(replaced).toContain('replacing 1 USDC at ≥ 50 Earned XP');
     expect(replaced).toContain('It will be re-enabled.');
     expect(replaced).toContain("already claimed it can't claim it again");
@@ -286,8 +289,13 @@ describe('contract errors', () => {
   function errorEnum(crate: string): Record<number, string> {
     const file = path.resolve(__dirname, `../../../../contracts/${crate}/src/lib.rs`);
     const src = readFileSync(file, 'utf8');
-    const body = src.slice(src.indexOf('pub enum Error'), src.indexOf('}', src.indexOf('pub enum Error')));
-    return Object.fromEntries([...body.matchAll(/(\w+)\s*=\s*(\d+)/g)].map((m) => [Number(m[2]), m[1]]));
+    const body = src.slice(
+      src.indexOf('pub enum Error'),
+      src.indexOf('}', src.indexOf('pub enum Error')),
+    );
+    return Object.fromEntries(
+      [...body.matchAll(/(\w+)\s*=\s*(\d+)/g)].map((m) => [Number(m[2]), m[1]]),
+    );
   }
 
   it('maps the codes each contract actually uses for these errors', () => {
@@ -325,8 +333,8 @@ describe('contract errors', () => {
     expect(adminErrorMessage('quests', new Error('Error(Contract, #4)'))).toBe(
       ADMIN_ERRORS.quests[4],
     );
-    expect(adminErrorMessage('rewards', new Error('HostError: Error(Auth, InvalidAction)'))).toContain(
-      'not its admin',
-    );
+    expect(
+      adminErrorMessage('rewards', new Error('HostError: Error(Auth, InvalidAction)')),
+    ).toContain('not its admin');
   });
 });

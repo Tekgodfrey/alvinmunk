@@ -64,9 +64,7 @@ describe('decodeScVal', () => {
     });
 
     it('decodes a u64 ScVal to a bigint (precision-safe)', () => {
-      const scv = xdr.ScVal.scvU64(
-        xdr.Uint64.fromString('9999999999'),
-      );
+      const scv = xdr.ScVal.scvU64(xdr.Uint64.fromString('9999999999'));
       const result = decodeScVal(scv);
       expect(result).toBe(9999999999n);
       expect(typeof result).toBe('bigint');
@@ -179,7 +177,7 @@ describe('decodeScVal', () => {
       expect(Array.isArray(result)).toBe(true);
       expect(result[0]).toBe('user');
       expect(typeof result[1]).toBe('string');
-      expect((result[1] as string)).toMatch(/^G[A-Z2-7]{55}$/);
+      expect(result[1] as string).toMatch(/^G[A-Z2-7]{55}$/);
       expect(result[2]).toBe(7);
       expect(ArrayBuffer.isView(result[3])).toBe(true);
     });
@@ -203,10 +201,7 @@ describe('decodeScVal', () => {
     });
 
     it('decodes a base64-encoded Vec ScVal correctly', () => {
-      const scv = xdr.ScVal.scvVec([
-        xdr.ScVal.scvSymbol('x'),
-        xdr.ScVal.scvU32(99),
-      ]);
+      const scv = xdr.ScVal.scvVec([xdr.ScVal.scvSymbol('x'), xdr.ScVal.scvU32(99)]);
       const b64 = scv.toXDR().toString('base64');
       const result = decodeScVal(b64);
       expect(result).toEqual(['x', 99]);
@@ -285,14 +280,22 @@ describe('contract event reads', () => {
       getLatestLedger: vi.fn().mockResolvedValue({ sequence: 50_000 }),
       getEvents: vi.fn().mockResolvedValue({ events: [] }),
     };
-    const net = { network: 'testnet', contracts: { reputation: 'CREP' }, server: otherServer } as unknown as ReadNetwork;
+    const net = {
+      network: 'testnet',
+      contracts: { reputation: 'CREP' },
+      server: otherServer,
+    } as unknown as ReadNetwork;
     await fetchReputationEvents();
     await fetchReputationEvents({ net }); // within the TTL of the deployment's window
     expect(otherServer.getEvents).toHaveBeenCalledTimes(1);
   });
 
   it('shares one scan between concurrent callers', async () => {
-    const [a, b, c] = await Promise.all([fetchReputationEvents(), fetchReputationEvents(), fetchReputationEvents()]);
+    const [a, b, c] = await Promise.all([
+      fetchReputationEvents(),
+      fetchReputationEvents(),
+      fetchReputationEvents(),
+    ]);
     expect(getEventsMock).toHaveBeenCalledTimes(1);
     expect(b).toBe(a);
     expect(c).toBe(a);
@@ -336,7 +339,10 @@ describe('contract event reads', () => {
   it('keeps the reputation and tip windows apart, each read once', async () => {
     await Promise.all([fetchReputationEvents(), fetchTipEvents()]);
     await Promise.all([fetchReputationEvents(), fetchTipEvents()]);
-    expect(getEventsMock.mock.calls.map((c) => c[0].filters[0].contractIds)).toEqual([['CREP'], ['CRWD']]);
+    expect(getEventsMock.mock.calls.map((c) => c[0].filters[0].contractIds)).toEqual([
+      ['CREP'],
+      ['CRWD'],
+    ]);
   });
 
   it("does not cache one sender's tips (badges read them once, on demand)", async () => {
@@ -386,8 +392,14 @@ describe('contract event reads', () => {
     getEventsMock.mockResolvedValue({
       events: [
         {
-          topic: [sym('tipped'), new Address(from).toScVal().toXDR('base64'), new Address(to).toScVal().toXDR('base64')],
-          value: xdr.ScVal.scvI128(new xdr.Int128Parts({ lo: xdr.Uint64.fromString('5'), hi: xdr.Int64.fromString('0') })).toXDR('base64'),
+          topic: [
+            sym('tipped'),
+            new Address(from).toScVal().toXDR('base64'),
+            new Address(to).toScVal().toXDR('base64'),
+          ],
+          value: xdr.ScVal.scvI128(
+            new xdr.Int128Parts({ lo: xdr.Uint64.fromString('5'), hi: xdr.Int64.fromString('0') }),
+          ).toXDR('base64'),
           ledger: 19_999,
         },
       ],
@@ -403,7 +415,9 @@ describe('contract event reads', () => {
     const filter = getEventsMock.mock.calls[0][0].filters[0];
     expect(filter.contractIds).toEqual(['CRWD']);
     // ('tipped', from, to) has THREE topics; a 2-segment filter would never match it.
-    expect(filter.topics).toEqual([[sym('tipped'), new Address(from).toScVal().toXDR('base64'), '*']]);
+    expect(filter.topics).toEqual([
+      [sym('tipped'), new Address(from).toScVal().toXDR('base64'), '*'],
+    ]);
     expect(events).toEqual([{ topics: ['tipped', from, to], data: 5n, ledger: 19_999 }]);
   });
 
@@ -467,20 +481,24 @@ describe('contract event reads', () => {
         const ledger = LATEST - EVENT_LEDGER_WINDOW + Math.floor(i / 3);
         return { id: eventId(ledger, i), ledger, topic: [SOCIAL, WHO], value: xdr.ScVal.scvU32(i) };
       });
-      getEventsMock.mockImplementation(async (req: { startLedger?: number; cursor?: string; limit: number }) => {
-        const { startLedger, cursor, limit } = req;
-        if (cursor !== undefined && startLedger !== undefined) {
-          throw new Error('ledger ranges and cursor cannot both be set');
-        }
-        if (cursor === undefined && !(Number(startLedger) > 0)) throw new Error('startLedger must be positive');
-        const rest =
-          cursor === undefined
-            ? all.filter((e) => e.ledger >= Number(startLedger))
-            : all.filter((e) => e.id > cursor);
-        const events = rest.slice(0, limit);
-        const next = events.length === limit ? events[events.length - 1].id : eventId(LATEST, 4_294_967_295);
-        return { events, cursor: next, latestLedger: LATEST, oldestLedger: 1 };
-      });
+      getEventsMock.mockImplementation(
+        async (req: { startLedger?: number; cursor?: string; limit: number }) => {
+          const { startLedger, cursor, limit } = req;
+          if (cursor !== undefined && startLedger !== undefined) {
+            throw new Error('ledger ranges and cursor cannot both be set');
+          }
+          if (cursor === undefined && !(Number(startLedger) > 0))
+            throw new Error('startLedger must be positive');
+          const rest =
+            cursor === undefined
+              ? all.filter((e) => e.ledger >= Number(startLedger))
+              : all.filter((e) => e.id > cursor);
+          const events = rest.slice(0, limit);
+          const next =
+            events.length === limit ? events[events.length - 1].id : eventId(LATEST, 4_294_967_295);
+          return { events, cursor: next, latestLedger: LATEST, oldestLedger: 1 };
+        },
+      );
       return all;
     }
     const indexes = (events: { data: unknown }[]) => events.map((e) => e.data);
@@ -536,7 +554,9 @@ describe('contract event reads', () => {
     it('drops the whole scan when a later page fails, and retries on the next call', async () => {
       serveWindow(PAGE_SIZE + 1);
       const rpcWindow = getEventsMock.getMockImplementation()!;
-      getEventsMock.mockImplementationOnce(rpcWindow).mockRejectedValueOnce(new Error('rpc timeout'));
+      getEventsMock
+        .mockImplementationOnce(rpcWindow)
+        .mockRejectedValueOnce(new Error('rpc timeout'));
 
       // An oldest-only prefix would pass for "nothing newer happened", so it is not returned.
       await expect(fetchReputationEvents()).resolves.toEqual([]);
@@ -548,7 +568,11 @@ describe('contract event reads', () => {
     it('shares one multi-page scan between concurrent callers', async () => {
       serveWindow(2 * PAGE_SIZE + 1);
 
-      const [a, b, c] = await Promise.all([fetchReputationEvents(), fetchReputationEvents(), fetchReputationEvents()]);
+      const [a, b, c] = await Promise.all([
+        fetchReputationEvents(),
+        fetchReputationEvents(),
+        fetchReputationEvents(),
+      ]);
 
       expect(getLatestLedgerMock).toHaveBeenCalledTimes(1);
       expect(getEventsMock).toHaveBeenCalledTimes(3); // one 3-page scan, not three
@@ -629,7 +653,11 @@ describe('fetchContractEvents', () => {
       cursor: undefined,
     });
 
-    const events = await fetchContractEvents('CRWD', [TOPIC_SYM('tipped'), WILDCARD, WILDCARD], 100);
+    const events = await fetchContractEvents(
+      'CRWD',
+      [TOPIC_SYM('tipped'), WILDCARD, WILDCARD],
+      100,
+    );
 
     expect(events).toHaveLength(1);
     expect(events[0].ledger).toBe(19_800);
@@ -714,10 +742,9 @@ describe('fetchContractEvents', () => {
       events: [
         {
           topic: [TOPIC_SYM('quest'), TOPIC_SYM('awarded')],
-          value: xdr.ScVal.scvVec([
-            xdr.ScVal.scvU32(42),
-            new Address(recipient).toScVal(),
-          ]).toXDR('base64'),
+          value: xdr.ScVal.scvVec([xdr.ScVal.scvU32(42), new Address(recipient).toScVal()]).toXDR(
+            'base64',
+          ),
           ledger: 19_500,
         },
       ],

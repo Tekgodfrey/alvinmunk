@@ -32,7 +32,9 @@ try {
 
   // Wait for the success state with the explorer link.
   await page.getByText(/on-chain/i).waitFor({ timeout: 60000 });
-  await page.getByRole('link', { name: /view your first transaction/i }).waitFor({ timeout: 60000 });
+  await page
+    .getByRole('link', { name: /view your first transaction/i })
+    .waitFor({ timeout: 60000 });
   await page.waitForTimeout(800);
   await page.screenshot({ path: `${ROOT}level1-3-testnet-tx.png` });
 

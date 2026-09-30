@@ -49,14 +49,14 @@ console.log({ handle, profile, passesGate1 });
 Each method resolves the view's value or rejects with the RPC or contract error. Nothing is
 retried or cached.
 
-| Method | Contract view | Resolves |
-| --- | --- | --- |
-| `getProfile(address)` | reputation `get_profile` | `{ social, earned, verified }` |
-| `getScore(address)` | reputation `get_profile` | `{ social, earned }` |
-| `resolveHandle(handle)` | registry `resolve` | holder address, or `null` |
-| `reverseHandle(address)` | registry `reverse` | handle, or `null` |
-| `getVouch(id)` | reputation `get_vouch` | the vouch card, or `null` |
-| `checkGate(address, gateId)` | gate `check` | `true` when `address` passes the gate |
+| Method                       | Contract view            | Resolves                              |
+| ---------------------------- | ------------------------ | ------------------------------------- |
+| `getProfile(address)`        | reputation `get_profile` | `{ social, earned, verified }`        |
+| `getScore(address)`          | reputation `get_profile` | `{ social, earned }`                  |
+| `resolveHandle(handle)`      | registry `resolve`       | holder address, or `null`             |
+| `reverseHandle(address)`     | registry `reverse`       | handle, or `null`                     |
+| `getVouch(id)`               | reputation `get_vouch`   | the vouch card, or `null`             |
+| `checkGate(address, gateId)` | gate `check`             | `true` when `address` passes the gate |
 
 Social XP comes from vouches and is never cashable. Earned XP comes from verified quests and
 is the only USDC-eligible track. On a reputation contract deployed before `get_profile`,

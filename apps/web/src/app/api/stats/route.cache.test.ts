@@ -157,7 +157,9 @@ describe('GET /api/stats caching', () => {
 
   it('lets the CDN cache the response for the same window', async () => {
     const res = await GET(req());
-    expect(res.headers.get('cache-control')).toBe('public, s-maxage=30, stale-while-revalidate=120');
+    expect(res.headers.get('cache-control')).toBe(
+      'public, s-maxage=30, stale-while-revalidate=120',
+    );
   });
 
   it('does not mark a rejected network as publicly cacheable', async () => {

@@ -20,8 +20,20 @@ type Option = {
 };
 
 const OPTIONS: Option[] = [
-  { id: 'freighter', name: 'Freighter', blurb: 'Browser extension', tint: 'bg-primary/20 text-primary', connect: connectFreighter },
-  { id: 'albedo', name: 'Albedo', blurb: 'Web wallet · no install', tint: 'bg-tertiary/20 text-tertiary', connect: connectAlbedo },
+  {
+    id: 'freighter',
+    name: 'Freighter',
+    blurb: 'Browser extension',
+    tint: 'bg-primary/20 text-primary',
+    connect: connectFreighter,
+  },
+  {
+    id: 'albedo',
+    name: 'Albedo',
+    blurb: 'Web wallet · no install',
+    tint: 'bg-tertiary/20 text-tertiary',
+    connect: connectAlbedo,
+  },
   { id: 'xbull', name: 'xBull', blurb: 'Coming soon', tint: 'bg-muted text-muted-foreground' },
   { id: 'rabet', name: 'Rabet', blurb: 'Coming soon', tint: 'bg-muted text-muted-foreground' },
 ];
@@ -109,10 +121,17 @@ export function ConnectWalletModal({
                     onClick={() => pick(opt)}
                     className={cn(
                       'flex w-full items-center gap-3 rounded-2xl border border-transparent px-3 py-3 text-left transition-colors',
-                      enabled ? 'hover:border-border/70 hover:bg-surface/60' : 'cursor-not-allowed opacity-60',
+                      enabled
+                        ? 'hover:border-border/70 hover:bg-surface/60'
+                        : 'cursor-not-allowed opacity-60',
                     )}
                   >
-                    <span className={cn('flex size-9 items-center justify-center rounded-full', opt.tint)}>
+                    <span
+                      className={cn(
+                        'flex size-9 items-center justify-center rounded-full',
+                        opt.tint,
+                      )}
+                    >
                       <WalletIcon className="size-4" />
                     </span>
                     <span className="flex-1">

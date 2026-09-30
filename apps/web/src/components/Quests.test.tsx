@@ -105,7 +105,8 @@ describe('Quests', () => {
   }
 
   const earnedBadge = () =>
-    [...container.querySelectorAll('span')].find((s) => s.textContent?.startsWith('Earned XP:'))?.textContent;
+    [...container.querySelectorAll('span')].find((s) => s.textContent?.startsWith('Earned XP:'))
+      ?.textContent;
 
   async function clickVouchBack() {
     await act(async () => {
@@ -161,7 +162,9 @@ describe('Quests', () => {
 
   it('does not hold the quest buttons while a refresh read hangs', async () => {
     getEarnedScoreMock.mockResolvedValueOnce(12).mockReturnValueOnce(new Promise(() => {}));
-    getStreakMock.mockResolvedValueOnce({ weeks: 1, best: 2, lastWeek: 0 }).mockReturnValueOnce(new Promise(() => {}));
+    getStreakMock
+      .mockResolvedValueOnce({ weeks: 1, best: 2, lastWeek: 0 })
+      .mockReturnValueOnce(new Promise(() => {}));
     await mount();
     // A referral target, so the refer button is enabled exactly when no quest is busy.
     await typeInto('#quest-ref', FRIEND);
@@ -197,7 +200,9 @@ describe('Quests', () => {
 
     expect(toastMock.success).not.toHaveBeenCalled();
     expect(toastMock.error).toHaveBeenCalledWith('Vouch for 3 people first');
-    expect(container.querySelector('p.text-destructive')?.textContent).toBe('Vouch for 3 people first');
+    expect(container.querySelector('p.text-destructive')?.textContent).toBe(
+      'Vouch for 3 people first',
+    );
     expect(container.textContent).not.toContain(SUCCESS_ART);
   });
 
@@ -244,11 +249,10 @@ describe('Quests', () => {
 
     await clickVouchBack();
 
-    expect(completeQuestMock).toHaveBeenCalledWith(
-      { kind: 'dev', address: ADDRESS },
-      VOUCHBACK,
-      { type: 'vouch_back', ref: '' },
-    );
+    expect(completeQuestMock).toHaveBeenCalledWith({ kind: 'dev', address: ADDRESS }, VOUCHBACK, {
+      type: 'vouch_back',
+      ref: '',
+    });
     expect(vouchBackButton().textContent).toBe('Completed');
     expect(vouchBackButton().disabled).toBe(true);
     expect(container.textContent).toContain('You’ve already completed this quest.');
@@ -267,7 +271,8 @@ describe('Quests', () => {
 
   describe('repeatable quests (#154)', () => {
     const WEEK = 604_800;
-    const labels = () => [...container.querySelectorAll('label, span.font-mono')].map((l) => l.textContent);
+    const labels = () =>
+      [...container.querySelectorAll('label, span.font-mono')].map((l) => l.textContent);
 
     it('tags a repeatable quest and shows it done only for this period', async () => {
       getQuestPeriodsMock.mockResolvedValue(
@@ -290,9 +295,17 @@ describe('Quests', () => {
       expect(refer.textContent).toBe('Completed'); // one-shot: done for good
       expect(invite.textContent).toBe('Done this week');
       expect(vouchback.textContent).toBe('Done this round');
-      expect(labels().some((l) => l?.includes('invite who converted') && l.includes('repeats weekly'))).toBe(true);
-      expect(labels().some((l) => l?.includes('vouch-back streak') && l.includes('repeats every 3 days'))).toBe(true);
-      expect(labels().some((l) => l?.includes('refer a friend') && l.includes('repeats'))).toBe(false);
+      expect(
+        labels().some((l) => l?.includes('invite who converted') && l.includes('repeats weekly')),
+      ).toBe(true);
+      expect(
+        labels().some(
+          (l) => l?.includes('vouch-back streak') && l.includes('repeats every 3 days'),
+        ),
+      ).toBe(true);
+      expect(labels().some((l) => l?.includes('refer a friend') && l.includes('repeats'))).toBe(
+        false,
+      );
     });
 
     it('opens a weekly quest again when the week rolls over', async () => {

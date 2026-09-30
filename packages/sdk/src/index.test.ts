@@ -69,7 +69,10 @@ function mockRpc(answer: (call: Call) => Reply) {
 
 const client = (answer: (call: Call) => Reply) => {
   const rpc = mockRpc(answer);
-  return { ...rpc, sdk: createClient({ network: 'testnet', contracts: CONTRACTS, server: rpc.server }) };
+  return {
+    ...rpc,
+    sdk: createClient({ network: 'testnet', contracts: CONTRACTS, server: rpc.server }),
+  };
 };
 
 const u64 = (n: number) => nativeToScVal(n, { type: 'u64' });
@@ -85,7 +88,10 @@ describe('createClient', () => {
   });
 
   it('overrides only the contract ids it is given', () => {
-    const sdk = createClient({ network: 'testnet', contracts: { gate: GATE, registry: undefined } });
+    const sdk = createClient({
+      network: 'testnet',
+      contracts: { gate: GATE, registry: undefined },
+    });
     expect(sdk.contracts).toEqual({ ...NETWORKS.testnet.contracts, gate: GATE });
   });
 
@@ -158,7 +164,9 @@ describe('getProfile / getScore', () => {
   it('reads get_profile(addr) in one call', async () => {
     const { sdk, calls } = client(() => ({ retval: profile(30, 50, true) }));
     await expect(sdk.getProfile(ADDR)).resolves.toEqual({ social: 30, earned: 50, verified: true });
-    expect(calls).toEqual([expect.objectContaining({ contract: REP, method: 'get_profile', args: [ADDR] })]);
+    expect(calls).toEqual([
+      expect.objectContaining({ contract: REP, method: 'get_profile', args: [ADDR] }),
+    ]);
   });
 
   it('falls back to get_score + get_earned + is_verified on a contract without get_profile', async () => {
@@ -196,7 +204,9 @@ describe('getProfile / getScore', () => {
 
   it('does not mistake an outage or a revert for a missing view', async () => {
     const { sdk, calls } = client(() => ({ error: 'HostError: Error(Contract, #3)' }));
-    await expect(sdk.getProfile(ADDR)).rejects.toThrow('simulate get_profile failed: HostError: Error(Contract, #3)');
+    await expect(sdk.getProfile(ADDR)).rejects.toThrow(
+      'simulate get_profile failed: HostError: Error(Contract, #3)',
+    );
     expect(calls).toHaveLength(1);
   });
 
@@ -224,7 +234,9 @@ describe('handles', () => {
 
   it('reverseHandle reads reverse(addr) and answers the handle or null', async () => {
     const { sdk, calls } = client(({ args: [a] }) =>
-      a === ADDR ? { retval: nativeToScVal('alice', { type: 'symbol' }) } : { retval: xdr.ScVal.scvVoid() },
+      a === ADDR
+        ? { retval: nativeToScVal('alice', { type: 'symbol' }) }
+        : { retval: xdr.ScVal.scvVoid() },
     );
     await expect(sdk.reverseHandle(ADDR)).resolves.toBe('alice');
     await expect(sdk.reverseHandle(OTHER)).resolves.toBeNull();
@@ -304,13 +316,34 @@ describe('decoders', () => {
   it('decodeVouch maps an absent claimer to null', () => {
     expect(decodeVouch(null)).toBeNull();
     expect(
-      decodeVouch({ id: 1n, from: ADDR, note: '', claimed: false, created: 2n, stake: 3n, slashed: true }),
-    ).toEqual({ id: 1, from: ADDR, note: '', claimed: false, claimer: null, created: 2, stake: 3, slashed: true });
+      decodeVouch({
+        id: 1n,
+        from: ADDR,
+        note: '',
+        claimed: false,
+        created: 2n,
+        stake: 3n,
+        slashed: true,
+      }),
+    ).toEqual({
+      id: 1,
+      from: ADDR,
+      note: '',
+      claimed: false,
+      claimer: null,
+      created: 2,
+      stake: 3,
+      slashed: true,
+    });
   });
 
   it('isMissingFunction spots a contract that predates a view, and nothing else', () => {
-    expect(isMissingFunction(new Error(`simulate get_profile failed: ${missing('get_profile')}`))).toBe(true);
-    expect(isMissingFunction(new Error('simulate check failed: HostError: Error(Contract, #1)'))).toBe(false);
+    expect(
+      isMissingFunction(new Error(`simulate get_profile failed: ${missing('get_profile')}`)),
+    ).toBe(true);
+    expect(
+      isMissingFunction(new Error('simulate check failed: HostError: Error(Contract, #1)')),
+    ).toBe(false);
     expect(isMissingFunction(new Error('fetch failed'))).toBe(false);
     expect(isMissingFunction(undefined)).toBe(false);
   });

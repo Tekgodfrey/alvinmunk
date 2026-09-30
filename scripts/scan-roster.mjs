@@ -35,13 +35,37 @@ const pick = (k) => process.env[k] || env[k];
 const NETS = {
   testnet: {
     rpc: pick('NEXT_PUBLIC_RPC_URL') || 'https://soroban-testnet.stellar.org',
-    ids: [pick('NEXT_PUBLIC_REPUTATION_CONTRACT_ID'), pick('NEXT_PUBLIC_REGISTRY_CONTRACT_ID'), pick('NEXT_PUBLIC_REWARDS_CONTRACT_ID'), pick('NEXT_PUBLIC_QUEST_REGISTRY_CONTRACT_ID')].filter(Boolean),
-    exclude: [pick('NEXT_PUBLIC_REPUTATION_CONTRACT_ID'), pick('NEXT_PUBLIC_REGISTRY_CONTRACT_ID'), pick('NEXT_PUBLIC_REWARDS_CONTRACT_ID'), pick('NEXT_PUBLIC_QUEST_REGISTRY_CONTRACT_ID'), pick('NEXT_PUBLIC_GATE_CONTRACT_ID'), pick('NEXT_PUBLIC_USDC_SAC_ID')].filter(Boolean),
+    ids: [
+      pick('NEXT_PUBLIC_REPUTATION_CONTRACT_ID'),
+      pick('NEXT_PUBLIC_REGISTRY_CONTRACT_ID'),
+      pick('NEXT_PUBLIC_REWARDS_CONTRACT_ID'),
+      pick('NEXT_PUBLIC_QUEST_REGISTRY_CONTRACT_ID'),
+    ].filter(Boolean),
+    exclude: [
+      pick('NEXT_PUBLIC_REPUTATION_CONTRACT_ID'),
+      pick('NEXT_PUBLIC_REGISTRY_CONTRACT_ID'),
+      pick('NEXT_PUBLIC_REWARDS_CONTRACT_ID'),
+      pick('NEXT_PUBLIC_QUEST_REGISTRY_CONTRACT_ID'),
+      pick('NEXT_PUBLIC_GATE_CONTRACT_ID'),
+      pick('NEXT_PUBLIC_USDC_SAC_ID'),
+    ].filter(Boolean),
   },
   mainnet: {
     rpc: pick('MAINNET_RPC_URL') || 'https://mainnet.sorobanrpc.com',
-    ids: [pick('MAINNET_REPUTATION_CONTRACT_ID'), pick('MAINNET_REGISTRY_CONTRACT_ID'), pick('MAINNET_REWARDS_CONTRACT_ID'), pick('MAINNET_QUEST_REGISTRY_CONTRACT_ID')].filter(Boolean),
-    exclude: [pick('MAINNET_REPUTATION_CONTRACT_ID'), pick('MAINNET_REGISTRY_CONTRACT_ID'), pick('MAINNET_REWARDS_CONTRACT_ID'), pick('MAINNET_QUEST_REGISTRY_CONTRACT_ID'), pick('MAINNET_GATE_CONTRACT_ID'), pick('MAINNET_USDC_SAC_ID')].filter(Boolean),
+    ids: [
+      pick('MAINNET_REPUTATION_CONTRACT_ID'),
+      pick('MAINNET_REGISTRY_CONTRACT_ID'),
+      pick('MAINNET_REWARDS_CONTRACT_ID'),
+      pick('MAINNET_QUEST_REGISTRY_CONTRACT_ID'),
+    ].filter(Boolean),
+    exclude: [
+      pick('MAINNET_REPUTATION_CONTRACT_ID'),
+      pick('MAINNET_REGISTRY_CONTRACT_ID'),
+      pick('MAINNET_REWARDS_CONTRACT_ID'),
+      pick('MAINNET_QUEST_REGISTRY_CONTRACT_ID'),
+      pick('MAINNET_GATE_CONTRACT_ID'),
+      pick('MAINNET_USDC_SAC_ID'),
+    ].filter(Boolean),
   },
 };
 const ADDR = /^[GC][A-Z2-7]{55}$/;
@@ -78,7 +102,9 @@ async function scan(net, cfg) {
   for (let page = 0; page < 20_000; page++) {
     let res;
     try {
-      res = await server.getEvents(cursor ? { filters, cursor, limit: 1000 } : { filters, startLedger, limit: 1000 });
+      res = await server.getEvents(
+        cursor ? { filters, cursor, limit: 1000 } : { filters, startLedger, limit: 1000 },
+      );
     } catch (e) {
       const m = /within the ledger range: (\d+)/.exec(String(e.message || e));
       if (!cursor && m) {

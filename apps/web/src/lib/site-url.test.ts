@@ -1,7 +1,12 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { getSiteUrl } from './site-url';
 
-const KEYS = ['NEXT_PUBLIC_SITE_URL', 'VERCEL_ENV', 'VERCEL_URL', 'VERCEL_PROJECT_PRODUCTION_URL'] as const;
+const KEYS = [
+  'NEXT_PUBLIC_SITE_URL',
+  'VERCEL_ENV',
+  'VERCEL_URL',
+  'VERCEL_PROJECT_PRODUCTION_URL',
+] as const;
 
 /** Set exactly these site-URL env vars; every other one in KEYS is cleared. */
 function env(vars: Partial<Record<(typeof KEYS)[number], string>>) {

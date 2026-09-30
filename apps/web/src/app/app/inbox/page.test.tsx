@@ -14,7 +14,9 @@ const m = vi.hoisted(() => ({
   reverseHandles: vi.fn(),
 }));
 
-vi.mock('@/components/wallet/wallet-provider', () => ({ useWallet: () => ({ profile: m.profile }) }));
+vi.mock('@/components/wallet/wallet-provider', () => ({
+  useWallet: () => ({ profile: m.profile }),
+}));
 vi.mock('@/lib/inbox', () => ({ loadInbox: m.loadInbox, markInboxRead: m.markInboxRead }));
 vi.mock('@/lib/registry', () => ({ reverseHandles: m.reverseHandles }));
 
@@ -23,7 +25,14 @@ import InboxPage from './page';
 const ITEMS = [
   { id: 'streak:s', kind: 'streak', ledger: 130, weeks: 3 },
   { id: 'quest:q', kind: 'quest', ledger: 120, questId: 2 },
-  { id: 'tip:t', kind: 'tip', ledger: 110, at: Math.floor(Date.now() / 1000), peer: BOB, amount: '25000000' },
+  {
+    id: 'tip:t',
+    kind: 'tip',
+    ledger: 110,
+    at: Math.floor(Date.now() / 1000),
+    peer: BOB,
+    amount: '25000000',
+  },
   { id: 'claim:7', kind: 'claim', ledger: 0, peer: ALICE, vouchId: 7 },
 ];
 
@@ -36,7 +45,9 @@ describe('/app/inbox (#279)', () => {
     document.body.appendChild(container);
     root = createRoot(container);
     m.profile = { address: 'GME' };
-    m.loadInbox.mockReset().mockResolvedValue({ items: ITEMS, unread: new Set(['tip:t', 'claim:7']) });
+    m.loadInbox
+      .mockReset()
+      .mockResolvedValue({ items: ITEMS, unread: new Set(['tip:t', 'claim:7']) });
     m.markInboxRead.mockReset();
     m.reverseHandles.mockReset().mockResolvedValue({ [BOB]: 'bob', [ALICE]: null });
   });
@@ -52,7 +63,12 @@ describe('/app/inbox (#279)', () => {
   it('lists every kind newest first, with the other party by @handle (or address)', async () => {
     await render();
     expect(m.loadInbox).toHaveBeenCalledWith('GME');
-    expect(rows().map((r) => r.getAttribute('data-kind'))).toEqual(['streak', 'quest', 'tip', 'claim']);
+    expect(rows().map((r) => r.getAttribute('data-kind'))).toEqual([
+      'streak',
+      'quest',
+      'tip',
+      'claim',
+    ]);
     const text = rows().map((r) => r.textContent);
     expect(text[0]).toContain('Your quest streak reached 3 weeks');
     expect(text[1]).toContain('Quest #2 verified');

@@ -43,7 +43,9 @@ export default function HowItWorks() {
   return (
     <div className="container max-w-5xl py-16">
       {/* header */}
-      <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-primary/80">{t('howItWorks.eyebrow')}</p>
+      <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-primary/80">
+        {t('howItWorks.eyebrow')}
+      </p>
       <h1 className="display-hero mt-4 flex flex-wrap items-center gap-3 font-display text-5xl font-semibold tracking-tight sm:text-6xl">
         {t('howItWorks.title')}
         <Sticker name="star-lime" size={48} className="h-10 w-auto motion-safe:animate-float" />
@@ -61,7 +63,9 @@ export default function HowItWorks() {
             {t('howItWorks.vouchLoop.title')}
             <Sticker name="doodle-spark" size={28} className="h-6 w-auto" />
           </h2>
-          <span className="font-mono text-xs text-muted-foreground">{t('howItWorks.vouchLoop.scroll')}</span>
+          <span className="font-mono text-xs text-muted-foreground">
+            {t('howItWorks.vouchLoop.scroll')}
+          </span>
         </div>
         <div className="mt-8">
           <LoopScroll />
@@ -81,7 +85,9 @@ export default function HowItWorks() {
               <h3 className="mt-4 text-xl font-semibold">{t('howItWorks.social.title')}</h3>
               <p className="mt-2 text-sm text-muted-foreground">
                 <SplitHighlight
-                  raw={t('howItWorks.social.body', { notCashable: t('howItWorks.social.notCashable') })}
+                  raw={t('howItWorks.social.body', {
+                    notCashable: t('howItWorks.social.notCashable'),
+                  })}
                   highlight={t('howItWorks.social.notCashable')}
                 />
               </p>
@@ -89,7 +95,12 @@ export default function HowItWorks() {
           </Frame>
           <Frame label={t('howItWorks.earned.label')} index="B" accent="secondary" tilt>
             <div className="relative p-7">
-              <Sticker name="stamp-verified" size={72} rotate={-8} className="absolute right-3 top-3" />
+              <Sticker
+                name="stamp-verified"
+                size={72}
+                rotate={-8}
+                className="absolute right-3 top-3"
+              />
               <Stamp accent="secondary">{t('howItWorks.earned.stamp')}</Stamp>
               <h3 className="mt-4 text-xl font-semibold">{t('howItWorks.earned.title')}</h3>
               <p className="mt-2 text-sm text-muted-foreground">
@@ -108,11 +119,14 @@ export default function HowItWorks() {
         <h2 className="border-b border-border/60 pb-3 font-display text-3xl font-semibold tracking-tight">
           {t('howItWorks.antiSybil.title')}
         </h2>
-        <p className="mt-3 text-sm text-muted-foreground">
-          {t('howItWorks.antiSybil.subtitle')}
-        </p>
+        <p className="mt-3 text-sm text-muted-foreground">{t('howItWorks.antiSybil.subtitle')}</p>
         <Frame label={t('howItWorks.antiSybil.frame')} index="06" className="mt-6" tape="tr">
-          <Sticker name="stamp-strip" size={96} rotate={-4} className="absolute -top-4 right-10 z-10 hidden sm:block" />
+          <Sticker
+            name="stamp-strip"
+            size={96}
+            rotate={-4}
+            className="absolute -top-4 right-10 z-10 hidden sm:block"
+          />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {LIMIT_KEYS.map((l, i) => (
               <div
@@ -121,10 +135,13 @@ export default function HowItWorks() {
                   'border-border/50 p-6',
                   i % 3 !== 2 && 'lg:border-r',
                   i % 2 === 0 && 'sm:border-r lg:border-r',
-                  i >= 1 && 'border-t sm:[&:nth-child(2)]:border-t-0 lg:[&:nth-child(3)]:border-t-0',
+                  i >= 1 &&
+                    'border-t sm:[&:nth-child(2)]:border-t-0 lg:[&:nth-child(3)]:border-t-0',
                 )}
               >
-                <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-primary/60">{l.id}</span>
+                <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-primary/60">
+                  {l.id}
+                </span>
                 <h3 className="mt-3 font-semibold">{t(l.tKey)}</h3>
                 <p className="mt-1.5 text-sm text-muted-foreground">{t(l.dKey)}</p>
               </div>
@@ -138,14 +155,17 @@ export default function HowItWorks() {
         <h2 className="border-b border-border/60 pb-3 font-display text-3xl font-semibold tracking-tight">
           {t('howItWorks.devs.title')}
         </h2>
-        <p className="mt-3 text-sm text-muted-foreground">
-          {t('howItWorks.devs.body')}
-        </p>
+        <p className="mt-3 text-sm text-muted-foreground">{t('howItWorks.devs.body')}</p>
         <ReputationSnippet className="mt-6" />
       </section>
 
       <div className="relative mt-16 flex justify-center">
-        <Sticker name="social-boom" size={64} rotate={-10} className="absolute -top-6 left-1/2 hidden -translate-x-[7rem] motion-safe:animate-float md:block" />
+        <Sticker
+          name="social-boom"
+          size={64}
+          rotate={-10}
+          className="absolute -top-6 left-1/2 hidden -translate-x-[7rem] motion-safe:animate-float md:block"
+        />
         <span className="relative inline-flex overflow-hidden rounded-full">
           <Link href="/app" className={cn(buttonVariants({ variant: 'flow', size: 'lg' }))}>
             {t('howItWorks.devs.openApp')}

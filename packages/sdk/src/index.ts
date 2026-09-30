@@ -123,16 +123,19 @@ export function decodeProfile(raw: unknown): ProfileView {
 
 /** Decode a `get_vouch` result (native form); `null` for an unknown id. */
 export function decodeVouch(raw: unknown): VouchView | null {
-  const v = raw as {
-    id: bigint;
-    from: string;
-    note: string;
-    claimed: boolean;
-    claimer: string | null | undefined;
-    created: bigint;
-    stake: bigint;
-    slashed: boolean;
-  } | null | undefined;
+  const v = raw as
+    | {
+        id: bigint;
+        from: string;
+        note: string;
+        claimed: boolean;
+        claimer: string | null | undefined;
+        created: bigint;
+        stake: bigint;
+        slashed: boolean;
+      }
+    | null
+    | undefined;
   if (!v) return null;
   return {
     id: Number(v.id),
@@ -231,7 +234,9 @@ export function createClient(options: ClientOptions): AlvinmunkClient {
   const { network } = options;
   const defaults = Object.hasOwn(NETWORKS, network) ? NETWORKS[network] : undefined;
   if (!defaults) {
-    throw new Error(`alvinmunk: unknown network "${String(network)}" (expected "testnet" or "mainnet")`);
+    throw new Error(
+      `alvinmunk: unknown network "${String(network)}" (expected "testnet" or "mainnet")`,
+    );
   }
   const rpcUrl = options.rpcUrl ?? defaults.rpcUrl;
   if (!options.server && !rpcUrl) {

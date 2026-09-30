@@ -105,7 +105,8 @@ export function contentSecurityPolicy(env) {
       originOf(horizonUrl),
       // The read-only ?network=testnet views (lib/read-network), which only override on a
       // deployment that isn't testnet.
-      network !== 'testnet' && originOf(envValue(env.NEXT_PUBLIC_TESTNET_RPC_URL) ?? TESTNET_OVERRIDE_RPC),
+      network !== 'testnet' &&
+        originOf(envValue(env.NEXT_PUBLIC_TESTNET_RPC_URL) ?? TESTNET_OVERRIDE_RPC),
       network !== 'mainnet' && 'https://friendbot.stellar.org', // the dev wallet (never on mainnet)
       anchorHome, // SEP-1 stellar.toml (+ SEP-10/24 when served from the same host)
       originOf(envValue(env.NEXT_PUBLIC_ANCHOR_TRANSFER_SERVER)),

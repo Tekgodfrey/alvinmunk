@@ -30,10 +30,18 @@ describe('getRewardsFor', () => {
   beforeEach(() => readContractMock.mockReset());
 
   it('reads the whole table for the wallet in one get_rewards_for simulation', async () => {
-    readContractMock.mockResolvedValueOnce([[row(1), row(2, { claimed: true, reason: 4 })], 3_000_000n]);
+    readContractMock.mockResolvedValueOnce([
+      [row(1), row(2, { claimed: true, reason: 4 })],
+      3_000_000n,
+    ]);
     const res = await getRewardsFor('GWHO', 'GSOURCE');
     expect(readContractMock).toHaveBeenCalledTimes(1);
-    expect(readContractMock).toHaveBeenCalledWith('CREWARDS', 'get_rewards_for', [{ __addr: 'GWHO' }], 'GSOURCE');
+    expect(readContractMock).toHaveBeenCalledWith(
+      'CREWARDS',
+      'get_rewards_for',
+      [{ __addr: 'GWHO' }],
+      'GSOURCE',
+    );
     expect(res.rows).toEqual([row(1), row(2, { claimed: true, reason: 4 })]);
     expect(res.remainingToday).toBe(3_000_000n);
   });
@@ -53,7 +61,10 @@ describe('getRewardsFor', () => {
 
   it('treats a missing result as an empty, uncapped table', async () => {
     readContractMock.mockResolvedValueOnce(undefined);
-    await expect(getRewardsFor('GWHO', 'GSOURCE')).resolves.toEqual({ rows: [], remainingToday: null });
+    await expect(getRewardsFor('GWHO', 'GSOURCE')).resolves.toEqual({
+      rows: [],
+      remainingToday: null,
+    });
   });
 
   it('lets an RPC failure reach the caller instead of guessing a state', async () => {

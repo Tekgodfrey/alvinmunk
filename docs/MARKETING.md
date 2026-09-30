@@ -55,29 +55,35 @@ Try it, vouch for someone, and light a star. alvinmunk.vercel.app
 **Suggested home:** dev.to / Hashnode / Medium, cross-posted to the repo as `docs/blog/`.
 
 ### Intro
+
 Most on-chain reputation is either a self-issued résumé or a pile of one-time mints that bots farm in minutes. We wanted something different: reputation that is made of other people, is expensive to fake, and is actually spendable. This post walks through the three ideas that made alvinmunk work on Stellar.
 
 ### 1. The cold-start problem, and the async vouch
+
 A solo builder cannot ask two people to stand next to each other and tap. So the core action is a one-sided, asynchronous vouch. You pick someone, write one line, and mint a half-card bound to `sha256(secret)`. You never enter their address. The claim-secret rides in the share link fragment, which browsers never send to a server. Whoever opens the link binds their own address at claim time. Two consequences: the link is the install funnel, and rings cannot be pre-computed because the minter does not know the claimer.
 
 Code: `contracts/reputation/src/lib.rs` (`mint_vouch`, `claim_vouch`), `apps/web/src/lib/reputation.ts`.
 
 ### 2. Separating money from fun (the two-track model)
+
 The lethal version of this product pays both sides of a free, self-initiable vouch in cashable value. That is a money printer for sybils. So we split reputation into two tracks. Social XP comes from vouches and is never cashable. Earned XP comes only from attester-verified quests and is the only track the rewards contract reads. On top of that: first-pair-only rewards, per-day caps, an XP stake that is slashed if a vouch is never claimed, a second-order gate that only pays the voucher after the claimer does something verified, and a proof-of-funding gate plus a treasury circuit breaker on the payout side. The result: sybils can farm clout, but every cashable dollar is gated and, at scale, backed by real revenue.
 
 Code: the `Social`/`Earned` split in `reputation`, and `rewards` reading only `get_earned`.
 
 ### 3. No seed phrase, no gas, no backend
+
 Onboarding uses passkey smart wallets (secp256r1) through passkey-kit, and every contract call is fee-sponsored and fee-bumped through an OpenZeppelin Channels relayer. The user signs with Face ID and never holds XLM. On the read side there is no standing backend: the leaderboard, activity feed, and profiles all read Soroban events directly over RPC. The only server-side secret is a single serverless attester that verifies off-chain evidence and signs it, with the contract verifying that signature on-chain.
 
 Code: `apps/web/src/lib/wallet.ts`, `apps/web/src/app/api/passkey-send/route.ts`, `apps/web/src/app/api/attest/route.ts`.
 
 ### Closing
+
 The canonical `att_set` event is emitted from day one, append-only, so the reputation becomes a signal any anchor or app can read without us building a second write path. That is the long game: a portable proof-of-people primitive on Stellar. Code is open at github.com/mericcintosun/alvinmunk.
 
 ---
 
 ## 3. Ecosystem checklist (Black)
+
 - [ ] Post the X thread above, tag @StellarOrg.
 - [ ] Publish the blog, link it in the README.
 - [ ] Submit to stellar.org/ecosystem and lumenloop.com.

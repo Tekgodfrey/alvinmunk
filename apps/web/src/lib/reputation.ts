@@ -236,7 +236,11 @@ export async function mintVouches(
 /** Claim a half-card by signing the claim for this wallet with the seed from the link.
  *  The seed stays here; the transaction carries only the signature, which is worthless
  *  for any other claimer, card, contract or network. Both sides earn Social XP. */
-export async function claimVouchSigned(wallet: Wallet, vouchId: number, seedHex: string): Promise<void> {
+export async function claimVouchSigned(
+  wallet: Wallet,
+  vouchId: number,
+  seedHex: string,
+): Promise<void> {
   const sig = signClaim(fromHex(seedHex), networkPassphrase, repId(), vouchId, wallet.address);
   await invokeAndWait(
     repId(),
@@ -250,7 +254,11 @@ export async function claimVouchSigned(wallet: Wallet, vouchId: number, seedHex:
 /** LEGACY: claim a card minted with a claim hash (links with `s=`) by presenting its secret.
  *  The secret is a plain transaction argument, so these older cards stay front-runnable;
  *  new cards use `mintVouch` + `claimVouchSigned`. Both sides earn Social XP. */
-export async function claimVouch(wallet: Wallet, vouchId: number, secretHex: string): Promise<void> {
+export async function claimVouch(
+  wallet: Wallet,
+  vouchId: number,
+  secretHex: string,
+): Promise<void> {
   await invokeAndWait(
     repId(),
     'claim_vouch',
@@ -357,8 +365,16 @@ export async function getEarnedScore(addr: string, source: string): Promise<numb
  * the ledger time of the latest one (there is no on-chain count). `null` means no quest yet;
  * a failed read throws instead of looking like "no quests".
  */
-export async function getQuestAttestation(addr: string, net?: ReadNetwork | null): Promise<Attestation | null> {
-  const a = await readPublic<{ issuer: string; value: bigint | number; timestamp: bigint | number; revoked: boolean }>(
+export async function getQuestAttestation(
+  addr: string,
+  net?: ReadNetwork | null,
+): Promise<Attestation | null> {
+  const a = await readPublic<{
+    issuer: string;
+    value: bigint | number;
+    timestamp: bigint | number;
+    revoked: boolean;
+  }>(
     net ? net.contracts.reputation : repId(),
     'get_attestation',
     [args.addr(addr), args.u32(SCHEMA.QUEST)],
@@ -366,5 +382,10 @@ export async function getQuestAttestation(addr: string, net?: ReadNetwork | null
   );
   if (!a) return null;
   // i128 / u64 decode to bigint; normalise to the shared shape (timestamp in unix seconds).
-  return { issuer: a.issuer, value: BigInt(a.value), timestamp: Number(a.timestamp), revoked: a.revoked };
+  return {
+    issuer: a.issuer,
+    value: BigInt(a.value),
+    timestamp: Number(a.timestamp),
+    revoked: a.revoked,
+  };
 }

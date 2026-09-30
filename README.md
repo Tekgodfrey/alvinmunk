@@ -1,10 +1,10 @@
 # 🛰️ alvinmunk
 
-> **Collect people, not points.** A social, gamified, non-betting *proof-of-people* reputation game on Stellar/Soroban — built for the Rise In **Stellar Journey to Mastery** belt program (White → Master).
+> **Collect people, not points.** A social, gamified, non-betting _proof-of-people_ reputation game on Stellar/Soroban — built for the Rise In **Stellar Journey to Mastery** belt program (White → Master).
 
 **▶ Live on Stellar testnet: [alvinmunk.vercel.app](https://alvinmunk.vercel.app)**
 
-You earn reputation through **mutual/social actions** (vouch for someone, complete a verifiable quest, tip), not solo grinding. Badges name **other humans** and auto-generate a shareable card — reputation about *others* is viral; reputation about *yourself* is a résumé. Reputation is **spendable**: it unlocks bounties, ranking, and USDC micro-rewards.
+You earn reputation through **mutual/social actions** (vouch for someone, complete a verifiable quest, tip), not solo grinding. Badges name **other humans** and auto-generate a shareable card — reputation about _others_ is viral; reputation about _yourself_ is a résumé. Reputation is **spendable**: it unlocks bounties, ranking, and USDC micro-rewards.
 
 The full product thesis, the persona debates, and the belt-by-belt roadmap live in **[`belts/`](./belts/)** — start with **[`belts/00-strategy.md`](./belts/00-strategy.md)** (source of truth).
 
@@ -12,8 +12,8 @@ The full product thesis, the persona debates, and the belt-by-belt roadmap live 
 
 Captured on **Stellar testnet** via the built-in wallet flow (passkey infra unset → a Friendbot-funded testnet keypair; a literal Freighter connect/disconnect + XLM-send flow is also shipped at the `/wallet` route).
 
-| Wallet connected | Balance displayed | Successful testnet transaction |
-| :---: | :---: | :---: |
+|                   Wallet connected                   |         Balance displayed          |      Successful testnet transaction      |
+| :--------------------------------------------------: | :--------------------------------: | :--------------------------------------: |
 | ![wallet connected](./level1-1-wallet-connected.png) | ![balance](./level1-2-balance.png) | ![testnet tx](./level1-3-testnet-tx.png) |
 
 The third shot shows the first on-chain transaction confirmed (`You're on-chain ✨ in 0.6s`) with a **view your first transaction →** link to Stellar Expert.
@@ -36,13 +36,13 @@ The `/wallet` route connects through the real **[Stellar Wallets Kit](https://gi
 
 Five Soroban contracts, deployed + cross-contract verified on-chain:
 
-| Contract | Address |
-| --- | --- |
+| Contract                                          | Address                                                                                                                                                                 |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Reputation (Social/Earned XP, vouches, `att_set`) | [`CDRYXUS55TKGYEM3YUB3YTJWQKSWWQABK6YPQK7SLEPVALWYK4IR7WCL`](https://stellar.expert/explorer/testnet/contract/CDRYXUS55TKGYEM3YUB3YTJWQKSWWQABK6YPQK7SLEPVALWYK4IR7WCL) |
-| Quest Registry (attester-signed quests) | [`CBEJVYLWTU6BQDL3RXKWW6CYUISRC4SUIVURCG452CTOIANGY2N7V3WI`](https://stellar.expert/explorer/testnet/contract/CBEJVYLWTU6BQDL3RXKWW6CYUISRC4SUIVURCG452CTOIANGY2N7V3WI) |
-| Rewards (USDC tip + Earned-gated claim) | [`CBMO3X3EXKUZAHNAPRSFVBXJJARJD5I5VME5UQ7OSI2OA5Q56UO7TM3G`](https://stellar.expert/explorer/testnet/contract/CBMO3X3EXKUZAHNAPRSFVBXJJARJD5I5VME5UQ7OSI2OA5Q56UO7TM3G) |
-| Registry (handle ↔ address) | [`CCT5EGFZ33IFLMUU6EBMC6NWRLX5TWJS5FICNJFBG7MU5PTAU6PFMVH4`](https://stellar.expert/explorer/testnet/contract/CCT5EGFZ33IFLMUU6EBMC6NWRLX5TWJS5FICNJFBG7MU5PTAU6PFMVH4) |
-| Gate (reputation-gated access) | [`CDX4QTFVT7VOGXCSASD75INCUHNZJUE3DRZDL65Z65PMIYJ5JELP576E`](https://stellar.expert/explorer/testnet/contract/CDX4QTFVT7VOGXCSASD75INCUHNZJUE3DRZDL65Z65PMIYJ5JELP576E) |
+| Quest Registry (attester-signed quests)           | [`CBEJVYLWTU6BQDL3RXKWW6CYUISRC4SUIVURCG452CTOIANGY2N7V3WI`](https://stellar.expert/explorer/testnet/contract/CBEJVYLWTU6BQDL3RXKWW6CYUISRC4SUIVURCG452CTOIANGY2N7V3WI) |
+| Rewards (USDC tip + Earned-gated claim)           | [`CBMO3X3EXKUZAHNAPRSFVBXJJARJD5I5VME5UQ7OSI2OA5Q56UO7TM3G`](https://stellar.expert/explorer/testnet/contract/CBMO3X3EXKUZAHNAPRSFVBXJJARJD5I5VME5UQ7OSI2OA5Q56UO7TM3G) |
+| Registry (handle ↔ address)                       | [`CCT5EGFZ33IFLMUU6EBMC6NWRLX5TWJS5FICNJFBG7MU5PTAU6PFMVH4`](https://stellar.expert/explorer/testnet/contract/CCT5EGFZ33IFLMUU6EBMC6NWRLX5TWJS5FICNJFBG7MU5PTAU6PFMVH4) |
+| Gate (reputation-gated access)                    | [`CDX4QTFVT7VOGXCSASD75INCUHNZJUE3DRZDL65Z65PMIYJ5JELP576E`](https://stellar.expert/explorer/testnet/contract/CDX4QTFVT7VOGXCSASD75INCUHNZJUE3DRZDL65Z65PMIYJ5JELP576E) |
 
 ### Contract call — transaction hash (verifiable on Stellar Expert)
 
@@ -53,14 +53,14 @@ A real `mint_vouch` call on the Reputation contract (reproduce with `node script
 
 ### Requirements → where they live
 
-| Requirement | Implementation |
-| --- | --- |
-| Multi-wallet integration | Stellar Wallets Kit picker — `apps/web/src/lib/wallet-kit.ts`, `apps/web/src/app/wallet/page.tsx` |
-| 3+ error types (not-found / rejected / insufficient) | `wallet.ts` (Freighter not detected, access rejected), `utils.ts` `humanizeError` (insufficient balance / trustline / timeout) |
-| Contract deployed on testnet | 5 contracts above (`scripts/deploy-testnet.sh`) |
-| Contract called from the frontend | `lib/reputation.ts` `mint_vouch`/`claim_vouch`, `lib/rewards.ts` `tip`/`claim_reward`, via `lib/contracts.ts` `invokeAndWait` |
-| Event listening + state sync | Leaderboard polls RPC `getEvents` every 5s (`lib/events.ts`, `app/leaderboard/page.tsx`); activity feed streams `vouch:claimed` events |
-| Transaction status visible (pending/success/fail) | `app/wallet/page.tsx` status card + explorer link; contract calls poll to SUCCESS/FAILED with toasts |
+| Requirement                                          | Implementation                                                                                                                         |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Multi-wallet integration                             | Stellar Wallets Kit picker — `apps/web/src/lib/wallet-kit.ts`, `apps/web/src/app/wallet/page.tsx`                                      |
+| 3+ error types (not-found / rejected / insufficient) | `wallet.ts` (Freighter not detected, access rejected), `utils.ts` `humanizeError` (insufficient balance / trustline / timeout)         |
+| Contract deployed on testnet                         | 5 contracts above (`scripts/deploy-testnet.sh`)                                                                                        |
+| Contract called from the frontend                    | `lib/reputation.ts` `mint_vouch`/`claim_vouch`, `lib/rewards.ts` `tip`/`claim_reward`, via `lib/contracts.ts` `invokeAndWait`          |
+| Event listening + state sync                         | Leaderboard polls RPC `getEvents` every 5s (`lib/events.ts`, `app/leaderboard/page.tsx`); activity feed streams `vouch:claimed` events |
+| Transaction status visible (pending/success/fail)    | `app/wallet/page.tsx` status card + explorer link; contract calls poll to SUCCESS/FAILED with toasts                                   |
 
 ---
 
@@ -72,8 +72,8 @@ A complete end-to-end Stellar dApp: five Soroban contracts that talk to each oth
 
 ### Screenshots
 
-| Mobile responsive | CI/CD pipeline running | Test output (3+ passing) |
-| :---: | :---: | :---: |
+|             Mobile responsive             |        CI/CD pipeline running         |       Test output (3+ passing)       |
+| :---------------------------------------: | :-----------------------------------: | :----------------------------------: |
 | ![mobile responsive](./orange-mobile.png) | ![CI pipeline green](./orange-ci.png) | ![tests passing](./orange-tests.png) |
 
 ### Deployment & interaction (verifiable on-chain)
@@ -83,17 +83,17 @@ A complete end-to-end Stellar dApp: five Soroban contracts that talk to each oth
 
 ### Requirements → where they live
 
-| Requirement | Implementation |
-| --- | --- |
-| Advanced smart contract development | 5 contracts: two-track reputation (async vouch mint/claim, first-pair guard, `att_set` versioning), signature-verified quest registry, USDC rewards with treasury circuit breaker, reputation gate, handle registry |
-| **Inter-contract communication** | `gate.check`/`unlock` cross-reads `reputation.get_score`/`get_earned` (`gate/src/lib.rs:196`); `quest_registry.award_quest` cross-calls `reputation.award_xp` (`quest_registry/src/lib.rs:200`); `rewards` moves USDC via the SAC `token::Client` |
-| **Event streaming & real-time updates** | Every contract publishes events (`social`, `xp`, `tipped`, `reward`, `unlocked`, `streak`, …); the leaderboard + activity feed poll RPC `getEvents` every 5s (`lib/events.ts`, `app/leaderboard/page.tsx`) |
-| **CI/CD pipeline** | `.github/workflows/ci.yml` — contracts job (`cargo fmt --check`, `cargo clippy -D warnings`, `cargo test`) + web job (`pnpm typecheck`, `pnpm lint`, `pnpm test`) on every push/PR |
-| Smart contract deployment workflow | `scripts/deploy-testnet.sh` (build → deploy with constructor arguments → cross-wire all 5 contracts); `contracts/Makefile` |
-| Mobile responsive frontend | Tailwind responsive layout across all routes — see screenshot above |
-| Error handling & loading states | `utils.ts` `humanizeError` (insufficient / trustline / timeout / rejected), toast + pending/success/fail status on every contract call |
-| Writing tests for contracts and frontend | **134 tests green** — 57 contract (`cargo test`, incl. property/fuzz) + 59 web + 18 shared (`vitest`) |
-| Production-ready architecture | pnpm/turbo monorepo, frozen-lockfile installs, shared types package, no standing backend (RPC-direct) — see [Architecture](#architecture-and-the-no-standing-backend-decision) |
+| Requirement                              | Implementation                                                                                                                                                                                                                                    |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Advanced smart contract development      | 5 contracts: two-track reputation (async vouch mint/claim, first-pair guard, `att_set` versioning), signature-verified quest registry, USDC rewards with treasury circuit breaker, reputation gate, handle registry                               |
+| **Inter-contract communication**         | `gate.check`/`unlock` cross-reads `reputation.get_score`/`get_earned` (`gate/src/lib.rs:196`); `quest_registry.award_quest` cross-calls `reputation.award_xp` (`quest_registry/src/lib.rs:200`); `rewards` moves USDC via the SAC `token::Client` |
+| **Event streaming & real-time updates**  | Every contract publishes events (`social`, `xp`, `tipped`, `reward`, `unlocked`, `streak`, …); the leaderboard + activity feed poll RPC `getEvents` every 5s (`lib/events.ts`, `app/leaderboard/page.tsx`)                                        |
+| **CI/CD pipeline**                       | `.github/workflows/ci.yml` — contracts job (`cargo fmt --check`, `cargo clippy -D warnings`, `cargo test`) + web job (`pnpm typecheck`, `pnpm lint`, `pnpm test`) on every push/PR                                                                |
+| Smart contract deployment workflow       | `scripts/deploy-testnet.sh` (build → deploy with constructor arguments → cross-wire all 5 contracts); `contracts/Makefile`                                                                                                                        |
+| Mobile responsive frontend               | Tailwind responsive layout across all routes — see screenshot above                                                                                                                                                                               |
+| Error handling & loading states          | `utils.ts` `humanizeError` (insufficient / trustline / timeout / rejected), toast + pending/success/fail status on every contract call                                                                                                            |
+| Writing tests for contracts and frontend | **134 tests green** — 57 contract (`cargo test`, incl. property/fuzz) + 59 web + 18 shared (`vitest`)                                                                                                                                             |
+| Production-ready architecture            | pnpm/turbo monorepo, frozen-lockfile installs, shared types package, no standing backend (RPC-direct) — see [Architecture](#architecture-and-the-no-standing-backend-decision)                                                                    |
 
 ### Reproduce the tests locally
 
@@ -114,8 +114,8 @@ A production MVP on Stellar with real users, one-tap onboarding, analytics + mon
 
 ### Screenshots
 
-| Product UI | Mobile responsive | Analytics / monitoring |
-| :---: | :---: | :---: |
+|             Product UI             |            Mobile responsive             |             Analytics / monitoring             |
+| :--------------------------------: | :--------------------------------------: | :--------------------------------------------: |
 | ![product ui](./green-product.png) | ![mobile responsive](./green-mobile.png) | ![on-chain usage stats](./green-analytics.png) |
 
 ### Proof of 10+ user wallet interactions
@@ -129,33 +129,33 @@ A production MVP on Stellar with real users, one-tap onboarding, analytics + mon
 
 **Responses (raw evidence — the rows in the sheet above; handles are real on-chain users, `/u/<handle>`):**
 
-| Name | Wallet or @handle | Rating | Notes / wants next |
-| --- | --- | :---: | --- |
-| Berkay Gündüz (beko) | [`GB72PZXN…YZ3H3`](https://stellar.expert/explorer/testnet/account/GB72PZXNOU6DJ2BXZDITS24A5JCN3CEUNTKIX5ESZDXAY2R5HO7YZ3H3) | 4/5 | "Interface is working well." → wants **weighted vouch** |
-| Umut Akçayır | [@umut](https://alvinmunk.vercel.app/u/umut?network=testnet) | 5/5 | — |
-| Leyla Bayıroğlu | [@leyla](https://alvinmunk.vercel.app/u/leyla?network=testnet) | 5/5 | — |
-| Cansu Güzel | [@cansu](https://alvinmunk.vercel.app/u/cansu?network=testnet) | 3/5 | — |
-| Nazlı Kır | [@nazli](https://alvinmunk.vercel.app/u/nazli?network=testnet) | 1/5 | — |
+| Name                 | Wallet or @handle                                                                                                            | Rating | Notes / wants next                                      |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------- | :----: | ------------------------------------------------------- |
+| Berkay Gündüz (beko) | [`GB72PZXN…YZ3H3`](https://stellar.expert/explorer/testnet/account/GB72PZXNOU6DJ2BXZDITS24A5JCN3CEUNTKIX5ESZDXAY2R5HO7YZ3H3) |  4/5   | "Interface is working well." → wants **weighted vouch** |
+| Umut Akçayır         | [@umut](https://alvinmunk.vercel.app/u/umut?network=testnet)                                                                 |  5/5   | —                                                       |
+| Leyla Bayıroğlu      | [@leyla](https://alvinmunk.vercel.app/u/leyla?network=testnet)                                                               |  5/5   | —                                                       |
+| Cansu Güzel          | [@cansu](https://alvinmunk.vercel.app/u/cansu?network=testnet)                                                               |  3/5   | —                                                       |
+| Nazlı Kır            | [@nazli](https://alvinmunk.vercel.app/u/nazli?network=testnet)                                                               |  1/5   | —                                                       |
 
 **Summary:** **5 responses, average 3.6/5**, ratings span 1–5 (organic, not all 5-star); UI praised; top qualitative request = **weighted vouch**.
 
 **How we improve next, based on this feedback (with git commit link):**
 
-| Feedback | Change shipped / planned | Commit |
-| --- | --- | --- |
-| "Recipients are hard — nobody memorizes a 56-char key" | **Tip by `@handle`** — registry resolves the handle to a wallet on-chain, with inline confirmation before sending (`components/Tip.tsx`) | [`2bac3c1`](https://github.com/mericcintosun/alvinmunk/commit/2bac3c1) |
-| "weighted vouch" (top request) | Scoped weighted-vouch for the reputation track (weight by voucher reputation, split across vouchees, seed-set anchored) | planned — tracked in [`docs/USER_FEEDBACK.md`](./docs/USER_FEEDBACK.md) |
+| Feedback                                               | Change shipped / planned                                                                                                                 | Commit                                                                  |
+| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| "Recipients are hard — nobody memorizes a 56-char key" | **Tip by `@handle`** — registry resolves the handle to a wallet on-chain, with inline confirmation before sending (`components/Tip.tsx`) | [`2bac3c1`](https://github.com/mericcintosun/alvinmunk/commit/2bac3c1)  |
+| "weighted vouch" (top request)                         | Scoped weighted-vouch for the reputation track (weight by voucher reputation, split across vouchees, seed-set anchored)                  | planned — tracked in [`docs/USER_FEEDBACK.md`](./docs/USER_FEEDBACK.md) |
 
 ### Requirements → where they live
 
-| Requirement | Implementation |
-| --- | --- |
-| Production-ready MVP, mobile responsive, loading/error states | Next.js 14 on Vercel; `humanizeError` + skeletons + pending/success/fail toasts across every flow |
-| Real-world onboarding | One-tap handle → passkey/dev wallet, fee-sponsored, no seed phrase (`components/landing-onboard.tsx`, `app/app`) |
-| Monitoring + analytics | Vercel Analytics + Speed Insights (`components/analytics.tsx`) + live on-chain usage at `/stats` (`app/api/stats`) |
-| 10+ users + wallet interactions | 50+ wallets on-chain (`/stats`), verifiable on Stellar Expert |
-| Feedback collection + exported sheet | [Google Form](https://forms.gle/kNXR3zmZhGhgmrt58) → [`docs/feedback/responses.xlsx`](./docs/feedback/responses.xlsx) (Excel) + raw-evidence table above |
-| Contracts on testnet · 15+ commits · public repo · demo video | ✅ (see Yellow/Orange sections; 40+ commits) |
+| Requirement                                                   | Implementation                                                                                                                                           |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Production-ready MVP, mobile responsive, loading/error states | Next.js 14 on Vercel; `humanizeError` + skeletons + pending/success/fail toasts across every flow                                                        |
+| Real-world onboarding                                         | One-tap handle → passkey/dev wallet, fee-sponsored, no seed phrase (`components/landing-onboard.tsx`, `app/app`)                                         |
+| Monitoring + analytics                                        | Vercel Analytics + Speed Insights (`components/analytics.tsx`) + live on-chain usage at `/stats` (`app/api/stats`)                                       |
+| 10+ users + wallet interactions                               | 50+ wallets on-chain (`/stats`), verifiable on Stellar Expert                                                                                            |
+| Feedback collection + exported sheet                          | [Google Form](https://forms.gle/kNXR3zmZhGhgmrt58) → [`docs/feedback/responses.xlsx`](./docs/feedback/responses.xlsx) (Excel) + raw-evidence table above |
+| Contracts on testnet · 15+ commits · public repo · demo video | ✅ (see Yellow/Orange sections; 40+ commits)                                                                                                             |
 
 ---
 
@@ -179,35 +179,35 @@ Growth + a feedback loop that changed the product: a pitch deck, 50+ testnet use
 
 Feedback is collected via the public [Google Form](https://forms.gle/kNXR3zmZhGhgmrt58) (name/email, wallet or @handle, 1–5 rating, open feedback; Notion mirror also live) and exported to an Excel sheet — [`docs/feedback/responses.xlsx`](./docs/feedback/responses.xlsx) (also as [`.csv`](./docs/feedback/responses.csv)) via Responses → Google Sheets → Download `.xlsx`.
 
-| Feedback | Change shipped | Where |
-| --- | --- | --- |
-| Recipients are hard — nobody memorizes a 56-char key | **Tip by `@handle`**: type `@beko`, the registry resolves it to the wallet on-chain (debounced), with inline confirmation of the resolved address before sending | [`components/Tip.tsx`](./apps/web/src/components/Tip.tsx) |
-| "weighted vouch" (top request) | Scoped for the reputation track — weight each vouch by the voucher's own reputation, split across their vouchees, anchored to a verified seed set | tracked in [`docs/USER_FEEDBACK.md`](./docs/USER_FEEDBACK.md) |
+| Feedback                                             | Change shipped                                                                                                                                                   | Where                                                         |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Recipients are hard — nobody memorizes a 56-char key | **Tip by `@handle`**: type `@beko`, the registry resolves it to the wallet on-chain (debounced), with inline confirmation of the resolved address before sending | [`components/Tip.tsx`](./apps/web/src/components/Tip.tsx)     |
+| "weighted vouch" (top request)                       | Scoped for the reputation track — weight each vouch by the voucher's own reputation, split across their vouchees, anchored to a verified seed set                | tracked in [`docs/USER_FEEDBACK.md`](./docs/USER_FEEDBACK.md) |
 
 ### Requirements → where they live
 
-| Requirement | Implementation |
-| --- | --- |
-| Pitch deck | [`docs/pitch-deck.pdf`](./docs/pitch-deck.pdf) (brand-skinned) + [`docs/PITCH_DECK.md`](./docs/PITCH_DECK.md) outline |
-| 50+ testnet users | Live count at [`/stats`](https://alvinmunk.vercel.app/stats), verifiable on Stellar Expert |
-| Real transaction activity | Vouch/claim/quest txs on-chain (reputation contract above) |
-| Demo video (full walkthrough) | https://youtu.be/3FANRKLM6PI |
-| Feedback collection + Excel export | [Google Form](https://forms.gle/kNXR3zmZhGhgmrt58) → [`docs/feedback/responses.xlsx`](./docs/feedback/responses.xlsx) |
+| Requirement                               | Implementation                                                                                                                    |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Pitch deck                                | [`docs/pitch-deck.pdf`](./docs/pitch-deck.pdf) (brand-skinned) + [`docs/PITCH_DECK.md`](./docs/PITCH_DECK.md) outline             |
+| 50+ testnet users                         | Live count at [`/stats`](https://alvinmunk.vercel.app/stats), verifiable on Stellar Expert                                        |
+| Real transaction activity                 | Vouch/claim/quest txs on-chain (reputation contract above)                                                                        |
+| Demo video (full walkthrough)             | https://youtu.be/3FANRKLM6PI                                                                                                      |
+| Feedback collection + Excel export        | [Google Form](https://forms.gle/kNXR3zmZhGhgmrt58) → [`docs/feedback/responses.xlsx`](./docs/feedback/responses.xlsx)             |
 | Feedback-driven iteration (+ commit link) | Tip-by-`@handle` (`components/Tip.tsx`, [`2bac3c1`](https://github.com/mericcintosun/alvinmunk/commit/2bac3c1)) — see table above |
 
 ---
 
 ## Documentation
 
-| Doc | What it covers |
-| --- | --- |
-| **[User guide](./docs/USER_GUIDE.md)** | End-user walkthrough — onboard, vouch/claim, quests, tips, leaderboard, profile, FAQ |
-| **[Technical blog](./docs/BLOG.md)** | How the sybil-resistant proof-of-people design works (async vouch, two-track anti-sybil, passkey + fee-sponsorship + no-standing-backend) |
-| **[Ecosystem contribution](./docs/ECOSYSTEM.md)** | Open-source / community: Drips Wave maintainer, 26 bountied issues, **15 merged external-contributor PRs** |
-| **[Security review](./docs/SECURITY_REVIEW.md)** | Free self-audit — Scout + cargo-audit + cargo-deny + clippy + no-`unsafe`; 4 critical overflow findings fixed, 22 medium triaged, **0 exploitable** |
-| **[Deploy your own (testnet)](./docs/DEPLOY.md)** · **[Mainnet runbook](./docs/DEPLOY_MAINNET.md)** | Stand up a fresh instance; mainnet cutover checklist |
-| **[On-chain event schema](./docs/ON_CHAIN_EVENTS.md)** · **[Contributing](./CONTRIBUTING.md)** | Frozen event shapes; how to contribute |
-| **[Marketing kit](./docs/MARKETING.md)** · **[Pitch deck](./docs/pitch-deck.pdf)** | Launch thread + promotion; the designed deck |
+| Doc                                                                                                 | What it covers                                                                                                                                      |
+| --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **[User guide](./docs/USER_GUIDE.md)**                                                              | End-user walkthrough — onboard, vouch/claim, quests, tips, leaderboard, profile, FAQ                                                                |
+| **[Technical blog](./docs/BLOG.md)**                                                                | How the sybil-resistant proof-of-people design works (async vouch, two-track anti-sybil, passkey + fee-sponsorship + no-standing-backend)           |
+| **[Ecosystem contribution](./docs/ECOSYSTEM.md)**                                                   | Open-source / community: Drips Wave maintainer, 26 bountied issues, **15 merged external-contributor PRs**                                          |
+| **[Security review](./docs/SECURITY_REVIEW.md)**                                                    | Free self-audit — Scout + cargo-audit + cargo-deny + clippy + no-`unsafe`; 4 critical overflow findings fixed, 22 medium triaged, **0 exploitable** |
+| **[Deploy your own (testnet)](./docs/DEPLOY.md)** · **[Mainnet runbook](./docs/DEPLOY_MAINNET.md)** | Stand up a fresh instance; mainnet cutover checklist                                                                                                |
+| **[On-chain event schema](./docs/ON_CHAIN_EVENTS.md)** · **[Contributing](./CONTRIBUTING.md)**      | Frozen event shapes; how to contribute                                                                                                              |
+| **[Marketing kit](./docs/MARKETING.md)** · **[Pitch deck](./docs/pitch-deck.pdf)**                  | Launch thread + promotion; the designed deck                                                                                                        |
 
 ---
 
@@ -234,8 +234,9 @@ alvinmunk/                # project root (the repo)
 **Backend?** No separate, always-on host. The only server-side need — the **attester signing key** — lives in a **Next.js serverless API route** (`/api/attest`), so it ships as one Vercel deploy. The MVP **leaderboard reads RPC `getEvents` directly**; a durable indexer is deferred until scale demands it (Blue/Black belt). See `belts/00-strategy.md`.
 
 ### On-chain design (why it's lean)
-- **Two-track reputation (anti-sybil keystone, `belts/08-anti-sybil`):** **Social XP** (from vouches) is non-cashable — leaderboard/fun only; **Earned XP** (from attester-verified quests) is the *only* track `Rewards` reads to gate USDC. Vouches are `first-pair-only` (repeat pairs mint the card but grant 0 XP).
-- **XP/badges = account-keyed contract storage**, non-transferable by the *absence* of a transfer fn (SBT semantics) — no per-badge NFT minting.
+
+- **Two-track reputation (anti-sybil keystone, `belts/08-anti-sybil`):** **Social XP** (from vouches) is non-cashable — leaderboard/fun only; **Earned XP** (from attester-verified quests) is the _only_ track `Rewards` reads to gate USDC. Vouches are `first-pair-only` (repeat pairs mint the card but grant 0 XP).
+- **XP/badges = account-keyed contract storage**, non-transferable by the _absence_ of a transfer fn (SBT semantics) — no per-badge NFT minting.
 - **Oracle = allowlisted attesters with signed claims**, not a decentralized oracle.
 - **Canonical `att_set` event emitted from day one** — append-only and retroactively impossible. This keeps the "reputation primitive" SCF door open for ~free; the `get_attestation`/`get_score`/`get_earned` read-views are pure adapters, never a second write path (`belts/00-strategy §4`).
 
@@ -301,13 +302,14 @@ mint_vouch (async half-card)  →  share link = install funnel  →  claim_vouch
         →  stake/quest  →  rank unlocks reward  →  tip / claim_reward in USDC
 ```
 
-North-star metric: **Verified Value Loops / week** — a vouch staked & redeemed into USDC by a *different*, proof-of-funding-verified user, where the USDC was backed by real external value (`belts/08-anti-sybil`). Raw "closed loops" is a vanity sub-metric only.
+North-star metric: **Verified Value Loops / week** — a vouch staked & redeemed into USDC by a _different_, proof-of-funding-verified user, where the USDC was backed by real external value (`belts/08-anti-sybil`). Raw "closed loops" is a vanity sub-metric only.
 
 ---
 
 ## Quick start
 
 ### Prerequisites
+
 - **Node ≥ 20** + **pnpm 9** (`corepack enable && corepack prepare pnpm@9 --activate`)
 - **Rust stable** + `wasm32-unknown-unknown` target
 - **Stellar CLI**: `cargo install --locked stellar-cli` (or `brew install stellar-cli`)
@@ -315,11 +317,13 @@ North-star metric: **Verified Value Loops / week** — a vouch staked & redeemed
 > ⚠️ **Pin versions before first build.** The dependency versions in `contracts/Cargo.toml` (`soroban-sdk`) and `apps/web/package.json` (`@stellar/stellar-sdk`, `passkey-kit` for passkey, `@stellar/freighter-api` + `@albedo-link/intent` for the `/wallet` connect modal) are best-effort and should be verified against the latest releases — these libraries move fast.
 
 ### 1. Install JS deps
+
 ```bash
 pnpm install
 ```
 
 ### 2. Build + test everything
+
 ```bash
 pnpm contracts:build      # stellar contract build (wasm32v1-none)
 pnpm contracts:test       # cargo test — 6/6 reputation tests
@@ -328,18 +332,22 @@ pnpm -C apps/web build    # next build
 ```
 
 ### 3. Run the app locally (no infra needed)
+
 ```bash
 cp .env.example apps/web/.env.local   # optional; testnet defaults work as-is
 pnpm dev                              # turbo -> next dev
 ```
+
 **Onboarding works out-of-the-box on testnet** via a **dev wallet** (ephemeral keypair, Friendbot-funded) — Face ID / passkey kicks in once you set `NEXT_PUBLIC_PASSKEY_WALLET_WASM_HASH`, `PASSKEY_RELAYER_URL`, and `PASSKEY_RELAYER_API_KEY` (see [`docs/DEPLOY.md`](./docs/DEPLOY.md) §4 and [`docs/PASSKEY_HANDOFF.md`](./docs/PASSKEY_HANDOFF.md) for full setup). The dev wallet is hard-disabled on mainnet.
 
 ### 4. Deploy contracts to testnet
+
 ```bash
 stellar keys generate --fund admin --network testnet
 stellar keys generate --fund attester --network testnet
 USDC_SAC=<your_usdc_sac_id> ADMIN=admin ATTESTER=attester ./scripts/deploy-testnet.sh
 ```
+
 Copy the printed `NEXT_PUBLIC_*` ids into `apps/web/.env.local` (template: [`.env.example`](./.env.example)).
 
 **Full “deploy your own” runbook** (keys → contracts → `.env.local` → web app → optional attester/faucet/passkey secrets): [`docs/DEPLOY.md`](./docs/DEPLOY.md).
@@ -348,18 +356,18 @@ Copy the printed `NEXT_PUBLIC_*` ids into `apps/web/.env.local` (template: [`.en
 
 ## What's a working skeleton vs. a TODO
 
-| Area | Status |
-| --- | --- |
-| `reputation` (two-track Social/Earned, async vouch mint/claim, first-pair guard, attester award, `att_set`, read views) | ✅ implemented + 6 unit tests |
-| `quest_registry` (allowlist, replay guard, cross-call to reputation) | ✅ implemented |
-| `rewards` (tip, Earned-gated claim, pause) | ✅ implemented |
-| Monorepo / CI / deploy script / shared types + art engine | ✅ |
-| **Sprint 1 / White belt**: wallet (passkey + dev fallback), onboarding, first on-chain tx (Genesis), Genesis Stamp art, profile | ✅ implemented + vitest |
-| **Sprint 2 / Yellow belt**: `reputation` deployed to testnet; vouch mint/claim wired; leaderboard from `social` events (RPC-direct, 5s poll); event schema frozen | ✅ implemented + verified on-chain (social 10/10, earned 0/0) |
-| Serverless attester `/api/attest` | 🟡 transport + structure done; **evidence verification stubbed** (Orange belt) |
-| Passkey provider (`connectPasskey`) | 🟡 dev-wallet fallback works now; **wire passkey-kit** for FaceID (White belt infra) |
-| Handle → address resolution | ✅ live in Tip (type `@handle`, registry resolves on-chain); vouch still address-based |
-| Indexer | ⏸ deferred (RPC-direct for MVP) |
+| Area                                                                                                                                                              | Status                                                                                 |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `reputation` (two-track Social/Earned, async vouch mint/claim, first-pair guard, attester award, `att_set`, read views)                                           | ✅ implemented + 6 unit tests                                                          |
+| `quest_registry` (allowlist, replay guard, cross-call to reputation)                                                                                              | ✅ implemented                                                                         |
+| `rewards` (tip, Earned-gated claim, pause)                                                                                                                        | ✅ implemented                                                                         |
+| Monorepo / CI / deploy script / shared types + art engine                                                                                                         | ✅                                                                                     |
+| **Sprint 1 / White belt**: wallet (passkey + dev fallback), onboarding, first on-chain tx (Genesis), Genesis Stamp art, profile                                   | ✅ implemented + vitest                                                                |
+| **Sprint 2 / Yellow belt**: `reputation` deployed to testnet; vouch mint/claim wired; leaderboard from `social` events (RPC-direct, 5s poll); event schema frozen | ✅ implemented + verified on-chain (social 10/10, earned 0/0)                          |
+| Serverless attester `/api/attest`                                                                                                                                 | 🟡 transport + structure done; **evidence verification stubbed** (Orange belt)         |
+| Passkey provider (`connectPasskey`)                                                                                                                               | 🟡 dev-wallet fallback works now; **wire passkey-kit** for FaceID (White belt infra)   |
+| Handle → address resolution                                                                                                                                       | ✅ live in Tip (type `@handle`, registry resolves on-chain); vouch still address-based |
+| Indexer                                                                                                                                                           | ⏸ deferred (RPC-direct for MVP)                                                        |
 
 Each TODO references the belt doc that owns it. Build order follows the belts/sprints: see [`docs/SPRINTS.md`](./docs/SPRINTS.md). **Sprints 0–2 done; Orange + Green code complete** — all 3 contracts deployed + cross-contract verified on-chain, claim-secret vouch loop, real serverless attester (GitHub PR / referral tx), anti-sybil (claim-secret + per-day cap + asymmetric + first-pair + ring-flag), USDC tip rail + faucet, on-chain rank→reward table with treasury circuit breaker (daily cap + frozen set + proof-of-funding toggle), weekly streak, leaderboard snapshot cache. **134 tests green** (57 contract incl. property/fuzz + 59 web + 18 shared). Remaining for Orange/Green: public testers + 2-week live retention.
 
@@ -370,4 +378,5 @@ Each TODO references the belt doc that owns it. Build order follows the belts/sp
 This repo (alvinmunk) is the **Builder-Track / $20k** play and the user's **primary** project. A separate idea targets the Startup Track / SCF. Rule (`00-strategy §7`): **alvinmunk ships a demonstrable belt-loop increment every week before any SCF hour.** Share infra so alvinmunk work feeds the SCF project.
 
 ## License
+
 TBD.

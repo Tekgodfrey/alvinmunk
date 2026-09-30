@@ -50,10 +50,14 @@ describe('VouchNetwork (#277)', () => {
     container = document.createElement('div');
     document.body.appendChild(container);
     root = createRoot(container);
-    m.vouchers.mockReset().mockResolvedValue([{ from: A, vouchId: 1, note: 'unblocked me', created: 0 }]);
+    m.vouchers
+      .mockReset()
+      .mockResolvedValue([{ from: A, vouchId: 1, note: 'unblocked me', created: 0 }]);
     m.backed.mockReset().mockResolvedValue([{ from: B, vouchId: 2, note: '', created: 0 }]);
     // THEY vouched A and B; ME vouched A → the viewer and THEY share only A.
-    m.events.mockReset().mockResolvedValue([claimed(1, A, THEY), claimed(2, THEY, B), claimed(3, ME, A)]);
+    m.events
+      .mockReset()
+      .mockResolvedValue([claimed(1, A, THEY), claimed(2, THEY, B), claimed(3, ME, A)]);
     m.reverseHandles.mockReset().mockResolvedValue({ [A]: 'alice', [B]: null });
   });
 
@@ -64,7 +68,17 @@ describe('VouchNetwork (#277)', () => {
 
   const render = (props: Partial<React.ComponentProps<typeof VouchNetwork>> = {}) =>
     act(async () =>
-      root.render(<VouchNetwork address={THEY} handle="they" net={null} isMe={false} vouchedByCount={9} backedCount={1} {...props} />),
+      root.render(
+        <VouchNetwork
+          address={THEY}
+          handle="they"
+          net={null}
+          isMe={false}
+          vouchedByCount={9}
+          backedCount={1}
+          {...props}
+        />,
+      ),
     );
   const hrefs = () => [...container.querySelectorAll('a')].map((a) => a.getAttribute('href'));
 
@@ -108,7 +122,9 @@ describe('VouchNetwork (#277)', () => {
     expect(m.vouchers).toHaveBeenCalledWith(THEY, 14, net);
     expect(m.backed).toHaveBeenCalledWith(THEY, 14, net);
     expect(m.reverseHandles).toHaveBeenCalledWith(expect.any(Array), net);
-    expect(hrefs()).toEqual(expect.arrayContaining(['/u/alice?network=testnet', `/score/${B}?network=testnet`]));
+    expect(hrefs()).toEqual(
+      expect.arrayContaining(['/u/alice?network=testnet', `/score/${B}?network=testnet`]),
+    );
     expect(m.events).not.toHaveBeenCalled();
     expect(container.querySelector('[data-testid="vouch-network-mutual"]')).toBeNull();
   });

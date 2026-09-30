@@ -10,15 +10,15 @@ updates:
           - minor
           - patch
     ignore:
-      - dependency-name: "next"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "react"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "tailwindcss"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "@stellar/stellar-sdk"
-        update-types: ["version-update:semver-major"]
-  
+      - dependency-name: 'next'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'react'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'tailwindcss'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@stellar/stellar-sdk'
+        update-types: ['version-update:semver-major']
+
   - package-ecosystem: cargo
     directory: /contracts
     schedule:

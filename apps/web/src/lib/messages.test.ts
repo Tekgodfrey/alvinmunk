@@ -12,8 +12,12 @@ describe('messages', () => {
   it('keeps one set of onboarding messages', () => {
     const keys = Object.keys(en);
     expect(keys.filter((k) => k.startsWith('onboard.landing.'))).toEqual([]);
-    const shared = new Set(keys.filter((k) => /^onboard\.[^.]+$/.test(k)).map((k) => k.slice('onboard.'.length)));
-    const redeclared = keys.filter((k) => k.startsWith('onboard.app.') && shared.has(k.slice('onboard.app.'.length)));
+    const shared = new Set(
+      keys.filter((k) => /^onboard\.[^.]+$/.test(k)).map((k) => k.slice('onboard.'.length)),
+    );
+    const redeclared = keys.filter(
+      (k) => k.startsWith('onboard.app.') && shared.has(k.slice('onboard.app.'.length)),
+    );
     expect(redeclared).toEqual([]);
   });
 });

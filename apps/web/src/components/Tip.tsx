@@ -71,7 +71,9 @@ export function Tip({ address }: { address: string }) {
   const [hash, setHash] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   // A mainnet tip waiting on its confirmation (#291), with the amount exactly as typed.
-  const [pending, setPending] = useState<{ request: MoneyConfirmRequest; amount: string } | null>(null);
+  const [pending, setPending] = useState<{ request: MoneyConfirmRequest; amount: string } | null>(
+    null,
+  );
   const [firstMainnetTip, setFirstMainnetTip] = useState(false);
 
   const refresh = useCallback(() => {
@@ -262,7 +264,13 @@ export function Tip({ address }: { address: string }) {
               />
               <Button
                 onClick={onSend}
-                disabled={busy !== null || pending !== null || resolving || !resolved || !isValidAmount(amount)}
+                disabled={
+                  busy !== null ||
+                  pending !== null ||
+                  resolving ||
+                  !resolved ||
+                  !isValidAmount(amount)
+                }
                 className="flex-1"
               >
                 {busy === 'tip' ? t('tip.sending') : t('tip.send')}

@@ -38,9 +38,7 @@ export function AvatarPicker({
             style={{ width: size, height: size }}
             className={cn(
               'relative overflow-hidden rounded-full bg-surface-2 ring-2 transition-all',
-              active
-                ? 'scale-105 ring-lime'
-                : 'ring-border/60 hover:scale-105 hover:ring-lime/50',
+              active ? 'scale-105 ring-lime' : 'ring-border/60 hover:scale-105 hover:ring-lime/50',
             )}
           >
             <img

@@ -17,7 +17,9 @@ function loadWorker() {
     },
     skipWaiting: vi.fn(() => Promise.resolve()),
     clients: { claim: vi.fn(() => Promise.resolve()) },
-    registration: { showNotification: vi.fn((_title: string, _options: unknown) => Promise.resolve()) },
+    registration: {
+      showNotification: vi.fn((_title: string, _options: unknown) => Promise.resolve()),
+    },
   };
   new Function('self', 'clients', 'caches', 'fetch', source)(self, self.clients, {}, vi.fn());
   return { self, listeners };
@@ -56,7 +58,10 @@ describe('service worker', () => {
     const { self, listeners } = loadWorker();
     listeners.push({ data: { json: () => ({ vouchId: 7 }) }, waitUntil: vi.fn() });
     expect(self.registration.showNotification).toHaveBeenCalledTimes(1);
-    const options = self.registration.showNotification.mock.calls[0][1] as { icon: string; badge: string };
+    const options = self.registration.showNotification.mock.calls[0][1] as {
+      icon: string;
+      badge: string;
+    };
 
     for (const [path, size] of [
       [options.icon, '192x192'],

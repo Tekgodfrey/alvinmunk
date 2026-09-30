@@ -45,7 +45,8 @@ async function claimedEdges(
     const from = String(data[1]);
     const claimer = String(data[2]);
     if (from === claimer) continue; // rejected on-chain; never a person to show
-    const other = direction === 'in' ? (claimer === address ? from : null) : from === address ? claimer : null;
+    const other =
+      direction === 'in' ? (claimer === address ? from : null) : from === address ? claimer : null;
     if (!other || seen.has(other)) continue;
     seen.add(other);
     edges.push({ other, vouchId });
@@ -61,7 +62,11 @@ async function claimedEdges(
 }
 
 /** People who vouched `address` — newest first, de-duplicated per voucher, capped at `max`. */
-export function fetchVouchersOf(address: string, max = 14, net?: ReadNetwork | null): Promise<VoucherStar[]> {
+export function fetchVouchersOf(
+  address: string,
+  max = 14,
+  net?: ReadNetwork | null,
+): Promise<VoucherStar[]> {
   return claimedEdges(address, 'in', max, net);
 }
 
@@ -69,7 +74,11 @@ export function fetchVouchersOf(address: string, max = 14, net?: ReadNetwork | n
  * People `address` BACKED — its claimed half-cards, newest first, one per recipient, capped
  * at `max`. `from` on each star is the person backed (the other side of the edge).
  */
-export function fetchBackedBy(address: string, max = 14, net?: ReadNetwork | null): Promise<VoucherStar[]> {
+export function fetchBackedBy(
+  address: string,
+  max = 14,
+  net?: ReadNetwork | null,
+): Promise<VoucherStar[]> {
   return claimedEdges(address, 'out', max, net);
 }
 
@@ -96,8 +105,14 @@ export function mutualNeighbours(viewer: string, address: string, events: ChainE
  * number, so each side takes the larger — a counter still at 0 (or a deployed contract
  * that predates the view) falls back to the events. Never derived from Social XP.
  */
-export async function getPeopleCounts(address: string, net?: ReadNetwork | null): Promise<PeopleCounts> {
-  const [onchain, events] = await Promise.all([getCounts(address, net), fetchReputationEvents({ net })]);
+export async function getPeopleCounts(
+  address: string,
+  net?: ReadNetwork | null,
+): Promise<PeopleCounts> {
+  const [onchain, events] = await Promise.all([
+    getCounts(address, net),
+    fetchReputationEvents({ net }),
+  ]);
   const recent = foldVouchEdges(events, address);
   return {
     vouchedBy: Math.max(onchain?.vouchedBy ?? 0, recent.vouchedBy.length),

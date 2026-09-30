@@ -61,7 +61,10 @@ export function AvatarRemix({
 
       <div className="grid w-full max-w-xs grid-cols-1 gap-1.5">
         {CATS.map(({ field, label }) => (
-          <div key={field} className="flex items-center justify-between gap-2 rounded-lg bg-surface/40 px-2 py-1">
+          <div
+            key={field}
+            className="flex items-center justify-between gap-2 rounded-lg bg-surface/40 px-2 py-1"
+          >
             <span className="w-16 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
               {label}
             </span>

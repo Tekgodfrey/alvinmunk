@@ -60,7 +60,8 @@ describe('Tip', () => {
 
   const recipient = () => screen('Tip recipient: handle or address');
   const amountField = () => screen('Tip amount in USDC');
-  const sendButton = () => [...container.querySelectorAll('button')].find((b) => /Send tip/.test(b.textContent ?? ''))!;
+  const sendButton = () =>
+    [...container.querySelectorAll('button')].find((b) => /Send tip/.test(b.textContent ?? ''))!;
 
   function screen(label: string) {
     return container.querySelector<HTMLInputElement>(`input[aria-label="${label}"]`)!;
@@ -90,7 +91,11 @@ describe('Tip', () => {
     await act(async () => {
       sendButton().click();
     });
-    expect(tipMock).toHaveBeenCalledWith(expect.objectContaining({ address: ME }), OTHER, 25_000_000n);
+    expect(tipMock).toHaveBeenCalledWith(
+      expect.objectContaining({ address: ME }),
+      OTHER,
+      25_000_000n,
+    );
   });
 
   it('refuses a zero amount before signing — the chain would reject it (#144)', async () => {
@@ -134,8 +139,13 @@ describe('TIP_ERRORS', () => {
   function errorEnum(crate: string): Record<number, string> {
     const file = path.resolve(__dirname, `../../../../contracts/${crate}/src/lib.rs`);
     const src = readFileSync(file, 'utf8');
-    const body = src.slice(src.indexOf('pub enum Error'), src.indexOf('}', src.indexOf('pub enum Error')));
-    return Object.fromEntries([...body.matchAll(/(\w+)\s*=\s*(\d+)/g)].map((m) => [Number(m[2]), m[1]]));
+    const body = src.slice(
+      src.indexOf('pub enum Error'),
+      src.indexOf('}', src.indexOf('pub enum Error')),
+    );
+    return Object.fromEntries(
+      [...body.matchAll(/(\w+)\s*=\s*(\d+)/g)].map((m) => [Number(m[2]), m[1]]),
+    );
   }
 
   it('maps exactly the rewards codes a tip can revert with, at the on-chain numbers', () => {
@@ -146,7 +156,9 @@ describe('TIP_ERRORS', () => {
       10: 'Frozen',
       20: 'SelfTip',
     } as const;
-    expect(Object.keys(TIP_ERRORS).map(Number).sort()).toEqual(Object.keys(names).map(Number).sort());
+    expect(Object.keys(TIP_ERRORS).map(Number).sort()).toEqual(
+      Object.keys(names).map(Number).sort(),
+    );
     for (const [code, name] of Object.entries(names)) {
       expect(onChain[Number(code)], `code ${code}`).toBe(name);
       expect(TIP_ERRORS[Number(code)]).toBeTruthy();
@@ -158,6 +170,10 @@ describe('TIP_ERRORS', () => {
     // coin flip between two contracts, which is how "insufficient balance" gets mistaken
     // for a rewards error.
     expect(TIP_ERRORS[20]).toBeDefined();
-    expect(Object.keys(TIP_ERRORS).map(Number).filter((c) => c >= 14)).toContain(20);
+    expect(
+      Object.keys(TIP_ERRORS)
+        .map(Number)
+        .filter((c) => c >= 14),
+    ).toContain(20);
   });
 });

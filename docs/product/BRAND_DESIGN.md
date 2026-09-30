@@ -9,7 +9,7 @@ live in [DESIGN_SYSTEM_TOKENS.md](./DESIGN_SYSTEM_TOKENS.md)._
 
 **Collect people, not points.**
 
-alvinmunk is where a community recognizes its own. Someone you trust *vouches*
+alvinmunk is where a community recognizes its own. Someone you trust _vouches_
 for you — they put their reputation behind yours — and that moment becomes a small piece
 of on-chain art. The more people vouch for you, the brighter your **constellation**.
 
@@ -34,17 +34,17 @@ Why it works: it unifies the product soul ("collect people") with the visual lan
 Black-heavy cosmic base · **soft orange** primary (warmth) · **soft white** foreground ·
 violet reserved for on-chain moments. Stars are warm-white dust over deep space.
 
-| Role | Feel | Approx |
-|------|------|--------|
-| **Deep space** (bg) | near-black, faint blue-violet undertone | `#07080D` |
-| **Soft white** (text) | warm off-white, never pure `#FFF` | `#F4F1EA` |
-| **Soft orange / amber** (primary) | warmth, "a medal", "someone vouched" | `#FF9E5E` |
-| **Stellar violet** (secondary) | cold, used ONLY for on-chain / verified moments | `#A78BFA` |
-| **Starlight** (accents) | warm-white + faint amber/violet star dust | `#FFF6E9` |
+| Role                              | Feel                                            | Approx    |
+| --------------------------------- | ----------------------------------------------- | --------- |
+| **Deep space** (bg)               | near-black, faint blue-violet undertone         | `#07080D` |
+| **Soft white** (text)             | warm off-white, never pure `#FFF`               | `#F4F1EA` |
+| **Soft orange / amber** (primary) | warmth, "a medal", "someone vouched"            | `#FF9E5E` |
+| **Stellar violet** (secondary)    | cold, used ONLY for on-chain / verified moments | `#A78BFA` |
+| **Starlight** (accents)           | warm-white + faint amber/violet star dust       | `#FFF6E9` |
 
 Rule: **orange = human warmth; violet = the chain.** A page is mostly black + soft-white
-with orange as the single warm CTA color; violet appears only when something is *verified
-on-chain* (a claim confirms, an attestation lands). Don't let violet compete with orange.
+with orange as the single warm CTA color; violet appears only when something is _verified
+on-chain_ (a claim confirms, an attestation lands). Don't let violet compete with orange.
 
 ## 4. Logo & marks
 
@@ -83,6 +83,7 @@ no layout shift). Type scale lives in the tokens doc.
 5. **One voice, two audiences.** Consumer copy and dev copy share the same calm, human tone.
 
 Signature lines:
+
 - Tagline: **"Collect people, not points."**
 - Hero: **"Someone vouched for you. Claim your half of the sky."**
 - Manifesto (footer): **"Reputation should name humans, not hoard points. Lit on Stellar."**
@@ -90,14 +91,14 @@ Signature lines:
 
 ## 8. Feelings & anti-patterns
 
-| We feel like… | We are NOT… |
-|---------------|-------------|
+| We feel like…                                     | We are NOT…                                      |
+| ------------------------------------------------- | ------------------------------------------------ |
 | being recognized, warmth, a night sky, a keepsake | a quest grind, an airdrop farm, a cold dashboard |
-| a face/constellation first | a number/rank first |
-| honest and calm | hype, urgency-bait, FOMO |
+| a face/constellation first                        | a number/rank first                              |
+| honest and calm                                   | hype, urgency-bait, FOMO                         |
 
-**Brand promise:** *Here, your reputation has a face — and the people who believe in you
-become the stars you carry.*
+**Brand promise:** _Here, your reputation has a face — and the people who believe in you
+become the stars you carry._
 
 ## 9. Accessibility as brand (non-negotiable)
 
@@ -130,6 +131,7 @@ glassy translucent `--surface` panels with hairline borders + inner highlight, a
 motif), masked to fade.
 
 **Interactive primitives (`components/fx`, Magic-UI language, zero heavy deps):**
+
 - **MagicCard** — glass surface with a cursor-tracked spotlight glow; replaces every
   flat `bg-card` box.
 - **BorderBeam** — a light particle traveling a rounded border (`offset-path`); marks

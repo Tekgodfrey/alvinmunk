@@ -96,7 +96,12 @@ export function Starfield() {
     };
 
     const drawShoot = (sh: Shoot) => {
-      const grad = ctx.createLinearGradient(sh.x, sh.y, sh.x - sh.vx * sh.len, sh.y - sh.vy * sh.len);
+      const grad = ctx.createLinearGradient(
+        sh.x,
+        sh.y,
+        sh.x - sh.vx * sh.len,
+        sh.y - sh.vy * sh.len,
+      );
       grad.addColorStop(0, `hsla(40 100% 95% / ${sh.life})`);
       grad.addColorStop(1, 'hsla(40 100% 95% / 0)');
       ctx.strokeStyle = grad;

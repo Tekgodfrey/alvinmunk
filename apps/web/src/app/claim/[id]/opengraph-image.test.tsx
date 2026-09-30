@@ -92,12 +92,24 @@ describe('/claim/[id]/opengraph-image', () => {
 
     const [, options] = imageResponseMock.mock.calls[0] as [
       unknown,
-      { width: number; height: number; fonts: Array<{ name: string; weight: number; data: string }> },
+      {
+        width: number;
+        height: number;
+        fonts: Array<{ name: string; weight: number; data: string }>;
+      },
     ];
     expect(options).toMatchObject({ width: 1200, height: 630 });
     expect(options.fonts).toEqual([
-      expect.objectContaining({ name: 'Noto Sans', weight: 400, data: 'font-bytes:fonts/NotoSans-Regular.ttf' }),
-      expect.objectContaining({ name: 'Noto Sans', weight: 700, data: 'font-bytes:fonts/NotoSans-Bold.ttf' }),
+      expect.objectContaining({
+        name: 'Noto Sans',
+        weight: 400,
+        data: 'font-bytes:fonts/NotoSans-Regular.ttf',
+      }),
+      expect.objectContaining({
+        name: 'Noto Sans',
+        weight: 700,
+        data: 'font-bytes:fonts/NotoSans-Bold.ttf',
+      }),
     ]);
   });
 
@@ -118,7 +130,12 @@ describe('/claim/[id]/opengraph-image', () => {
     getVouchMock.mockResolvedValue(vouch());
     reverseHandleMock.mockRejectedValue(new Error('rpc down'));
     getMetaMock.mockRejectedValue(new Error('rpc down'));
-    expect(await render({ id: '7' })).toMatchObject({ status: 'open', from: G, handle: null, avatar: undefined });
+    expect(await render({ id: '7' })).toMatchObject({
+      status: 'open',
+      from: G,
+      handle: null,
+      avatar: undefined,
+    });
   });
 
   it('renders the unknown card when no half-card has the id', async () => {
@@ -143,9 +160,21 @@ describe('/claim/[id]/opengraph-image', () => {
 
   describe('the claim code', () => {
     it('is never read: the route has no query, fragment or header access at all', () => {
-      const src = readFileSync(join(process.cwd(), 'src/app/claim/[id]/opengraph-image.tsx'), 'utf8');
+      const src = readFileSync(
+        join(process.cwd(), 'src/app/claim/[id]/opengraph-image.tsx'),
+        'utf8',
+      );
       const code = src.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
-      for (const access of [/searchParams/, /URLSearchParams/, /\blocation\b/, /\bhash\b/, /\bheaders\b/, /\bcookies\b/, /parseClaimCode/, /console\./]) {
+      for (const access of [
+        /searchParams/,
+        /URLSearchParams/,
+        /\blocation\b/,
+        /\bhash\b/,
+        /\bheaders\b/,
+        /\bcookies\b/,
+        /parseClaimCode/,
+        /console\./,
+      ]) {
         expect(code).not.toMatch(access);
       }
     });

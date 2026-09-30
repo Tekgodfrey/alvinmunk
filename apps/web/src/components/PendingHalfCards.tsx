@@ -55,10 +55,10 @@ export function PendingHalfCards() {
         <div className="flex flex-col items-center gap-3 px-6 py-8 text-center">
           <StateArt kind="vouch-sent" size={140} />
           <div>
-            <p className="font-display text-lg text-foreground">{t('pendingHalfCards.empty.title')}</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {t('pendingHalfCards.empty.body')}
+            <p className="font-display text-lg text-foreground">
+              {t('pendingHalfCards.empty.title')}
             </p>
+            <p className="mt-1 text-sm text-muted-foreground">{t('pendingHalfCards.empty.body')}</p>
           </div>
         </div>
       </Frame>
@@ -66,8 +66,18 @@ export function PendingHalfCards() {
   }
 
   return (
-    <Frame label={t('pendingHalfCards.frame')} index={String(items.length).padStart(2, '0')} accent="tertiary" tape="tr">
-      <Sticker name="stamp-ticket" size={60} rotate={-6} className="absolute -bottom-2 right-3 z-10 opacity-90" />
+    <Frame
+      label={t('pendingHalfCards.frame')}
+      index={String(items.length).padStart(2, '0')}
+      accent="tertiary"
+      tape="tr"
+    >
+      <Sticker
+        name="stamp-ticket"
+        size={60}
+        rotate={-6}
+        className="absolute -bottom-2 right-3 z-10 opacity-90"
+      />
       <ul className="divide-y divide-border/50">
         {items.map((v) => (
           <li key={v.id} className="flex items-center gap-3 p-4">
@@ -81,7 +91,9 @@ export function PendingHalfCards() {
               )}
             >
               <span className="font-mono text-[10px]">
-                {v.daysLeft <= 0 ? t('pendingHalfCards.now') : t('pendingHalfCards.days', { count: numberFormat.format(v.daysLeft) })}
+                {v.daysLeft <= 0
+                  ? t('pendingHalfCards.now')
+                  : t('pendingHalfCards.days', { count: numberFormat.format(v.daysLeft) })}
               </span>
             </div>
             <div className="min-w-0 flex-1">
@@ -97,7 +109,10 @@ export function PendingHalfCards() {
             </div>
             <button
               onClick={() => copy(v)}
-              className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'glass shrink-0 font-mono')}
+              className={cn(
+                buttonVariants({ variant: 'outline', size: 'sm' }),
+                'glass shrink-0 font-mono',
+              )}
             >
               {copied === v.id ? <Check className="size-4" /> : <Copy className="size-4" />}
               {copied === v.id ? t('pendingHalfCards.copied') : t('pendingHalfCards.copyLink')}

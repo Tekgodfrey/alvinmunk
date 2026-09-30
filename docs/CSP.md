@@ -5,12 +5,12 @@ from the URL fragment. A CSP is the browser-side second line of defence: an inje
 that loads from, or talks to, an origin the policy doesn't list is reported (and, once
 enforced, blocked). Issue #179.
 
-| Piece | Where |
-| --- | --- |
-| Policy builder (plain ESM, built from env) | `apps/web/src/config/csp.mjs` |
-| Header | `headers()` in `apps/web/next.config.mjs`, on every route |
-| Violation endpoint | `POST /api/csp-report` (`app/api/csp-report/route.ts`, parsing in `lib/csp-report.ts`) |
-| Tests | `src/config/csp.test.ts`, `src/config/security-headers.test.ts`, `app/api/csp-report/route.test.ts` |
+| Piece                                      | Where                                                                                               |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| Policy builder (plain ESM, built from env) | `apps/web/src/config/csp.mjs`                                                                       |
+| Header                                     | `headers()` in `apps/web/next.config.mjs`, on every route                                           |
+| Violation endpoint                         | `POST /api/csp-report` (`app/api/csp-report/route.ts`, parsing in `lib/csp-report.ts`)              |
+| Tests                                      | `src/config/csp.test.ts`, `src/config/security-headers.test.ts`, `app/api/csp-report/route.test.ts` |
 
 The builder is `.mjs` on purpose: Next loads `next.config.mjs` with plain Node, which cannot
 import TypeScript. `security-headers.test.ts` loads the config in a real Node process to keep
@@ -23,19 +23,19 @@ violation is POSTed to `/api/csp-report` (`report-uri`).
 
 ### What the policy allows, and why
 
-| Directive | Sources | Needed by |
-| --- | --- | --- |
-| `default-src` | `'self'` | everything not listed below (manifest, media) |
-| `script-src` | `'self' 'unsafe-inline'` | Next's inline bootstrap scripts and the pre-paint theme script in `app/layout.tsx`. No hash or nonce may be added while `'unsafe-inline'` is relied on: browsers then ignore `'unsafe-inline'` and block every inline script. Dev adds `'unsafe-eval'` (React Refresh) and `https://va.vercel-scripts.com` (Vercel's debug analytics scripts). |
-| `style-src` | `'self' 'unsafe-inline'` | inline style attributes (React, Radix, motion) and the Stellar Wallets Kit's runtime styles |
-| `img-src` | `'self' data: blob: https://stellar.creit.tech` | local art and the wallet icons in the Stellar Wallets Kit picker |
-| `font-src` | `'self'` | `next/font` self-hosts the Google fonts |
-| `connect-src` | `'self'`, the RPC and Horizon origins, Friendbot (not on mainnet), the anchor, and on a non-testnet deployment the testnet RPC | `/api/*` and the `/_vercel/*` analytics and Speed Insights beacons (same origin), Soroban RPC + Horizon (also used by passkey-kit), the testnet dev wallet's funding, the SEP-1/10/24 anchor flow, the read-only `?network=testnet` views (`lib/read-network.ts`) |
-| `worker-src` | `'self'` | `public/sw.js` (push notifications) |
-| `frame-src` | `'none'` | nothing embeds a frame: Albedo, xBull's web wallet and the SEP-24 flow open popups, which CSP does not govern; Freighter, Rabet, LOBSTR, Hana and xBull's extension talk over `postMessage`; WebAuthn (passkeys) is not a CSP fetch |
-| `frame-ancestors` | `'none'` | matches `X-Frame-Options: DENY` |
-| `object-src` / `base-uri` / `form-action` | `'none'` / `'self'` / `'self'` | standard lockdown |
-| `report-uri` | `/api/csp-report` | the violation endpoint |
+| Directive                                 | Sources                                                                                                                        | Needed by                                                                                                                                                                                                                                                                                                                                      |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `default-src`                             | `'self'`                                                                                                                       | everything not listed below (manifest, media)                                                                                                                                                                                                                                                                                                  |
+| `script-src`                              | `'self' 'unsafe-inline'`                                                                                                       | Next's inline bootstrap scripts and the pre-paint theme script in `app/layout.tsx`. No hash or nonce may be added while `'unsafe-inline'` is relied on: browsers then ignore `'unsafe-inline'` and block every inline script. Dev adds `'unsafe-eval'` (React Refresh) and `https://va.vercel-scripts.com` (Vercel's debug analytics scripts). |
+| `style-src`                               | `'self' 'unsafe-inline'`                                                                                                       | inline style attributes (React, Radix, motion) and the Stellar Wallets Kit's runtime styles                                                                                                                                                                                                                                                    |
+| `img-src`                                 | `'self' data: blob: https://stellar.creit.tech`                                                                                | local art and the wallet icons in the Stellar Wallets Kit picker                                                                                                                                                                                                                                                                               |
+| `font-src`                                | `'self'`                                                                                                                       | `next/font` self-hosts the Google fonts                                                                                                                                                                                                                                                                                                        |
+| `connect-src`                             | `'self'`, the RPC and Horizon origins, Friendbot (not on mainnet), the anchor, and on a non-testnet deployment the testnet RPC | `/api/*` and the `/_vercel/*` analytics and Speed Insights beacons (same origin), Soroban RPC + Horizon (also used by passkey-kit), the testnet dev wallet's funding, the SEP-1/10/24 anchor flow, the read-only `?network=testnet` views (`lib/read-network.ts`)                                                                              |
+| `worker-src`                              | `'self'`                                                                                                                       | `public/sw.js` (push notifications)                                                                                                                                                                                                                                                                                                            |
+| `frame-src`                               | `'none'`                                                                                                                       | nothing embeds a frame: Albedo, xBull's web wallet and the SEP-24 flow open popups, which CSP does not govern; Freighter, Rabet, LOBSTR, Hana and xBull's extension talk over `postMessage`; WebAuthn (passkeys) is not a CSP fetch                                                                                                            |
+| `frame-ancestors`                         | `'none'`                                                                                                                       | matches `X-Frame-Options: DENY`                                                                                                                                                                                                                                                                                                                |
+| `object-src` / `base-uri` / `form-action` | `'none'` / `'self'` / `'self'`                                                                                                 | standard lockdown                                                                                                                                                                                                                                                                                                                              |
+| `report-uri`                              | `/api/csp-report`                                                                                                              | the violation endpoint                                                                                                                                                                                                                                                                                                                         |
 
 On preview deployments (`VERCEL_ENV=preview`) the policy also allows the Vercel toolbar
 (`https://vercel.live` and its assets), so previews can run clean too.
@@ -67,7 +67,14 @@ violations: add that origin in `csp.mjs` before enforcing.
 Each violation is one log line:
 
 ```json
-{"csp":"violation","directive":"img-src","blocked":"https://cdn.example.com","document":"https://alvinmunk.vercel.app/claim/7","line":12,"disposition":"report"}
+{
+  "csp": "violation",
+  "directive": "img-src",
+  "blocked": "https://cdn.example.com",
+  "document": "https://alvinmunk.vercel.app/claim/7",
+  "line": 12,
+  "disposition": "report"
+}
 ```
 
 The endpoint logs the directive, the blocked origin (or keyword: `inline`, `eval`, `data`…)

@@ -6,7 +6,13 @@ import { shortAddr } from '@alvinmunk/shared';
 import { Avatar } from '@/components/Avatar';
 import { Frame } from '@/components/fx/frame';
 import { Skeleton } from '@/components/ui/skeleton';
-import { fetchBackedBy, fetchVouchersOf, mutualNeighbours, timeAgo, type VoucherStar } from '@/lib/constellation';
+import {
+  fetchBackedBy,
+  fetchVouchersOf,
+  mutualNeighbours,
+  timeAgo,
+  type VoucherStar,
+} from '@/lib/constellation';
 import { fetchReputationEvents } from '@/lib/events';
 import { useLocale, useTranslations } from '@/lib/i18n';
 import { withReadNetwork, type ReadNetwork } from '@/lib/read-network';
@@ -82,8 +88,15 @@ export function VouchNetwork({
   }, [address, viewer, net]);
 
   // One batched reverse_many for every face on the section, never re-asking an address.
-  const people = [...(vouchers ?? []).map((p) => p.from), ...(backed ?? []).map((p) => p.from), ...mutual];
-  const missing = [...new Set(people)].filter((a) => !(a in handles)).sort().join(',');
+  const people = [
+    ...(vouchers ?? []).map((p) => p.from),
+    ...(backed ?? []).map((p) => p.from),
+    ...mutual,
+  ];
+  const missing = [...new Set(people)]
+    .filter((a) => !(a in handles))
+    .sort()
+    .join(',');
   useEffect(() => {
     if (!missing) return;
     let alive = true;
@@ -111,7 +124,11 @@ export function VouchNetwork({
           line={(p) => line(p)}
         />
         <Row
-          label={isMe ? t('vouchNetwork.backed.me') : t('vouchNetwork.backed.them', { handle: `@${handle}` })}
+          label={
+            isMe
+              ? t('vouchNetwork.backed.me')
+              : t('vouchNetwork.backed.them', { handle: `@${handle}` })
+          }
           count={backedCount}
           people={backed}
           accent="text-tertiary"
@@ -125,7 +142,9 @@ export function VouchNetwork({
             </p>
             <div className="mt-3 flex flex-wrap items-center gap-1.5">
               {mutual.map((a) => face(a, 26, name(a)))}
-              <span className="ml-1 font-mono text-xs text-secondary">{mutual.map(name).join(' · ')}</span>
+              <span className="ml-1 font-mono text-xs text-secondary">
+                {mutual.map(name).join(' · ')}
+              </span>
             </div>
           </div>
         )}
@@ -176,8 +195,12 @@ function Row({
   return (
     <div className="p-5">
       <div className="flex items-baseline justify-between gap-3">
-        <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{label}</p>
-        {count !== undefined && <p className={cn('font-display text-sm font-semibold', accent)}>{count}</p>}
+        <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+          {label}
+        </p>
+        {count !== undefined && (
+          <p className={cn('font-display text-sm font-semibold', accent)}>{count}</p>
+        )}
       </div>
       {people === null ? (
         <div className="mt-3 flex items-center gap-2">
@@ -192,7 +215,10 @@ function Row({
           <div className="mt-3 flex flex-wrap gap-1.5">{shown.map(render)}</div>
           <ul className="mt-2 space-y-0.5">
             {shown.map((p) => (
-              <li key={`${p.from}-${p.vouchId}`} className="truncate font-mono text-[11px] text-muted-foreground">
+              <li
+                key={`${p.from}-${p.vouchId}`}
+                className="truncate font-mono text-[11px] text-muted-foreground"
+              >
                 {line(p)}
               </li>
             ))}
@@ -225,7 +251,12 @@ function FaceLink({
 }) {
   const href = withReadNetwork(handle ? `/u/${handle}` : `/score/${address}`, net);
   return (
-    <Link href={href} title={title} aria-label={title} className="block rounded-full transition-transform hover:scale-110">
+    <Link
+      href={href}
+      title={title}
+      aria-label={title}
+      className="block rounded-full transition-transform hover:scale-110"
+    >
       <Avatar address={address} handle={handle ?? undefined} size={size} />
     </Link>
   );

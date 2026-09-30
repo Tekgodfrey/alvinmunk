@@ -17,7 +17,12 @@ describe('getRewardStats', () => {
   it('reads get_reward_stats for the reward id', async () => {
     readContractMock.mockResolvedValueOnce({ claims: 3, max_claims: 50 });
     await expect(getRewardStats(7, 'GSOURCE')).resolves.toEqual({ claims: 3, max_claims: 50 });
-    expect(readContractMock).toHaveBeenCalledWith('CREWARDS', 'get_reward_stats', [{ __u32: 7 }], 'GSOURCE');
+    expect(readContractMock).toHaveBeenCalledWith(
+      'CREWARDS',
+      'get_reward_stats',
+      [{ __u32: 7 }],
+      'GSOURCE',
+    );
   });
 
   it('treats a missing result as an uncapped reward with no claims', async () => {

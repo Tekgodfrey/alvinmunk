@@ -27,7 +27,12 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { removeSubscription, saveSubscription, saveSubscriptionWithVouchIds, moveSubscription } from '@/lib/push-store';
+import {
+  removeSubscription,
+  saveSubscription,
+  saveSubscriptionWithVouchIds,
+  moveSubscription,
+} from '@/lib/push-store';
 import { withRoute } from '@/lib/api-route';
 
 const MAX_BODY = 4096;
@@ -39,7 +44,12 @@ export const POST = withRoute('POST /api/push/subscribe', async (req: NextReques
     return NextResponse.json({ error: 'body too large' }, { status: 413 });
   }
 
-  let body: { subscription?: PushSubscriptionJSON; walletAddress?: string; vouchId?: number; vouchIds?: number[] };
+  let body: {
+    subscription?: PushSubscriptionJSON;
+    walletAddress?: string;
+    vouchId?: number;
+    vouchIds?: number[];
+  };
   try {
     body = (await req.json()) as typeof body;
   } catch {

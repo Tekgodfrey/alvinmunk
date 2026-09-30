@@ -30,7 +30,10 @@ export function BadgeGallery({ address, className }: { address: string; classNam
     let alive = true;
     setState({ status: 'loading' });
     getBadges(address)
-      .then((badges) => alive && setState({ status: 'ready', badges: visibleBadges(badges, FOCUS_MODE) }))
+      .then(
+        (badges) =>
+          alive && setState({ status: 'ready', badges: visibleBadges(badges, FOCUS_MODE) }),
+      )
       .catch(() => alive && setState({ status: 'error' }));
     return () => {
       alive = false;
@@ -46,7 +49,13 @@ export function BadgeGallery({ address, className }: { address: string; classNam
 
   return (
     <section aria-labelledby={headingId}>
-      <Frame label={t('badges.frame')} index={index} accent="tertiary" tape="br" className={className}>
+      <Frame
+        label={t('badges.frame')}
+        index={index}
+        accent="tertiary"
+        tape="br"
+        className={className}
+      >
         <h2 id={headingId} className="sr-only">
           {t('badges.heading')}
         </h2>
@@ -91,12 +100,25 @@ function BadgeTile({ badge }: { badge: Badge }) {
   const t = useTranslations();
   const key = `badges.${badge.id}`;
   return (
-    <li className="flex flex-col items-center gap-1.5 p-2 text-center" data-badge={badge.id} data-earned={badge.earned}>
+    <li
+      className="flex flex-col items-center gap-1.5 p-2 text-center"
+      data-badge={badge.id}
+      data-earned={badge.earned}
+    >
       <div className="flex h-12 items-center justify-center">
         {/* Decorative: the badge name below is the accessible label. */}
-        <Sticker name={badge.sticker} size={48} className={cn(!badge.earned && 'opacity-40 grayscale')} />
+        <Sticker
+          name={badge.sticker}
+          size={48}
+          className={cn(!badge.earned && 'opacity-40 grayscale')}
+        />
       </div>
-      <p className={cn('text-[11px] font-semibold leading-tight', !badge.earned && 'text-muted-foreground')}>
+      <p
+        className={cn(
+          'text-[11px] font-semibold leading-tight',
+          !badge.earned && 'text-muted-foreground',
+        )}
+      >
         {t(`${key}.name`)}
         <span className="sr-only"> — {t(badge.earned ? 'badges.earned' : 'badges.locked')}</span>
       </p>
@@ -113,7 +135,9 @@ function BadgeDetail({ badge, t }: { badge: Badge; t: TFn }) {
   if (!badge.earned) {
     return badge.remaining === undefined
       ? t(`${key}.next`)
-      : t(`${key}.next.${badge.remaining === 1 ? 'one' : 'other'}`, { count: String(badge.remaining) });
+      : t(`${key}.next.${badge.remaining === 1 ? 'one' : 'other'}`, {
+          count: String(badge.remaining),
+        });
   }
   if (badge.person) {
     // The template places {name} (word order differs per locale); the name is a live link.

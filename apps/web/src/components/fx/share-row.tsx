@@ -14,7 +14,15 @@ import { useTranslations } from '@/lib/i18n';
  * render-time read made the server HTML and the hydrated client disagree, and React kept
  * the server's relative `url=` in the tweet link (#222).
  */
-export function ShareRow({ path, text, className }: { path: string; text: string; className?: string }) {
+export function ShareRow({
+  path,
+  text,
+  className,
+}: {
+  path: string;
+  text: string;
+  className?: string;
+}) {
   const t = useTranslations();
   const [copied, setCopied] = useState(false);
   const [origin, setOrigin] = useState('');

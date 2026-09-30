@@ -16,8 +16,16 @@ import crypto from 'node:crypto';
 const here = dirname(fileURLToPath(import.meta.url));
 const webDir = join(here, '..', 'apps', 'web');
 const require = createRequire(join(webDir, 'package.json'));
-const { Address, Contract, Keypair, Networks, TransactionBuilder, nativeToScVal, scValToNative, rpc } =
-  require('@stellar/stellar-sdk');
+const {
+  Address,
+  Contract,
+  Keypair,
+  Networks,
+  TransactionBuilder,
+  nativeToScVal,
+  scValToNative,
+  rpc,
+} = require('@stellar/stellar-sdk');
 
 // Read the deployed contract id + RPC straight from the app's env.local.
 const env = Object.fromEntries(

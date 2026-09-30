@@ -2,7 +2,13 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { Metadata } from 'next';
 import { accumulateMetadata, type MetadataItems } from 'next/dist/lib/metadata/resolve-metadata';
 import type { ResolvedMetadata } from 'next/dist/lib/metadata/types/metadata-interface';
-import { CLAIM_DESCRIPTION, SITE_DESCRIPTION, SITE_TITLE, rootMetadata, routeHandle } from '@/lib/metadata';
+import {
+  CLAIM_DESCRIPTION,
+  SITE_DESCRIPTION,
+  SITE_TITLE,
+  rootMetadata,
+  routeHandle,
+} from '@/lib/metadata';
 import * as appLayout from './app/layout';
 import * as vouchLayout from './app/vouch/layout';
 import * as questsLayout from './app/quests/layout';
@@ -61,7 +67,9 @@ const SCORE_ADDRESS = 'GDIS5BDXSI2DDJNTKRZPI6MNB5XCLMN4Z6PPRPM4RQLZ3PSQ2YTERLFA'
 // Next's OGImage union also allows a bare string/URL, not just a descriptor object;
 // mirror that here since the resolved metadata type keeps the full union.
 const imageUrls = (images: Array<string | URL | { url: string | URL }> | undefined) =>
-  (images ?? []).map((i) => (typeof i === 'string' || i instanceof URL ? i.toString() : i.url.toString()));
+  (images ?? []).map((i) =>
+    typeof i === 'string' || i instanceof URL ? i.toString() : i.url.toString(),
+  );
 
 /** Every piece of text a page or its unfurl shows. */
 function texts(m: ResolvedMetadata) {
@@ -95,20 +103,23 @@ describe('route metadata', () => {
     ['/stats', statsLayout.metadata, 'Stats'],
     ['/wallet', walletLayout.metadata, 'Wallet'],
     ['/how-it-works', howItWorksLayout.metadata, 'How it works'],
-  ])('%s has its own title and unfurl text, and keeps the default card', async (path, metadata, title) => {
-    const m = await resolve(path, metadata);
-    const t = texts(m);
-    expect(t.title).toBe(`${title} · alvinmunk`);
-    expect(t.ogTitle).toBe(t.title);
-    expect(t.twitterTitle).toBe(t.title);
-    expect(t.description).toBe(metadata.description);
-    expect(t.ogDescription).toBe(metadata.description);
-    expect(t.twitterDescription).toBe(metadata.description);
-    expect(m.openGraph).toMatchObject({ type: 'website' });
-    expect(imageUrls(m.openGraph?.images)).toEqual([DEFAULT_OG]);
-    expect(imageUrls(m.twitter?.images)).toEqual([DEFAULT_OG]);
-    expect(m.twitter?.card).toBe('summary_large_image');
-  });
+  ])(
+    '%s has its own title and unfurl text, and keeps the default card',
+    async (path, metadata, title) => {
+      const m = await resolve(path, metadata);
+      const t = texts(m);
+      expect(t.title).toBe(`${title} · alvinmunk`);
+      expect(t.ogTitle).toBe(t.title);
+      expect(t.twitterTitle).toBe(t.title);
+      expect(t.description).toBe(metadata.description);
+      expect(t.ogDescription).toBe(metadata.description);
+      expect(t.twitterDescription).toBe(metadata.description);
+      expect(m.openGraph).toMatchObject({ type: 'website' });
+      expect(imageUrls(m.openGraph?.images)).toEqual([DEFAULT_OG]);
+      expect(imageUrls(m.twitter?.images)).toEqual([DEFAULT_OG]);
+      expect(m.twitter?.card).toBe('summary_large_image');
+    },
+  );
 
   it('/app is "Home"', async () => {
     const m = await resolve('/app', appLayout.metadata);

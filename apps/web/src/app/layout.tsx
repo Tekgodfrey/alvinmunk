@@ -29,16 +29,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="grain min-h-dvh" suppressHydrationWarning>
         <WalletProvider>
           <I18nProvider>
-          <MotionProvider>
-          <SmoothScroll />
-          <Starfield />
-          <ConfigStatusBanner />
-          <Navbar />
-          <main className="min-h-[calc(100dvh-4rem)]">{children}</main>
-          <SiteFooter />
-          <Toaster />
-          <AnalyticsProvider />
-          </MotionProvider>
+            <MotionProvider>
+              <SmoothScroll />
+              <Starfield />
+              <ConfigStatusBanner />
+              <Navbar />
+              <main className="min-h-[calc(100dvh-4rem)]">{children}</main>
+              <SiteFooter />
+              <Toaster />
+              <AnalyticsProvider />
+            </MotionProvider>
           </I18nProvider>
         </WalletProvider>
       </body>

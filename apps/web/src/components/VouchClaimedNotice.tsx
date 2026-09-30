@@ -58,9 +58,13 @@ export function VouchClaimedNotice() {
         if (claimed.length === 1) {
           toast.success(t('vouchNotice.claimed.one', { note: claimed[0].note }));
         } else {
-          toast.success(t('vouchNotice.claimed.many', {
-            count: new Intl.NumberFormat(locale === 'tr' ? 'tr-TR' : 'en-US').format(claimed.length),
-          }));
+          toast.success(
+            t('vouchNotice.claimed.many', {
+              count: new Intl.NumberFormat(locale === 'tr' ? 'tr-TR' : 'en-US').format(
+                claimed.length,
+              ),
+            }),
+          );
         }
       })
       .catch(() => {});

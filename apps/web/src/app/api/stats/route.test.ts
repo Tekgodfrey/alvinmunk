@@ -54,7 +54,12 @@ beforeEach(() => {
 
   getLatestLedger = vi.fn().mockResolvedValue({ sequence: 50_000 });
   getEvents = vi.fn().mockResolvedValue({
-    events: [{ topic: [xdr.ScVal.scvSymbol('vouch'), new Address(LIVE_USER).toScVal()], value: xdr.ScVal.scvVoid() }],
+    events: [
+      {
+        topic: [xdr.ScVal.scvSymbol('vouch'), new Address(LIVE_USER).toScVal()],
+        value: xdr.ScVal.scvVoid(),
+      },
+    ],
     cursor: undefined,
   });
   vi.mocked(readVouchRecords).mockReset().mockResolvedValue({ total: 0, records: [] });
@@ -107,7 +112,11 @@ describe('GET /api/stats RPC URL', () => {
     const res = await GET(req());
 
     expect(res.status).toBe(200);
-    const body = (await res.json()) as { users: number; latestLedger?: number; funnelError?: string };
+    const body = (await res.json()) as {
+      users: number;
+      latestLedger?: number;
+      funnelError?: string;
+    };
     expect(body.users).toBe(ROSTER.length);
     expect(body.latestLedger).toBeUndefined();
     expect(body.funnelError).toMatch(/could not be read/);
@@ -115,7 +124,10 @@ describe('GET /api/stats RPC URL', () => {
   });
 
   it('allows an http:// mainnet RPC URL too', async () => {
-    const GET = await loadRoute({ MAINNET_RPC_URL: HTTP_RPC, MAINNET_REPUTATION_CONTRACT_ID: 'CMAINREP' });
+    const GET = await loadRoute({
+      MAINNET_RPC_URL: HTTP_RPC,
+      MAINNET_REPUTATION_CONTRACT_ID: 'CMAINREP',
+    });
     const res = await GET(req('mainnet'));
 
     expect(await res.json()).toMatchObject({ users: 1, latestLedger: 50_000 });

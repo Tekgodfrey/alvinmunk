@@ -11,7 +11,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ShareRow } from './share-row';
 
-const tweetUrl = (html: string) => new URL(new DOMParser().parseFromString(html, 'text/html').querySelector('a')!.href);
+const tweetUrl = (html: string) =>
+  new URL(new DOMParser().parseFromString(html, 'text/html').querySelector('a')!.href);
 
 describe('ShareRow', () => {
   let container: HTMLDivElement;

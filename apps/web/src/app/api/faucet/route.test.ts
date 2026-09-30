@@ -37,7 +37,9 @@ const { state, rpcMocks, horizonMocks, NotFoundError } = vi.hoisted(() => {
   /** Fake Horizon NotFoundError — satisfies `instanceof NotFoundError`. */
   class FakeNotFoundError extends Error {
     name = 'NotFoundError';
-    constructor() { super('not found'); }
+    constructor() {
+      super('not found');
+    }
   }
 
   return {
@@ -71,7 +73,9 @@ const { state, rpcMocks, horizonMocks, NotFoundError } = vi.hoisted(() => {
 // ─── mock @stellar/stellar-sdk ────────────────────────────────────────────
 vi.mock('@stellar/stellar-sdk', () => {
   /** Minimal Transaction stub — the route only calls .sign(). */
-  class FakeTx { sign() {} }
+  class FakeTx {
+    sign() {}
+  }
 
   /**
    * Minimal Keypair stub.
@@ -79,24 +83,46 @@ vi.mock('@stellar/stellar-sdk', () => {
    *   - Keypair.fromSecret(secret) → .publicKey() / .sign(tx)
    */
   class FakeKeypair {
-    static fromSecret(_s: string) { return new FakeKeypair(); }
-    static random()               { return new FakeKeypair(); }
-    publicKey() { return ISSUER_PUBLIC; }
+    static fromSecret(_s: string) {
+      return new FakeKeypair();
+    }
+    static random() {
+      return new FakeKeypair();
+    }
+    publicKey() {
+      return ISSUER_PUBLIC;
+    }
     sign(_tx: unknown) {}
   }
 
   return {
-    Keypair:            FakeKeypair,
-    StrKey:             { encodeContract: () => C_ADDR },
-    Address:            class { toScVal() { return {}; } },
-    Asset:              class { constructor(_code: string, _issuer: string) {} },
-    Contract:           class { call() { return {}; } },
-    Operation:          { payment: vi.fn().mockReturnValue({}) },
-    nativeToScVal:      vi.fn().mockReturnValue({}),
+    Keypair: FakeKeypair,
+    StrKey: { encodeContract: () => C_ADDR },
+    Address: class {
+      toScVal() {
+        return {};
+      }
+    },
+    Asset: class {
+      constructor(_code: string, _issuer: string) {}
+    },
+    Contract: class {
+      call() {
+        return {};
+      }
+    },
+    Operation: { payment: vi.fn().mockReturnValue({}) },
+    nativeToScVal: vi.fn().mockReturnValue({}),
     TransactionBuilder: class {
-      addOperation() { return this; }
-      setTimeout()   { return this; }
-      build()        { return new FakeTx(); }
+      addOperation() {
+        return this;
+      }
+      setTimeout() {
+        return this;
+      }
+      build() {
+        return new FakeTx();
+      }
     },
     rpc: {
       // `new rpc.Server(...)`: Vitest 4 constructs the implementation, so it must be a `function`.
@@ -118,16 +144,18 @@ vi.mock('@stellar/stellar-sdk', () => {
 vi.mock('../../../lib/stellar', () => ({
   get config() {
     return {
-      network:           state.network,
-      rpcUrl:            state.rpcUrl,
-      horizonUrl:        state.horizonUrl,
+      network: state.network,
+      rpcUrl: state.rpcUrl,
+      horizonUrl: state.horizonUrl,
       networkPassphrase: state.networkPassphrase,
       contracts: {
         usdcSac: state.contracts.usdcSac,
       },
     };
   },
-  get configErrors() { return state.configErrors; },
+  get configErrors() {
+    return state.configErrors;
+  },
   misconfiguredResponse() {
     if (state.configErrors.length === 0) return null;
     return new Response(JSON.stringify({ error: 'misconfigured' }), { status: 503 });
@@ -167,10 +195,10 @@ beforeEach(async () => {
   horizonMocks.loadAccount.mockResolvedValue({
     balances: [
       {
-        asset_code:   'USDC',
+        asset_code: 'USDC',
         asset_issuer: ISSUER_PUBLIC, // must equal issuer.publicKey()
-        asset_type:   'credit_alphanum4',
-        balance:      '0',
+        asset_type: 'credit_alphanum4',
+        balance: '0',
       },
     ],
   });

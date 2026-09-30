@@ -16,7 +16,14 @@ vi.mock('./registry', () => ({
 vi.mock('./reputation', () => ({ getScores: async () => ({ social: 40, earned: 7 }) }));
 vi.mock('./constellation', () => ({ getPeopleCounts: async () => ({ vouchedBy: 3, backed: 2 }) }));
 
-import { ogResolve, ogCard, claimCard, claimNameSize, handleFontSize, type OgScores } from './og-card';
+import {
+  ogResolve,
+  ogCard,
+  claimCard,
+  claimNameSize,
+  handleFontSize,
+  type OgScores,
+} from './og-card';
 import { shortAddr } from '@alvinmunk/shared';
 import { loadPng } from './og-assets';
 import { FACE_IDS, defaultAvatarId, faceFile, kitFile, type KitAvatar } from './avatar';
@@ -159,9 +166,13 @@ describe('claimCard', () => {
     const kit: KitAvatar = { kind: 'kit', skin: 2, hair: 5, eyes: 3, mouth: 9, acc: null, bg: 4 };
     const doc = render(claimCard({ ...open, avatar: kit }));
     expect(srcs(doc)).toEqual(
-      [kitFile('bg', 4), kitFile('skin', 2), kitFile('hair', 5), kitFile('eyes', 3), kitFile('mouth', 9)].map(
-        (f) => loadPng(f).uri,
-      ),
+      [
+        kitFile('bg', 4),
+        kitFile('skin', 2),
+        kitFile('hair', 5),
+        kitFile('eyes', 3),
+        kitFile('mouth', 9),
+      ].map((f) => loadPng(f).uri),
     );
   });
 

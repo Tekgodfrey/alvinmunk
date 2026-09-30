@@ -92,7 +92,8 @@ export function ConnectButton({ onNavigate }: { onNavigate?: () => void } = {}) 
     if (returnFocus) triggerRef.current?.focus();
   }
 
-  const focusItem = (index: number) => focusItemAt(itemsOf(itemRefs.current), index, setActiveIndex);
+  const focusItem = (index: number) =>
+    focusItemAt(itemsOf(itemRefs.current), index, setActiveIndex);
 
   /** Open the menu and focus item `index`; -1 targets the last item. */
   function openMenu(index: number) {
@@ -222,7 +223,9 @@ export function ConnectButton({ onNavigate }: { onNavigate?: () => void } = {}) 
       >
         <Crest address={profile.address} handle={profile.handle} size={28} points={5} />
         <span className="text-sm font-medium">@{profile.handle}</span>
-        <ChevronDown className={cn('size-4 text-muted-foreground transition-transform', open && 'rotate-180')} />
+        <ChevronDown
+          className={cn('size-4 text-muted-foreground transition-transform', open && 'rotate-180')}
+        />
       </button>
 
       {open && (
@@ -234,7 +237,8 @@ export function ConnectButton({ onNavigate }: { onNavigate?: () => void } = {}) 
                 {new Intl.NumberFormat(locale === 'tr' ? 'tr-TR' : 'en-US', {
                   minimumFractionDigits: 1,
                   maximumFractionDigits: 1,
-                }).format(Number(balance))} XLM
+                }).format(Number(balance))}{' '}
+                XLM
               </p>
             )}
           </div>

@@ -54,7 +54,13 @@ describe('WalletProvider — adopting the handle an address already holds (#278)
   });
 
   async function mount() {
-    await act(async () => root.render(<WalletProvider><Probe /></WalletProvider>));
+    await act(async () =>
+      root.render(
+        <WalletProvider>
+          <Probe />
+        </WalletProvider>,
+      ),
+    );
   }
 
   /** Run `fn` against the live context and let React commit what it set. */
@@ -84,7 +90,11 @@ describe('WalletProvider — adopting the handle an address already holds (#278)
     // A strict read: a failure must not pass for "no handle".
     expect(reverseHandleMock).toHaveBeenCalledWith('CACCOUNT', { strict: true });
     expect(shown()).toBe('alvin');
-    expect(loadProfile()).toEqual({ handle: 'alvin', address: 'CACCOUNT', createdAt: expect.any(Number) });
+    expect(loadProfile()).toEqual({
+      handle: 'alvin',
+      address: 'CACCOUNT',
+      createdAt: expect.any(Number),
+    });
   });
 
   it("replaces another address's profile with the connected address's handle", async () => {
@@ -94,7 +104,11 @@ describe('WalletProvider — adopting the handle an address already holds (#278)
 
     await run(() => ctx.connect());
 
-    expect(loadProfile()).toEqual({ handle: 'alvin', address: 'CACCOUNT', createdAt: expect.any(Number) });
+    expect(loadProfile()).toEqual({
+      handle: 'alvin',
+      address: 'CACCOUNT',
+      createdAt: expect.any(Number),
+    });
   });
 
   it('keeps a profile that already belongs to the address, without a registry read', async () => {
@@ -133,7 +147,9 @@ describe('WalletProvider — adopting the handle an address already holds (#278)
       await expect(run(() => ctx.restoreProfile(WALLET))).resolves.toBeNull();
 
       reverseHandleMock.mockResolvedValue('alvin');
-      await expect(run(() => ctx.restoreProfile(WALLET))).resolves.toMatchObject({ handle: 'alvin' });
+      await expect(run(() => ctx.restoreProfile(WALLET))).resolves.toMatchObject({
+        handle: 'alvin',
+      });
       expect(shown()).toBe('alvin');
     });
 

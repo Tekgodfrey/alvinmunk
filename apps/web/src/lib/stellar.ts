@@ -40,7 +40,9 @@ if (configErrors.length > 0 && typeof window === 'undefined') {
 /** Throws when the config is inconsistent — the client calls it before handing out a wallet. */
 export function assertNetworkConfig(): void {
   if (configErrors.length > 0) {
-    throw new Error(`This deployment is misconfigured, so nothing can be sent: ${configErrors.join('; ')}`);
+    throw new Error(
+      `This deployment is misconfigured, so nothing can be sent: ${configErrors.join('; ')}`,
+    );
   }
 }
 

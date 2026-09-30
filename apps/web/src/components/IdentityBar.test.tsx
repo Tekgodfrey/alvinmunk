@@ -216,13 +216,18 @@ describe('IdentityBar rename', () => {
       input.dispatchEvent(new Event('input', { bubbles: true }));
     });
     await act(async () =>
-      input.closest('form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })),
+      input
+        .closest('form')!
+        .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })),
     );
     await flush();
   }
 
   it('explains a handle cooling down for its previous owner and signs nothing', async () => {
-    availabilityMock.mockResolvedValue({ status: 'reserved', until: new Date('2026-10-29T12:00:00Z') });
+    availabilityMock.mockResolvedValue({
+      status: 'reserved',
+      until: new Date('2026-10-29T12:00:00Z'),
+    });
     await rename('alice');
     expect(availabilityMock).toHaveBeenCalledWith('alice', 'GME');
     expect(toastMock.error).toHaveBeenCalledWith(
